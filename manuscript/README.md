@@ -9,7 +9,7 @@
 -   [Introdução](foreword.md/#foreword)
 -   [Prefácio](preface.md/#preface)
 -   [Capítulo 1: Porquê Programação Funcional?](ch1.md/#chapter-1-why-functional-programming)
-    -   [Uma Olhada Rápida](ch1.md/#at-a-glance)
+    -   [De relance](ch1.md/#at-a-glance)
     -   [Confiança](ch1.md/#confidence)
     -   [Comunicação](ch1.md/#communication)
     -   [Legibilidade](ch1.md/#readability)
