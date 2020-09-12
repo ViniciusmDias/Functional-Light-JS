@@ -28,9 +28,12 @@ This first chapter's purpose is to answer questions like "Why should I use FP st
 O objetivo deste primeiro capítulo é responder a perguntas como "Por que devo usar o estilo PF com meu código?" e "Como o Functional-Light Javascript se compara ao que outros dizem sobre PF?" Depois de preenchermos esse fundamento, vamos descobrir ao longo do restante do livro, peça por peça, as técnicas e padrões para escrever JS no estilo Functional-Light. 
 
 ## At a Glance
-## À primeira vista
+## De Relance
 
 Let's briefly illustrate the notion of "Functional-Light JavaScript" with a before-and-after snapshot of code. Consider:
+
+Vamos ilustrar brevemente a noção de "Functional-Light JavaScript" com um antes e depois de um trecho código. Considerar
+
 
 ```js
 var numbers = [4,10,0,27,42,17,15,-6,58];
@@ -65,6 +68,8 @@ function outputMsg() {
 
 Now consider a very different style that accomplishes exactly the same outcome:
 
+Agora considere um estilo muito diferente que atinge exatamente o mesmo resultado:
+
 ```js
 var sumOnlyFavorites = FP.compose( [
     FP.filterReducer( FP.gte( 10 ) ),
@@ -89,59 +94,112 @@ function constructMsg(v) { return `The magic number is: ${v}`; }
 
 Once you understand FP and Functional-Light, this is likely how you'd *read* and mentally process that second snippet:
 
+Uma vez que você entendeu PF e Functional-Light, provavelmente é assim que você *leria* e processaria mentalmente esse segundo pedaço:
+
 > We're first creating a function called `sumOnlyFavorites(..)` that's a combination of three other functions. We combine two filters, one checking if a value is greater-than-or-equal to 10 and one for less-than-or-equal to 20. Then we include the `sum(..)` reducer in the transducer composition. The resulting `sumOnlyFavorites(..)` function is a reducer that checks if a value passes both filters, and if so, adds the value to an accumulator value.
 >
 > Then we make another function called `printMagicNumber(..)` which first reduces a list of numbers using that `sumOnlyFavorites(..)` reducer we just defined, resulting in a sum of only numbers that passed the *favorite* checks. Then `printMagicNumber(..)` pipes that final sum into `constructMsg(..)`, which creates a string value that finally goes into `console.log(..)`.
 
+> Estamos primeiro criando uma função chamada `sumOnlyFavorites(..)` que é uma combinação de três outras funções. Combinamos dois filtros, um verificando se um valor é maior ou igual a 10 e outro para menor ou igual a 20. Em seguida, incluímos o redutor de `soma(..)` na composição do transdutor. A função resultante `sumOnlyFavorites(..)` é um redutor que verifica se um valor passa em ambos os filtros e, em caso afirmativo, adiciona o valor a um valor acumulador.
+>
+> Então fazemos outra função chamada `printMagicNumber(..)` que primeiro reduz uma lista de números usando o redutor `sumOnlyFavorites(..)` que acabamos de definir, resultando em uma soma de apenas números que passaram nas verificações de *favoritos*. Então `printMagicNumber(..)` canaliza essa soma final em `constructMsg(..)`, que cria um valor de string que finalmente vai para `console.log(..)`.
+
 All those moving pieces *speak* to an FP developer in ways that likely seem highly unfamiliar to you right now. This book will help you *speak* that same kind of reasoning so that it's as readable to you as any other code, if not more so!
+
+Todas essas peças móveis *falam* com um desenvolvedor de PF em maneiras que, agora, provavelmente não lhe parecem familiares. Este livro irá ajudá-lo a *falar* esse mesmo tipo de raciocínio para que isso seja tão legível para você quanto qualquer outro código, se não até mais!
 
 A few other quick remarks about this code comparison:
 
+Algumas outras observações rápidas sobre essa comparação de código:
+
 * It's likely that for many readers, the former snippet feels closer to comfortable/readable/maintainable than the latter snippet. It's entirely OK if that's the case. You're in exactly the right spot. I'm confident that if you stick it out through the whole book, and practice everything we talk about, that second snippet will eventually become a lot more natural, maybe even preferable!
+
+* É provável que, para muitos leitores, o primeiro trecho parece mais confortável/legível/sustentável do que o último. Está tudo bem se for esse o seu caso. Você está exatamente no lugar certo. Tenho certeza de que, se você seguir todo o livro e praticar tudo o que falamos, esse segundo trecho de código acabará se tornando muito mais natural, talvez até melhor! 
 
 * You might have done the task significantly or entirely different from either snippet presented. That's OK, too. This book won't be prescriptive in dictating that you should do something a specific way. The goal is to illustrate the pros/cons of various patterns and enable you to make those decisions. By the end of this book, how you would approach the task may fall a little closer to the second snippet than it does right now.
 
+* Você pode ter feito a tarefa de maneira significativa ou totalmente diferente de qualquer um dos trechos de código apresentados. Tudo bem também. Este livro não será prescritivo ao ditar que você deve fazer algo de uma maneira específica. O objetivo é ilustrar os prós e contras de vários padrões e permitir que você tome essas decisões. No final deste livro, como você abordaria a tarefa pode ficar um pouco mais perto do segundo trecho de código do que agora.
+
 * It's also possible that you're already a seasoned FP developer who's scanning through the start of this book to see if it has anything useful for you to read. That second snippet certainly has some bits that are quite familiar. But I'm also betting that you thought, "Hmmm, I wouldn't have done it *that* way..." a couple of times. That's OK, and entirely reasonable.
+
+* Também é possível que você já seja um desenvolvedor de PF experiente, que está examinando o início deste livro para ver se há algo útil para ler. Esse segundo trecho de código certamente tem algumas partes que são bastante familiares. Mas também aposto que você pensou, "Hmmm, eu não teria feito *dessa* maneira..." em alguns momentos. Tudo bem e totalmente aceitável.
 
     This is not a traditional, canonical FP book. We'll at times seem quite heretical in our approaches. We're seeking to strike a pragmatic balance between the clear undeniable benefits of FP, and the need to ship workable, maintainable JS without having to tackle a daunting mountain of math/notation/terminology. This is not *your* FP, it's "Functional-Light JavaScript".
 
+    Este não é um livro tradicional e canônico da PF. Às vezes, pareceremos bastante heréticos em nossas abordagens. Estamos buscando um equilíbrio pragmático entre os benefícios claros e inegáveis da PF e a necessidade de enviar JS viável e sustentável sem ter que enfrentar uma montanha assustadora de matemática/notação/terminologia. Isto não é *sua* PF, é "Functional-Light Javascript".
+
 Whatever your reasons for reading this book, welcome!
 
+Quaisquer que sejam seus motivos para ler este livro, seja bem-vindo!
+
 ## Confidence
+## Confiança
 
 I have a very simple premise that sort of underlies everything I do as a teacher of software development (in JavaScript): code that you cannot trust is code that you do not understand. The reverse is true also: code that you don't understand is code you can't trust. Furthermore, if you cannot trust or understand your code, then you can't have any confidence whatsoever that the code you write is suitable to the task. You run the program and basically just cross your fingers.
 
+Tenho uma premissa muito simples que está por trás de tudo que eu faço como professor de desenvolvimento de software (em JavaScript): código em que você não pode confiar é código que você não entende. O inverso também é verdade como: um código que você não entende é um código que você não pode confiar. Além disso, se você não puder confiar ou compreender seu código, não poderá ter nenhuma confiança de que o código que você escreve é apropriado para a tarefa. Você executa o programa e basicamente cruza os dedos. 
+
 What do I mean by trust? I mean that you can verify, by reading and reasoning, not just executing, that you understand what a piece of code *will* do; you aren't just relying on what it *should* do. More often than is perhaps prudent, we tend to rely on running test suites to verify our programs' correctness. I don't mean to suggest tests are bad. But I do think we should aspire to be able to understand our code well enough that we know the test suite will pass before it runs.
+
+O que eu quero dizer com confiança? Quero dizer que você pode verificar, lendo e raciocinando, não apenas executando, que entende o que um pedaço de código *fará*; você não está apenas contando com o que ele *deve* fazer. Mais frequentemente do que parece prudente, tendemos a confiar na execução do conjunto de testes para verificar a exatidão de nossos programas. Não quero sugerir que os testes sejam ruins. Mas acho que devemos desejar ser capazes de entender nosso código bem o suficiente para sabermos que o conjunto de testes será aprovado antes de ser executado.
 
 The techniques that form the foundation of FP are designed from the mindset of having far more confidence over our programs just by reading them. Someone who understands FP, and who's disciplined enough to diligently use it throughout their programs, will write code that they **and others** can read and verify that the program will do what they want.
 
+As técnicas que formam a fundação da PF são projetadas com a mentalidade para termos muito mais confiança em nossos programas apenas por lê-los. Alguém que entenda de PF e que seja disciplinado o suficiente para usá-lo diligentemente em seus programas, escreverá um código que eles **e outros** podem ler e verificar se o programa fará o que eles desejam.
+
 Confidence is also increased when we use techniques that avoid or minimize likely sources of bugs. That's perhaps one of the biggest selling points of FP: FP programs often have fewer bugs, and the bugs that do exist are usually in more obvious places, so they're easier to find and fix. FP code tends to be more bug-resistant -- certainly not bug-proof, though.
+
+A confiança também aumenta quando usamos técnicas que evitam ou minimizam as prováveis fontes de bugs. Esse é talvez um dos maiores argumentos de venda da PF: os programas da PF geralmente têm menos bugs e os bugs que existem geralmente estão em lugares mais óbvios, então são mais fáceis de encontrar e corrigir. O código da PF tende a ser mais resistente a bugs -- certamente não à prova de bugs.
 
 As you journey through this book, you will begin to develop more confidence in the code you write, because you will use patterns and practices that are already well proven; and you'll avoid the most common causes of program bugs!
 
+Ao longo deste livro, você começará a desenvolver mais confiança no código que escreve, porque usará padrões e práticas já comprovados; e você evitará as mais comuns causas de bugs nos programas!
+
 ## Communication
+## Comunicação
 
 Why is Functional Programming important? To answer that, we need to take a bigger step back and talk about why programming itself is important.
 
+Por que a Programação Funcional é importante? Para responder a isso, precisamos dar um passo maior para trás e falar sobre por que a programação em si é importante.
+
 It may surprise you to hear this, but I don't believe that code is primarily a set of instructions for the computer. Actually, I think the fact that code instructs the computer is almost a happy accident.
+
+Você pode ficar surpreso ao ouvir isso, mas não acredito que o código seja basicamente um conjunto de instruções para o computador. Na verdade, acho que o fato de o código instruir o computador é quase que um feliz acidente.
 
 I believe very deeply that the vastly more important role of code is as a means of communication with other human beings.
 
+Acredito profundamente que o papel muito mais importante do código é como meio de comunicação com outros seres humanos.
+
 You probably know by experience that an awful lot of your time spent "coding" is actually spent reading existing code. Very few of us are so privileged as to spend all or most of our time simply banging out all new code and never dealing with code that others (or our past selves) wrote.
+
+Você provavelmente sabe por experiência que uma grande parte do seu tempo gasto "codigicando" é, na realidade, gasto lendo o código existente. Pouquissímos de nós temos o privilégio de gastar todo ou a maior parte do nosso tempo simplesmente elaborando todos os novos códigos e nunca lidando com códigos que outros (ou o nosso próprio eu no passo) escreveram.
 
 It's widely estimated that developers spend 70% of code maintenance time on reading to understand it. That is eye-opening. 70%. No wonder the global average for a programmer's lines of code written per day is about 10. We spend up to 7 hours of our day just reading the code to figure out where those 10 lines should go!
 
+É amplamente estimado que os desenvolvedores gastam 70% do tempo na manutenção do código e lendo para entendê-lo. Isso é revelador. 70%. Não é de se admirar que a média global de linhas de código que um programador escreve por dia seja cerca de 10. Passamos até 7 horas do nosso dia apenas lendo o código para descobrir onde essas 10 linhas devem ir!
+
 We need to focus a lot more on the readability of our code. And by the way, readability is not just about fewer characters. Readability is actually most impacted by familiarity.<a href="#user-content-footnote-1"><sup>1</sup></a>
+
+Precisamos nos concentar muito mais na legibilidade do nosso código. E, à propósito, legibilidade não se trata apenas de menos caracteres. A legibilidade é, na verdadem mais afetada pela familiaridade.
 
 If we are going to spend our time concerned with making code that will be more readable and understandable, FP is central in that effort. The principles of FP are well established, deeply studied and vetted, and provably verifiable. Taking the time to learn and employ these FP principles will ultimately lead to more readily and recognizably familiar code for you and others. The increase in code familiarity, and the expediency of that recognition, will improve code readability.
 
+Se vamos gastar nosso tempo preocupados em fazer um código que seja mais legível e compreensível, a PF é o fundamental nisso. Os princípios da PF são bem estabelecidos, profundamente estudados, controlados e, provavelmente, podem ser verificados.
+
 For example, once you learn what `map(..)` does, you'll be able to almost instantly spot and understand it when you see it in any program. But every time you see a `for` loop, you're going to have to read the whole loop to understand it. The syntax of the `for` loop may be familiar, but the substance of what it's doing is not; that has to be *read*, every time.
+
+Por exemplo, depois de aprender que `map(..)` faz, você será capaz de identificá-lo e entendê-lo quase que instantaneamente quando o vir em qualquer programa. Mas toda vez que você vir um loop `for`, terá que ler todo o loop para entendê-lo. A sintaxe do loop `for` pode ser familiar, mas a essência do que ele está fazendo não é; isso tem que ser *lido*, todas as vezes.
 
 By having more code that's recognizable at a glance, and thus spending less time figuring out what the code is doing, our focus is freed up to think about the higher levels of program logic; this is the important stuff that most needs our attention anyway.
 
+Por ter mais código reconhecível de relance e, portanto, gastar menos tempo tentando descobrir o que o código está fazendo, nosso foco fica livre para pensar sobre os níveis mais elevados da lógica do programa; essas são as coisas importantes que mais precisam de nossa atenção de qualquer maneira.
+
 FP (at least, without all the terminology weighing it down) is one of the most effective tools for crafting readable code. *That* is why it's so important.
 
+PF (pelo menos, sem toda aquela terminologia botando ela para baixo) é uma das ferramentas mais eficazes para a elaboração de código legível. *É* por isso que é tão importante.
+
 ## Readability
+## Legibilidade
 
 Readability is not a binary characteristic. It's a largely subjective human factor describing our relationship to code. And it will naturally vary over time as our skills and understanding evolve. I have experienced effects similar to the following figure, and anecdotally many others I've talked to have as well.
 
