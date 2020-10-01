@@ -1,7 +1,7 @@
 # Functional-Light JavaScript
 # Capítulo 1: Porquê Programação Funcional?
  
-> Programador funcional: (substantivo) Aquele que nomeia as variáveis "x", nomear as funções "f" e nomeia os padrões de código como "prépromorfismo zigohistomórfico"
+> Programador funcional: (substantivo) Aquele que nomeia as variáveis "x", nomeaia as funções "f" e nomeia os padrões de código como "prépromorfismo zigohistomórfico"
 >
 > James Iry @jamesiry 5/13/15
 >
