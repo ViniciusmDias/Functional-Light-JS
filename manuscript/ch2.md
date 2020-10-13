@@ -512,6 +512,8 @@ Outro benefício relacionado a PF onde usamos uma desestruturação de objeto pa
 
 Another key benefit is that named arguments, by virtue of being specified as object properties, are not fundamentally ordered. That means we can specify inputs in whatever order we want:
 
+Outra benefício importante é que os argumentos nomeados, em virtude de serem especificados como propriedade do objetos, não são fundamentalmente ordenados. Isto quer dizer que podemos especificar as entradas na ordem que quisermos:
+
 ```js
 function foo({ x, y } = {}) {
     console.log(x, y);
@@ -524,15 +526,24 @@ foo({
 
 We're skipping the `x` parameter by simply omitting it. Or we could specify an `x` argument if we cared to, even if we listed it after `y` in the object literal. The call-site is no longer cluttered by ordered-placeholders like `undefined` to skip a parameter.
 
+Estamos pulando o parâmetro `x` simplesmente omitindo-o. Ou poderíamos especificar um argumento `x` se quiséssemos, mesmo se o listássemos após `y` no literal do objeto. O call-site não é mais desordenado por marcadores de posição como `undefined` para pular um parâmetro.
+
 Named arguments are much more flexible, and attractive from a readability perspective, especially when the function in question can take three, four, or more inputs.
+
+Argumentos nomeados são muito mais flexíveis e atraentes do ponto de vista da legibilidade, especialmente quando a função em questão pode receber três, quatro ou mais entradas.
 
 **Tip:** If this style of function arguments seems useful or interesting to you, check out coverage of my [FPO library in Appendix C](apC.md/#bonus-fpo).
 
+**Dica:** Se este estilo de argumentos de função parece útil ou interessante para você, verifique a cobertura da minha [biblioteca FPO no Apêndice C](apC.md/#bonus-fpo).
+
 ## Function Output
+## Saída de função
 
 Let's shift our attention from a function's inputs to its output.
+Vamos mudar nossa atenção das entradas de uma função para sua saída.
 
 In JavaScript, functions always return a value. These three functions all have identical `return` behavior:
+Em JavaScript, as funções sempre retornam um valor. Todas essas três funções têm o mesmo comportamento no `return`:
 
 ```js
 function foo() {}
@@ -548,9 +559,15 @@ function baz() {
 
 The `undefined` value is implicitly `return`ed if you have no `return` or if you just have an empty `return;`.
 
+O valor `undefined` é implicitamente `return`ado se você não tiver um `return` ou se vocẽ tiver apenas uma `return` vazio. 
+
 But keeping as much with the spirit of FP function definition as possible -- using functions and not procedures -- our functions should always have outputs, which means they should explicitly `return` a value, and usually not `undefined`.
 
+Mas mantendo o máximo possível com o espírito de definição de PF -- usando funções e não procedimentos -- nossas funções devem sempre ter saídas, o que significa que elas devem `return` explicitamente um valor, e geralmente não `undefined`.
+
 A `return` statement can only return a single value. So if your function needs to return multiple values, your only viable option is to collect them into a compound value like an array or an object:
+
+Uma instrução `return` só pode retornar um único valor. Portanto, se sua função precisa retornar vários valores, sua única opção viável é coletá-los em um valor composto, como uma matrízou um objeto:
 
 ```js
 function foo() {
@@ -562,6 +579,8 @@ function foo() {
 
 Then, we'll assign `x` and `y` from two respective items in the array that comes back from `foo()`:
 
+Em seguida, atribuiremos `x` e `y` de dois respectivos itens na matriz que vem de `foo()`
+
 ```js
 var [x, y] = foo();
 console.log(x + y); // 42
@@ -569,7 +588,11 @@ console.log(x + y); // 42
 
 Collecting multiple values into an array (or object) to return, and subsequently destructuring those values back into distinct assignments, is a way to transparently express multiple outputs for a function.
 
+Coletar vários valores em uma matriz (ou objeto) para retornar e, subsequentemente, desestruturar esses valores de volta em atribuições distintas, é uma maneira de expressar de forma transparente várias saídas para uma função.
+
 **Tip:** I'd be remiss if I didn't suggest you take a moment to consider if a function needing multiple outputs could be refactored to avoid that, perhaps separated into two or more smaller single-purpose functions? Sometimes that will be possible, sometimes not; but you should at least consider it.
+
+**Dica:** Eu seria negligente se não sugerisse que você parasse um momento para considerar se uma função que precisa de várias saídas poderia ser refatorada para evitar isso, talvez separada em duas ou mais funções menores de propósito único. Às vezes isso será possível, às vezes não; mas você deve pelo menos considerar isso.
 
 ### Early Returns
 
