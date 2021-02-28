@@ -543,6 +543,7 @@ Let's shift our attention from a function's inputs to its output.
 Vamos mudar nossa atenção das entradas de uma função para sua saída.
 
 In JavaScript, functions always return a value. These three functions all have identical `return` behavior:
+
 Em JavaScript, as funções sempre retornam um valor. Todas essas três funções têm o mesmo comportamento no `return`:
 
 ```js
@@ -559,7 +560,7 @@ function baz() {
 
 The `undefined` value is implicitly `return`ed if you have no `return` or if you just have an empty `return;`.
 
-O valor `undefined` é implicitamente `return`ado se você não tiver um `return` ou se vocẽ tiver apenas uma `return` vazio. 
+O valor `undefined` é implicitamente `retornado`se você não tiver um `return` ou se vocẽ tiver apenas uma `return` vazio. 
 
 But keeping as much with the spirit of FP function definition as possible -- using functions and not procedures -- our functions should always have outputs, which means they should explicitly `return` a value, and usually not `undefined`.
 
@@ -595,10 +596,15 @@ Coletar vários valores em uma matriz (ou objeto) para retornar e, subsequenteme
 **Dica:** Eu seria negligente se não sugerisse que você parasse um momento para considerar se uma função que precisa de várias saídas poderia ser refatorada para evitar isso, talvez separada em duas ou mais funções menores de propósito único. Às vezes isso será possível, às vezes não; mas você deve pelo menos considerar isso.
 
 ### Early Returns
+### Retornos Antecipados
 
 The `return` statement doesn't just return a value from a function. It's also a flow control structure; it ends the execution of the function at that point. A function with multiple `return` statements thus has multiple possible exit points, meaning that it may be harder to read a function to understand its output behavior if there are many paths that could produce that output.
 
+A instrução `return` não retorna apenas um valor de uma função. É também uma estrutura de controle de fluxo; ele termina a execução da função nesse ponto. Uma função com várias instruções `return`, portanto, tem vários pontos de sáida possíveis, o que significa que pode ser mais difícil ler uma função para entender seu comportamento de saída se houver muitos caminhos que poderiam produzir essa saída.
+
 Consider:
+
+Considere:
 
 ```js
 function foo(x) {
@@ -618,13 +624,23 @@ function foo(x) {
 
 Pop quiz: without cheating and running this code in your browser, what does `foo(2)` return? What about `foo(4)`? And `foo(8)`? And `foo(12)`?
 
+Questionário rápido: sem trapacear e rodar este código em seu navegador, o que `foo(2)` retorna? E sobre `foo(4)`? E `foo(8)`? E `foo(12)`?
+
 How confident are you in your answers? How much mental tax did you pay to get those answers? I got it wrong the first two times I tried to think it through, and I wrote it!
+
+Você está confiante em suas respostas? Quanto da sua mente você gastou para obter essas respostas? Eu entendi errado nas duas primeiras vezes que tentei pensar sobre e escrevi! 
 
 I think part of the readability problem here is that we're using `return` not just to return different values, but also as a flow control construct to quit a function's execution early in certain cases. There are obviously better ways to write that flow control (the `if` logic, etc.), but I also think there are ways to make the output paths more obvious.
 
+Eu acho que parte do problema de legibilidade aqui é que estamos usando `return` não apenas para retornar valores diferentes, mas também como uma construção de controle de fluxo para encerrar a execução de uma função mais cedo em certos casos. Obviamente, existem maneiras melhores de escrever esse controle de fluxo (a lógica `if`, etc.), mas também, acho que existem maneiras de tornar os caminhos de saída mais óbvios.
+
 **Note:** The answers to the pop quiz are `2`, `2`, `8`, and `13`.
 
+**Observação:** As respostas do questionário rápido são `2`, `2`, `8` e `13`.
+
 Consider this version of the code:
+
+Considere esta versão do código:
 
 ```js
 function foo(x) {
@@ -656,15 +672,26 @@ function foo(x) {
 
 This version is unquestionably more verbose. But I would argue it's slightly simpler logic to follow, because every branch where `retValue` can get set is _guarded_ by the condition that checks if it's already been set.
 
+Esta versão é inquestionávelmente mais verbosa. Mas eu diria que é uma lógica mais simples de seguir, porque cada branch onde `retValue` pode ser definido é _guardado_ pela condição que verifica se ele já foi definido antes.
+
 Rather than `return`ing from the function early, we used normal flow control (`if` logic) to determine the `retValue`'s assignment. At the end, we simply `return retValue`.
+
+Em vez de usar `return` antecipadamente na função, usamos o controle de fluxo normal (`if` lógico) para determinar a atribuição de `retValue`'s. No final, simplesmente `retornamos retValue`.
 
 I'm not unconditionally saying that you should always have a single `return`, or that you should never do early `return`s, but I do think you should be careful about the flow control part of `return` creating more implicitness in your function definitions. Try to figure out the most explicit way to express the logic; that will often be the best way.
 
+Não estou dizendo incondicionalmente que você deve sempre ter um único `return`, ou que você nunca deve usar `return` antecipado, mas eu acho que você deve ter cuidado com a parte de controle de fluxo do `return` criando mais implicitude em suas definições de função. Tente descobrir a maneira mais explícita de expressar a lógica; essa geralmente será a melhor maneira.
+
 ### Un`return`ed Outputs
+### Saídas não retornadas
 
 One technique that you've probably used in most code you've written, and maybe didn't even think about it much, is to have a function output some or all of its values by simply changing variables outside itself.
 
+Uma técnica que você provavelmente usou na maior parte do código que você tem escrevido, e talvez não tenha pensado muito nisso, é fazer com que uma função produza alguns ou todos os seus valores simplesmente alterando as variáveis de fora dela.
+
 Remember our <code>f(x) = 2x<sup>2</sup> + 3</code> function from earlier in the chapter? We could have defined it like this in JS:
+
+Lembra-se de nossa função <code>f(x) = 2x<sup>2</sup> + 3</code> do início do capítulo? Poderíamos ter definido assim em JS:
 
 ```js
 var y;
@@ -680,6 +707,8 @@ y; // 11
 
 I know this is a silly example; we could just as easily have `return`d the value instead of setting it into `y` from within the function:
 
+Eu sei que este é um exemplo bobo; Poderíamos facilmente ter um `return` do valor em vez de defini-lo como `y` de dentro da função:
+
 ```js
 function f(x) {
     return 2 * Math.pow(x, 2) + 3;
@@ -692,11 +721,18 @@ y; // 11
 
 Both functions accomplish the same task, so is there any reason we should pick one version over the other? **Yes, absolutely.**
 
+Ambas as funções realizam a mesma tarefa, então há algum motivo para escolhermos uma versão em vez da outra? **Sim, absolutamente.**
+
 One way to explain the difference is that the `return` in the latter version signals an explicit output, whereas the `y` assignment in the former is an implicit output. You may already have some intuition that guides you in such cases; typically, developers prefer explicit patterns over implicit ones.
+
+Uma maneira de explicar a diferença é que o `return` na última versão sinaliza uma saída explícita, enquanto a atribuição `y` na primeira versão é uma saída implícita. Você pode já ter alguma intuição que o orienta nesses casos; Normalmente, os desenvolvedores preferem padrões explícitos aos implícitos.
 
 But changing a variable in an outer scope, as we did with the `y` assignment inside of `foo(..)`, is just one way of achieving an implicit output. A more subtle example is making changes to non-local values via reference.
 
+Mas alterar uma variável em um escopo externo, como fizemos com a atribuição `y` dentro de `foo(..)`, é apenas uma maneira de obter uma saída implícita. Um exemplo mais sutil é fazer alterações em valores não locais por meio de referência.
+
 Consider:
+Considere:
 
 ```js
 function sum(list) {
@@ -717,17 +753,29 @@ sum(nums); // 124
 
 The most obvious output from this function is the sum `124`, which we explicitly `return`ed. But do you spot the other output? Try that code and then inspect the `nums` array. Now do you spot the difference?
 
+A saída mais óbvia dessa função é a soma `124`, que explicitamente `retornamos`. Mas você identifica a outra saída? Coloque esse código em prática e inspecione o `nums` do array. Agora você percebe a diferença? 
+
 Instead of an `undefined` empty slot value in position `4`, now there's a `0`. The harmless looking `list[i] = 0` operation ended up affecting the array value on the outside, even though we operated on a local `list` parameter variable.
+
+Em vez de um valor de slot vazio `undefined` na posição `4`, agora há um `0`. A operação `list[i] = 0` de aparência inofensiva acabou afetando o valor do array do lado de fora, embora operássemos em uma variável de parâmetro `list` local.
 
 Why? Because `list` holds a reference-copy of the `nums` reference, not a value-copy of the `[1,3,9,..]` array value. JavaScript uses references and reference-copies for arrays, objects, and functions, so we may create an accidental output from our function all too easily.
 
+Por quê? Porque `list` contém uma cópia-referência da referência `nums`, não uma cópia-valor do valor do array `[1,3,9,..]`. JavaScript usa referências e cópias de referência para arrays, objetos e funções, portanto, podemos criar uma saída acidental de nossa função com muita facilidade.
+
 This implicit function output has a special name in the FP world: side effects. And a function that has _no side effects_ also has a special name: pure function. We'll talk a lot more about these in [Chapter 5](ch5.md), but the punchline is that we'll want to prefer pure functions and avoid side effects wherever possible.
 
+Essa saída de função implícita tem um nome especial no mundo da PF: efeitos colaterais. E uma função que _não tem efeitos colaterais_ também tem um nome especial: função pura. Falaremos muito mais sobre isso no [Capítulo 5](ch5.md), mas o ponto principal é que queremos preferir funções puras e evitar efeitos colaterais sempre que possível.
+
 ## Functions of Functions
+## Funções de Funções
 
 Functions can receive and return values of any type. A function that receives or returns one or more other function values has the special name: higher-order function.
 
+Funções podem receber e retornar valores de qualquer tipo. Uma função que recebe ou retorna uma ou mais outros valores de função tem um especial nome: funções de ordem superior.
+
 Consider:
+Considere:
 
 ```js
 function forEach(list, fn) {
@@ -744,7 +792,11 @@ forEach([1, 2, 3, 4, 5], function each(val) {
 
 `forEach(..)` is a higher-order function because it receives a function as an argument.
 
+`forEach(..)` é uma função de ordem superior porque recebe uma função como um argumento.
+
 A higher-order function can also output another function, like:
+
+Uma função de ordem superior também pode gerar outra função, como:
 
 ```js
 function foo() {
@@ -759,6 +811,8 @@ f("Hello!"); // HELLO!
 ```
 
 `return` is not the only way to "output" an inner function:
+
+`return` não é a única maneira de "produzir" uma função interna:
 
 ```js
 function foo() {
@@ -776,15 +830,24 @@ foo(); // HELLO!
 
 Functions that treat other functions as values are higher-order functions by definition. FPers write these all the time!
 
+As funções que tratam outras funções como valores são funções de ordem superior por definição. Os programadores funcionais escrevem isso o tempo todo!
+
 ### Keeping Scope
+### Mantendo o Escopo
 
 One of the most powerful things in all of programming, and especially in FP, is how a function behaves when it's inside another function's scope. When the inner function makes reference to a variable from the outer function, this is called closure.
 
+Uma das coisas mais poderosas em toda a programação, e especialmente na PF, é como uma função se comporta quando está dentro do escopo de outra função. Quando a função interna faz referência a uma variável da função externa, isso é chamado de closure.
+
 Defined pragmatically:
+Definido pragmaticamente:
 
 > Closure is when a function remembers and accesses variables from outside of its own scope, even when that function is executed in a different scope.
 
+> Closure é quando uma função lembra e acessa variáveis de fora de seu próprio escopo, mesmo quando essa função é executada em um escopo diferente.
+
 Consider:
+Considere:
 
 ```js
 function foo(msg) {
@@ -802,9 +865,14 @@ helloFn(); // HELLO!
 
 The `msg` parameter variable in the scope of `foo(..)` is referenced inside the inner function. When `foo(..)` is executed and the inner function is created, it captures the access to the `msg` variable, and retains that access even after being `return`ed.
 
+A variável de parâmetro `msg` no escopo de `foo(..)` é referenciada dentro da função interna. Quando `foo(..)` é executado e a função interna é criada, ele captura o acesso à variável `msg` e retém esse acesso mesmo depois de ser `retornado`.
+
 Once we have `helloFn`, a reference to the inner function, `foo(..)` has finished and it would seem as if its scope should have gone away, meaning the `msg` variable would no longer exist. But that doesn't happen, because the inner function has a closure over `msg` that keeps it alive. The closed over `msg` variable survives for as long as the inner function (now referenced by `helloFn` in a different scope) stays around.
 
+Uma vez que temos `helloFn`, uma referência à função interna, `foo(..)` terminou e parece que seu escopo deveria ter desaparecido, significando que a variável `msg` não existiria mais. Mas isso não acontecen, porque a função interna tem um fechamento sobre `msg` que a mantém viva. A variável fechada sobre `msg` sobrevive enquanto a função interna (agora referenciada por `helloFn` em um escopo diferente) permanece. 
+
 Let's look at a few more examples of closure in action:
+Vejamos mais alguns exemplos das closures em ação: 
 
 ```js
 function person(name) {
@@ -822,7 +890,11 @@ susan(); // I am Susan
 
 The inner function `identify()` has closure over the parameter `name`.
 
+A função interna `identify()` tem closure sobre o parâmetro `nome`.
+
 The access that closure enables is not restricted to merely reading the variable's original value -- it's not just a snapshot but rather a live link. You can update the value, and that new current state remains remembered until the next access:
+
+O acesso que a closure permite não se restringe apenas à leitura do valor original da variável -- não é apenas um instantâneo, mas um link ativo. Você pode atualizar o valor e esse novo estado atual permanece lembrado até o próximo acesso:
 
 ```js
 function runningCounter(start) {
@@ -843,7 +915,11 @@ score(13); // 15
 
 **Warning:** For reasons that we'll explore in more depth later in the book, this example of using closure to remember a state that changes (`val`) is probably something you'll want to avoid where possible.
 
+**Aviso:** Por razões que exploraremos com mais profundidade posteriormente neste livro, este exemplo de uso de closure para lembrar um estado que muda (`val`) é provavelmente algo que você deve evitar sempre que possível.
+
 If you have an operation that needs two inputs, one of which you know now but the other will be specified later, you can use closure to remember the first input:
+
+Se você tiver uma operação que precisa de duas entradas, uma das quais você conhece agora, mas a outra será especificada mais tarde, você pode usar closure para lembrar a primeira entrada:
 
 ```js
 function makeAdder(x) {
@@ -865,9 +941,15 @@ addTo37(13); // 50
 
 Normally, a `sum(..)` function would take both an `x` and `y` input to add them together. But in this example we receive and remember (via closure) the `x` value(s) first, while the `y` value(s) are separately specified later.
 
+Normalmente, uma função `sum(..)` tomaria ambas as entradas `x` e `y` para adicioná-los. Mas, neste exemplo, recebemos e lembramos (por meio do fechamento) o(s) valor(es) de `x` primeiro, quanto o(s) valor(es) `y` são especificados separadamente mais tarde.
+
 **Note:** This technique of specifying inputs in successive function calls is very common in FP, and comes in two forms: partial application and currying. We'll dive into them more thoroughly in [Chapter 3](ch3.md/#some-now-some-later).
 
+**Nota:** Esta técnica de especificar entradas em chamadas de função sucessiva é muito comum em PF e vem em duas formas: aplicação parcial e currying. Vamos mergulhar neles mais profudamente no [Capítulo 3](ch3.md/#some-now-some-later). 
+
 Of course, since functions are just values in JS, we can remember function values via closure:
+
+Obviamente, como as funções são apenas valores em JS, podemos lembrar os valores das funções por meio de closure:
 
 ```js
 function formatter(formatFn) {
@@ -890,15 +972,27 @@ upperFirst("hello"); // Hello
 
 Instead of distributing/repeating the `toUpperCase()` and `toLowerCase()` logic all over our code, FP encourages us to create simple functions that encapsulate -- a fancy way of saying wrapping up -- that behavior.
 
+Em vez de distribuir/repetir as lógicas `toUpperCase()` e `toLowerCase()` em todo o nosso código, a PF nos incentiva a criar funções simples que encapsulam -- uma maneira elegante de dizer encerrando -- esse comportamento.
+
 Specifically, we create two simple unary functions `lower(..)` and `upperFirst(..)`, because those functions will be much easier to wire up to work with other functions in the rest of our program.
+
+Especificamente, criamos duas funções unárias simples `lower(..)` e `upperFirst(..)`, porque essas funções serão muito mais fáceis de conectar para trabalhar com outras funções no resto do nosso programa.
 
 **Tip:** Did you spot how `upperFirst(..)` could have used `lower(..)`?
 
+**Dica:** Você percebeu como `upperFirst(..)` poderia ter usado `lower(..)`?
+
 We'll use closure heavily throughout the rest of the text. It may just be the most important foundational practice in all of FP, if not programming as a whole. Make sure you're really comfortable with it!
+
+Usaremos muito as closures no restante do texto. Pode ser apenas a prática fundamental mais importante em todo a FP, se não a programação como um todo. Certifique-se de que você está realmente confortável com isso!
 
 ## Syntax
 
+## Sintaxe
+
 Before we move on from this primer on functions, let's take a moment to discuss their syntax.
+
+Antes de prosseguirmos com esta introdução sobre funções, vamos discutir um pouco sobre sua sintaxe.
 
 More than many other parts of this text, the discussions in this section are mostly opinion and preference, whether you agree with the views presented here or take opposite ones. These ideas are highly subjective, though many people seem to feel rather absolutely about them.
 
