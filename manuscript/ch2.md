@@ -996,11 +996,19 @@ Antes de prosseguirmos com esta introdução sobre funções, vamos discutir um 
 
 More than many other parts of this text, the discussions in this section are mostly opinion and preference, whether you agree with the views presented here or take opposite ones. These ideas are highly subjective, though many people seem to feel rather absolutely about them.
 
+Mais do que muitas outras partes deste texto, as discussões nesta seção são principalmente opiniões e preferências, quer você concorde com as visões apresentadas aqui ou opte por outras. Essas idéias são altamente subjetivas, embora muitas pessoas acreditam nessas idéias.
+
 Ultimately, you get to decide.
+
+Em última análise, você decide.
 
 ### What's in a Name?
 
+### O que há em um nome?
+
 Syntactically speaking, function declarations require the inclusion of a name:
+
+Sintaticamente falando, as declarações de função precisão incluir um nome:
 
 ```js
 function helloMyNameIs() {
@@ -1009,6 +1017,9 @@ function helloMyNameIs() {
 ```
 
 But function expressions can come in both named and anonymous forms:
+
+Mas as expressões de função podem vir nas formas nomeadas e anônimas:
+
 
 ```js
 foo(function namedFunctionExpr() {
@@ -1023,13 +1034,23 @@ bar(function () {
 
 What exactly do we mean by anonymous, by the way? Specifically, functions have a `name` property that holds the string value of the name the function was given syntactically, such as `"helloMyNameIs"` or `"namedFunctionExpr"`. This `name` property is most notably used by the console/developer tools of your JS environment to list the function when it participates in a stack trace (usually from an exception).
 
+O que exatamente queremos dizer com anônimo, a propósito? Especificamente, as funções tem uma propriedade `nome` que contém o valor da string do nome que a função foi dada sintaticamente, como `"helloMyNameIs"` ou `"namedFunctionExpr"`. Esta propriedade `nome` é mais notavelmente usada pelas ferramentas de console/desenvolvedor de seu ambiente JS para listar a função quando ela participa de um rastreamento de pilha (geralmente de uma exceção).
+
 Anonymous functions are generally displayed as `(anonymous function)`.
+
+As funções anônimas são geralmente exibidas como `(função anônima)`.
 
 If you've ever had to debug a JS program from nothing but a stack trace of an exception, you probably have felt the pain of seeing `(anonymous function)` appear line after line. This listing doesn't give a developer any clue whatsoever as to the path the exception came from. It's not doing the developer any favors.
 
+Se você ja teve que debugar um programa JS de nada além de um rastreamento de pilha de uma exceção, provavelmente sentiu a dor de ver `(função anônima)` aparecer linha após linha. Esta lista não da ao desenvolvedor nenhuma pista quanto ao caminho onde veio a exceção. Não está fazendo nenhum favor ao desenvolvedor.
+
 If you name your function expressions, the name is always used. So if you use a good name like `handleProfileClicks` instead of `foo`, you'll get much more helpful stack traces.
 
+Se você nomear suas expressões de função, o nome será sempre usado. Portanto, se você usar um bom nome como `handleProfileClicks` em veze de `foo`, você obterá rastreamentos de pilha muito mais úteis. 
+
 As of ES6, anonymous function expressions are in certain cases aided by _name inferencing_. Consider:
+
+A partir do ES6, as expressões de função anônima são, em certos casos, auxiliadas por _inferência de nome_ Considere:
 
 ```js
 var x = function () {};
@@ -1039,7 +1060,11 @@ x.name; // x
 
 If the engine is able to guess what name you _probably_ want the function to take, it will go ahead and do so.
 
+Se a máquina for capaz de adivinhar que nome você _provavelmente_ deseja que a função assuma, ela o fará.
+
 But beware, not all syntactic forms benefit from name inferencing. Probably the most common place a function expression shows up is as an argument to a function call:
+
+Mas cuidado, nem todas as formas sintáticas se beneficiam da inferência de nomes. Provavelmente o lugar mais comum em que uma expressão de função aparece é como argumento para uma chamada de função:
 
 ```js
 function foo(fn) {
@@ -1054,9 +1079,15 @@ foo(function () {}); //
 
 When the name can't be inferred from the immediate surrounding syntax, it remains an empty string. Such a function will be reported as `(anonymous function)` in a stack trace should one occur.
 
+Quando o nome não pode ser inferido dentro dos parentêses, ele permanece uma string vazia. Tal função será relatada como `(função anônima)` em um rastreamento de pilha, caso ocorra.
+
 There are other benefits to a function being named besides the debugging question. First, the syntactic name (aka lexical name) is useful for internal self-reference. Self-reference is necessary for recursion (both sync and async) and also helpful with event handlers.
 
+Existem outros benefícios em um função sendo nomeada, além da questão de depuração. Primeiro, o nome sintático (também conhecido como nome léxico) é útil para autorreferência interna. A auto referência é necessária para recursão (em sincronismo e assincronismo) e também é útil com manipuladores de eventos.
+
 Consider these different scenarios:
+
+Considere estes diferentes cenários:
 
 ```js
 // sync recursion:
@@ -1103,7 +1134,11 @@ document.getElementById("onceBtn").addEventListener(
 
 In all these cases, the named function's lexical name was a useful and reliable self-reference from inside itself.
 
+Em todos esses casos, o nome léxico da função nomeada era uma auto-referência útil e confiável de dentro dela mesma. 
+
 Moreover, even in simple cases with one-liner functions, naming them tends to make code more self-explanatory and thus easier to read for those who haven't read it before:
+
+Além disso, mesmo em casos simples com funções de uma linha, nomeá-los tende a tornar o código mais auto explicativo e, portanto, mais fácil de ler para quem nunca o leu antes:
 
 ```js
 people.map(function getPreferredName(person) {
@@ -1114,7 +1149,11 @@ people.map(function getPreferredName(person) {
 
 The function name `getPreferredName(..)` tells the reader something about what the mapping operation is intending to do that is not entirely obvious from just its code. This name label helps the code be more readable.
 
+O nome da função `getPreferredName(..)` diz ao leitor algo sobre o que a operação de mapeamento pretende fazer que não é totalmente óbvio apenas pelo seu código. Este rótulo de nome ajuda o código a ser mais legível.
+
 Another place where anonymous function expressions are common is with immediately invoked function expressions (IIFEs):
+
+Outro lugar onde as expressões de função anônimas são comuns é com expressões de função imediatamente invocadas (IIFEs):
 
 ```js
 (function () {
@@ -1124,6 +1163,8 @@ Another place where anonymous function expressions are common is with immediatel
 
 You virtually never see IIFEs using names for their function expressions, but they should. Why? For all the same reasons we just went over: stack trace debugging, reliable self-reference, and readability. If you can't come up with any other name for your IIFE, at least use the word IIFE:
 
+Você virtualmente nunca vê IIFEs usando nomes para suas expressões de função, mas deveriam. Porque? Pelas mesmas razões que acabamos de examinar: depuração de rastreamento de pilha, auto-referência confiável e legibilidade. Se você não conseguir encontrar outro nome para seu IIFE, pelo menos use a palavra IIFE:
+
 ```js
 (function IIFE() {
     // You already knew I was an IIFE!
@@ -1132,23 +1173,45 @@ You virtually never see IIFEs using names for their function expressions, but th
 
 What I'm getting at is there are multiple reasons why **named functions are always more preferable to anonymous functions.** As a matter of fact, I'd go so far as to say that there's basically never a case where an anonymous function is more preferable. They just don't really have any advantage over their named counterparts.
 
+O que estou querendo dizer é que existem várias razões pelas quais **funções nomeadas são sempre mais preferíveis a funções anônimas.** Na verdade, eu diria que basicamente nunca há um caso em que uma função anônima é mais preferível. Elas simplesmente não têm nenhuma vantagem sobre suas contrapartes nomeadas.
+
 It's incredibly easy to write anonymous functions, because it's one less name we have to devote our mental attention to figuring out.
+
+É incrivelmente fácil escrever funções anônimas, porque é um nome a menos que temos que dedicar nossa atenção mental para descobrir.
 
 I'll be honest; I'm as guilty of this as anyone. I don't like to struggle with naming. The first few names I come up with for a function are usually bad. I have to revisit the naming over and over. I'd much rather just punt with a good ol' anonymous function expression.
 
+Eu serei honesto; Sou tão culpado disso quanto qualquer um. Eu não gosto de lutar com nomes. Os primeiros nomes que penso para uma função geralmente são ruins. Tenho que revisitar a nomeação repetidamente. Eu prefiro apenas usar uma boa expressão de função anônima.
+
 But we're trading ease-of-writing for pain-of-reading. This is not a good trade-off. Being lazy or uncreative enough to not want to figure out names for your functions is an all too common, but poor, excuse for using anonymous functions.
+
+Mas estamos trocando facilidade de escrita por dor de leitura. Esta não é uma boa troca. Ser preguiçoso ou pouco criativo para não querer descobrir nomes para suas funções é uma desculpa muito comum, mas pobre, para usar funções anônimas.
 
 **Name every single function.** And if you sit there stumped, unable to come up with a good name for some function you've written, I'd strongly suggest you don't fully understand that function's purpose yet -- or it's just too broad or abstract. You need to go back and re-design the function until this is more clear. And by that point, a name will become more apparent.
 
+**Nomeia toda função.** E se você ficar perplexo, incapaz de encontrar um bom nome para alguma função que escreveu, sugiro que você ainda entenda totalmente o propósito dessa função -- ou ela é muito ampla ou abstrata. Você precisa voltar e redesenhar a função até que isso fique mais claro. E nesse ponto, um nome ficará mais aparente.
+
 In my practice, if I don't have a good name to use for a function, I name it `TODO` initially. I'm certain that I'll at least catch that later when I search for "TODO" comments before committing code.
+
+Na minha prática, se não tenho um bom nome para usar em uma função, eu a chamo de `TODO` inicialmente. Tenho certeza de que pelo menos entenderei isso mais tarde, quando pesquisar os comentários `"TODO"` antes de enviar o código.
 
 I can testify from my own experience that in the struggle to name something well, I usually have come to understand it better, later, and often even refactor its design for improved readability and maintainability.
 
+Posso testemunhar por experiência própria que, na luta para nomear bem algo, geralmente passei a entendê-lo melhor, mais tarde, e muitas vezes até refatorar seu formato para facilitar a leitura e a manutenção.
+
 This time investment is well worth it.
+
+Esse investimento de tempo vale a pena.
 
 ### Functions Without `function`
 
+### Funções sem `função`
+
 So far we've been using the full canonical syntax for functions. But you've no doubt also heard all the buzz around the ES6 `=>` arrow function syntax.
+
+Até agora, usamos a sintaxe canônica completa para funções. Mas você, sem dúvida, também ouvir todo barulho em torno da sintaxe de arrow functions `=>`.
+
+Compare:
 
 Compare:
 
@@ -1164,17 +1227,31 @@ people.map((person) => person.nicknames[0] || person.firstName);
 
 Whoa.
 
+Whoa.
+
 The keyword `function` is gone, so is `return`, the parentheses (`( )`), the curly braces (`{ }`), and the innermost semicolon (`;`). In place of all that, we used a so-called fat arrow symbol (`=>`).
+
+A palavra-chave `função` se foi, assim como `return`, os parênteses (`( )`), as chaves (`{}`) e o ponto e vírgula mais interno (`;`). No lugar de tudo isso, usamos o chamado símbola de seta grande (`=>`).
 
 But there's another thing we omitted. Did you spot it? The `getPreferredName` function name.
 
+Mas há outra coisa que omitimos. Você percebeu? O nome da função `getPreferredName`.
+
 That's right; `=>` arrow functions are lexically anonymous; there's no way to syntactically provide it a name. Their names can be inferred like regular functions, but again, the most common case of function expression values passed as arguments won't get any assistance in that way. Bummer.
+
+Isso mesmo; `=>` as funções de seta são lexicamente anônimas; não há como fornecer um nome sintaticamente. Seus nomes podem ser inferidos como funçẽos regulares, mas, novamente, o caso mais comum de valores de expressão passados como argumentos de funções não teria nenhuma ajuda dessa forma. 
 
 If `person.nicknames` isn't defined for some reason, an exception will be thrown, meaning this `(anonymous function)` will be at the top of the stack trace. Ugh.
 
+Se `person.nicknames` não for definido por algum motivo, uma exceção será lançada, o que significa que esta `(função anônima)` estará no topo do stack trace. ECA.
+
 Honestly, the anonymity of `=>` arrow functions is a `=>` dagger to the heart, for me. I cannot abide by the loss of naming. It's harder to read, harder to debug, and impossible to self-reference.
 
+Honestamente, o anonimato das funções de seta `=>` é um `=>` punhal no coração, para mim. Não posso tolerar a perda de um nome. É mais difícil de ler, mais difícil de debugar e impossível de auto referênciar.
+
 But if that wasn't bad enough, the other slap in the face is that there's a whole bunch of subtle syntactic variations that you must wade through if you have different scenarios for your function definition. I'm not going to cover all of them in detail here, but briefly:
+
+Mas se isso não fosse ruim o suficiente, o outro tapa na cara é que há um monte de variações sintáticas sutis que você que você deve percorrer se tiver diferentes cenários para a definição de sua função. Não vou cobrir todos eles em detalhes aqui, mas resumidamente:
 
 ```js
 people.map((person) => person.nicknames[0] || person.firstName);
@@ -1196,23 +1273,43 @@ people.map((person) => ({
 
 The case for excitement over `=>` in the FP world is primarily that it follows almost exactly from the mathematical notation for functions, especially in FP languages like Haskell. The shape of `=>` arrow function syntax communicates mathematically.
 
+O caso de empolgação com `=>` no mundo da PF é principalmente que ela segue quase que exatamente a notação matemática para funções, especialmente em linguagens de PF como Haskell. A forma da sintaxe da função de seta `=>` se comunica matematicamente.
+
 Digging even further, I'd suggest that the argument in favor of `=>` is that by using much lighter-weight syntax, we reduce the visual boundaries between functions which lets us use simple function expressions much like we'd use lazy expressions -- another favorite of the FPer.
+
+Indo ainda mais longe, sugiro que um argumento a favor de `=>` é que usando uma sintaxe muito mais leve, reduzimos os limites visuais entre as funções, o que nos permite usar expressões de função simples da mesma forma que usaríamos expressões preguiçõsas -- outro favorito dos programadores funcionais.
 
 I think most FPers are going to wave off the concerns I'm sharing. They love anonymous functions and they love saving on syntax. But like I said before: you decide.
 
+Acho que a maioria dos programadores funcionais vai ignorar as preocupações que estou compartilhando. Eles adoram funções anônimas e adoram economizar na sintaxe. Mas como eu disse antes: você decide.
+
 **Note:** Though I do not prefer to use `=>` in practice in my production code, they are useful in quick code explorations. Moreover, we will use arrow functions in many places throughout the rest of this book -- especially when we present typical FP utilities -- where conciseness is preferred to optimize for the limited physical space in code snippets. Make your own determinations whether this approach will make your own production-ready code more or less readable.
+
+**Nota:** Embora eu não prefira usar `=>` na prática em meu código de produção, eles são úteis em explorações de código rápidas. Além disso, usaremos as funções de seta em muitos lugares no restante deste livro -- especialmente quando apresentamos utilitários da PF típicos -- onde a concisão é preferida para otimizar o espaço físico limitado em trechos de código. Faça suas próprias escolhas se essa abordagem tornará seu próprio código pronto para produção mais ou menos legível. 
 
 ## What's This?
 
+## O que é isso?
+
 If you're not familiar with the `this` binding rules in JavaScript, I recommend checking out my book _You Don't Know JS: this & Object Prototypes_. For the purposes of this section, I'll assume you know how `this` gets determined for a function call (one of the four rules). But even if you're still fuzzy on _this_, the good news is we're going to conclude that you shouldn't be using `this` if you're trying to do FP.
+
+Se você não está familiarizado com as regras de vinculação `this` em JavaScript, recomendo dar uma olhada no meu livro _You Don't Know JS: this & Object Prototypes_. Para os fins desta seção, assumirei que você sabe como o `this` é determinado para uma chamada de função (uma das quatro regras). Mas mesmo que você ainda esteja confuso com _this_, a boa notícia é que vamos concluir que você não deve usar `this` se estiver tentando fazer PF.
 
 **Note:** We're tackling a topic that we'll ultimately conclude we shouldn't use. Why!? Because the topic of `this` has implications for other topics covered later in this book. For example, our notions of function purity are impacted by `this` being essentially an implicit input to a function (see [Chapter 5](ch5.md)). Additionally, our perspective on `this` affects whether we choose array methods (`arr.map(..)`) versus standalone utilities (`map(..,arr)`) (see [Chapter 9](ch9.md)). Understanding `this` is essential to understanding why `this` really should _not_ be part of your FP!
 
+**Observação:** Estamos abordando um tópico que, em última análise, concluiremos que não deve ser usado. Por que!? Porque o tópico `this` tem implicações para outros tópicos cobertos posteriormente neste livro. Por exemplo, nossas noções de pureza de função são impactadas por `this` ser essencialmente uma entrada implícita para uma função (consulte [Capítulo 5](ch5.md)). Além disso, nossa perspectiva sobre `this` afeta se escolhemos métodos de array (`arr.map(..)`) contra utilitários autônomos (`map(..,arr)`) (veja [Capítulo 9](ch9.md)). Entender `this` é essencial para entender porque `this` realmente _não_ deve fazer parte da sua PF!
+
 JavaScript `function`s have a `this` keyword that's automatically bound per function call. The `this` keyword can be described in many different ways, but I prefer to say it provides an object context for the function to run against.
+
+As `funções` JavaScript têm uma palavra-chave `this` que é automaticamente vinculada por chamada de função. A palavra-chave `this` pode ser descritas de muitas maneiras diferentes, mas prefiro dizer que ela fornece um contexto de objeto para a execução da função.
 
 `this` is an implicit parameter input for your function.
 
+`this` é uma entrada de parâmetro implícita para sua função.
+
 Consider:
+
+Considere:
 
 ```js
 function sum() {
@@ -1235,6 +1332,8 @@ s(); // 3
 
 Of course, if `this` can be input into a function implicitly, the same object context could be sent in as an explicit argument:
 
+Claro, se `this` pode ser inserido em uma função implicitamente, o mesmo contexto de objeto pode ser enviado como um argumento explícito:
+
 ```js
 function sum(ctx) {
     return ctx.x + ctx.y;
@@ -1250,7 +1349,11 @@ sum(context);
 
 Simpler. And this kind of code will be a lot easier to deal with in FP. It's much easier to wire multiple functions together, or use any of the other input wrangling techniques we will get into in the next chapter, when inputs are always explicit. Doing them with implicit inputs like `this` ranges from awkward to nearly impossible depending on the scenario.
 
+Mais simples. E esse tipo de código será muito mais fácil de lidar na PF. É muito mais fácil conectar várias funções ou usar qualquer uma das outras técnicas de transformação de entrada que veremos no próximo capítulo, qunado as entradas são sempre explícitas. Fazê-los com entradas implícitas como `this` varia de estranho a quase impossível dependendo do cenário.
+
 There are other tricks we can leverage in a `this`-based system, including prototype-delegation (also covered in detail in _You Don't Know JS: this & Object Prototypes_):
+
+Existem outros truques que podemos aproveitar em um sistema baseado em `this`, incluindo a delegação de protótipo (também abordada em detalhes em _You Don't Know JS: this & Object Prototypes_):
 
 ```js
 var Auth = {
@@ -1285,9 +1388,15 @@ Login.doLogin("fred", "123456");
 
 **Note:** `Object.assign(..)` is an ES6+ utility for doing a shallow assignment copy of properties from one or more source objects to a single target object: `Object.assign( target, source1, ... )`.
 
+**Nota:** `Object.assign(..)` é um utilitário ES6+ para fazer uma cópia de atribuição superficial de propriedades de um ou mais objetos de origem para um único objeto de destino: `Object.assign (target, source1, ...)`.
+
 In case you're having trouble parsing what this code does: we have two separate objects `Login` and `Auth`, where `Login` performs prototype-delegation to `Auth`. Through delegation and the implicit `this` context sharing, these two objects virtually compose during the `this.authorize()` function call, so that properties/methods on `this` are dynamically shared with the `Auth.authorize(..)` function.
 
+Caso você esteja tendo problemas para analisar o que este código faz: nós temos dois objetos separados `Login` e `Auth`, onde `Login` executa a delegação de protótipo para `Auth`. Atravéz da delegação e do compartilhamento de contexto implícito `this`, esses dois objetos virtualmente compõem durante a chamada da função `this.authorize()`, de modo que as propriedades/métodos em `this` são dinamicamente compartilhados com a função `Auth.authorize(..)`. 
+
 _This_ code doesn't fit with various principles of FP for a variety of reasons, but one of the obvious hitches is the implicit `this` sharing. We could be more explicit about it and keep code closer to FP-friendly style:
+
+O código _this_ não se encaixa em vários princípios da PF por uma variedade de razões, mas um dos obstáculos óbvios é o compartilhamento implícito de `this`. Poderíamos ser mais explícitos sobre isso e manter o código mais próximo do estilo amigável da PF.
 
 ```js
 // ..
@@ -1314,16 +1423,32 @@ doLogin(user,pw) {
 
 From my perspective, the problem is not with using objects to organize behavior. It's that we're trying to use implicit input instead of being explicit about it. When I'm wearing my FP hat, I want to leave `this` stuff on the shelf.
 
+Do meu ponto de vista, o problema não é usar objetos para organizar o comportamento. É que estamos tentando usar entradas implícitas em vez de ser explícitos sobre isso. Quando estou usando meu boné da PF, quero deixar "essas coisas" na prateleira.
+
 ## Summary
+
+## Resumo
 
 Functions are powerful.
 
+Funções são poderosas.
+
 But let's be clear what a function is. It's not just a collection of statements/operations. Specifically, a function needs one or more inputs (ideally, just one!) and an output.
+
+Mas vamos deixar claro o que é uma função. Não é apenas uma coleções de instruções/operações. Especificamente, uma função precisa de uma ou mais entradas (de preferência, apenas uma!) e uma saída.
 
 Functions inside of functions can have closure over outer variables and remember them for later. This is one of the most important concepts in all of programming, and a fundamental foundation of FP.
 
+Funções dentro de funções podem ter fechamento sobre variáveis externas e lembrá-las para depois. Este é um dos conceitos mais importantes em toda a programação e uma base fundamental da PF.
+
 Be careful of anonymous functions, especially `=>` arrow functions. They're convenient to write, but they shift the cost from author to reader. The whole reason we're studying FP here is to write more readable code, so don't be so quick to jump on that bandwagon.
+
+Tenha cuidado com as funções anônimas, especialmente as funções de seta `=>`. Elas são convenientes de escrever, mas transferem o custo do autor para o leitor. O motivo pelo qual estamos estudando PF aqui é para escrever um código mais legível, então não se precipite nesse momento.
 
 Don't use `this`-aware functions. Just don't.
 
+Não use `this` conscientemente em funções. Não faça isso.
+
 You should now be developing a clear and colorful perspective in your mind of what _function_ means in Functional Programming. It's time to start wrangling functions to get them to interoperate, and the next chapter teaches you a variety of critical techniques you'll need along the way.
+
+Agora você deve estar desenvolvendo uma perspectiva clara e colorida em sua mente do que _função_ significa em Programação Funcional. É hora de começar a organizar funções para fazẽ-las interoperar, e o próximo capítulo ensina uma variedade de técnicas críticas de que você precisará ao longo do caminho.
