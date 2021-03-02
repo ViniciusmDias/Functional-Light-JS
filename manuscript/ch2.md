@@ -39,7 +39,7 @@ Então o que isso tem a ver com PF?
 Em matemática, uma função sempre recebe entrada(s) e sempre fornece uma saída. Um termo que você ouvirá frequentemente em torno da PF é "morfismo". Essa é uma maneira sofisticada de descrever um conjunto de valores que mapeia para outro conjunto de valores, como as entradas de uma função são relacionadas às saídas dessa função.
 
 
-Em matemática algébrica, essas entradas e saidas são frequentemente interpretadas como componentes de coordernadas a serem representadas graficamente. Em nossos programas, no entanto, podemos definir funções com todos os tipos de entrada(s) e saída(s), embora raramente sejam interpretadas como uma curva desenhada visualmente em um gráfico.
+Em matemática algébrica, essas entradas e saídas são frequentemente interpretadas como componentes de coordenadas a serem representadas graficamente. Em nossos programas, no entanto, podemos definir funções com todos os tipos de entrada(s) e saída(s), embora raramente sejam interpretadas como uma curva desenhada visualmente em um gráfico.
 
 ### Função vs Procedimento
 
@@ -173,7 +173,8 @@ foo(3, 4); // 2
 
 A partir do ES5 (e do modo estrito, especificamente), `argumentos` são considerados por alguns como obsoletos. Muitos evitam usá-lo, se possível. Em JS, nós "nunca" quebramos a compatibilidade com versões anteriores, não importa o quão útil isso possa ser para o progresso futuro, então `argumentos` nunca serão removidos. Mas agora é comumente sugerido que você evite usá-lo sempre que possível.
 
-No entando, sugiro que `arguments.length`, e apenas isso, pode continuar a ser usado para aqueles casos em que você precisa se preocupar com o número de argumentos transmitidos. Uma versão futura do JS pode possivelmente adicionar um recurso que oferece a capacidade de determinar o número de argumentos passados sem consultar `arguments.length`, se isso acontecer, podemos descartar totalmente o uso de `argumentos`!
+No entanto, sugiro que `arguments.length`, e apenas isso, pode continuar a ser usado para aqueles casos em que você precisa se preocupar com o número de argumentos transmitidos. Uma versão futura do JS pode possivelmente adicionar um recurso que oferece a capacidade de determinar o número de argumentos passados sem consultar `arguments.length`, se isso acontecer, podemos t
+artar totalmente o uso de `argumentos`!
 
 Seja cuidadoso: **nunca** acesse argumentos posicionalmente, como `arguments[1]`. Atenha-se apenas a `arguments.length`, e somente se for necessário.
 
@@ -252,7 +253,7 @@ Qualquer que seja o comportamento que você invocar, `...` torna o trabalho com 
 
 **Dica:** Na verdade, esses métodos não são totalmente inúteis. Haverá alguns lugares onde dependemos deles ao longo do código deste livro. Mas certamente na maioria dos lugares, `...` será muito mais legível declarativamente e, como resultado, preferível.
 
-### Destructuração de Parâmetros
+### Desestruturação de Parâmetros
 
 Considere a variável `foo(..)` da seção anterior:
 
@@ -338,13 +339,13 @@ Mas a parte da desestruturação do parâmetro do objeto que eu quero que você 
 
 Com uma call-site normal como `foo(undefined,3)`, a posição é usada para mapear de argumento para parâmetro, colocamos `3` na segunda posição para atribuí-lo a um parâmetro `y`. Mas neste novo tipo de call-site onde a desestruturação de parâmetro está envolvida, uma propriedade de objeto simples indica a qual parâmetro (`y`) o valor do argumento `3` deve ser atribuído.
 
-Não tivemos que contabilizar `x` _naquela_ call-site porque, na verdade, não nos importamos com `x`. Nós apenas o omitimos, em vez de ter que fazer algo pertubador, como passar `undefined` para marcar a posição.
+Não tivemos que contabilizar `x` _naquela_ call-site porque, na verdade, não nos importamos com `x`. Nós apenas o omitimos, em vez de ter que fazer algo perturbador, como passar `undefined` para marcar a posição.
 
 Algumas linguagens têm um recurso explícito para isso: argumentos nomeados. Em outras palavras, no call-site, rotulando um valor de entrada para indicar para qual parâmetro ele mapeia. JavaScript não tem argumentos nomeados, mas a desestruturação do objeto de parâmetro é a coisa mais próxima disso.
 
 Outro benefício relacionado a PF onde usamos uma desestruturação de objeto para passar argumentos potencialmente múltiplos é que uma função que leva apenas um parâmetro (o objeto) é muito mais fácil de compor com a única saída de outra função. Mais sobre isso no [Capítulo 4](ch4.md).
 
-### Parâmetros Não Odernados
+### Parâmetros Não Ordernados
 
 Outra benefício importante é que os argumentos nomeados, em virtude de serem especificados como propriedade do objetos, não são fundamentalmente ordenados. Isto quer dizer que podemos especificar as entradas na ordem que quisermos:
 
@@ -409,7 +410,7 @@ Coletar vários valores em uma matriz (ou objeto) para retornar e, subsequenteme
 
 ### Retornos Antecipados
 
-A instrução `return` não retorna apenas um valor de uma função. É também uma estrutura de controle de fluxo; ele termina a execução da função nesse ponto. Uma função com várias instruções `return`, portanto, tem vários pontos de sáida possíveis, o que significa que pode ser mais difícil ler uma função para entender seu comportamento de saída se houver muitos caminhos que poderiam produzir essa saída.
+A instrução `return` não retorna apenas um valor de uma função. É também uma estrutura de controle de fluxo; ele termina a execução da função nesse ponto. Uma função com várias instruções `return`, portanto, tem vários pontos de saída possíveis, o que significa que pode ser mais difícil ler uma função para entender seu comportamento de saída se houver muitos caminhos que poderiam produzir essa saída.
 
 Considere:
 
@@ -467,7 +468,7 @@ function foo(x) {
 }
 ```
 
-Esta versão é inquestionávelmente mais verbosa. Mas eu diria que é uma lógica mais simples de seguir, porque cada branch onde `retValue` pode ser definido é _guardado_ pela condição que verifica se ele já foi definido antes.
+Esta versão é inquestionavelmente mais verbosa. Mas eu diria que é uma lógica mais simples de seguir, porque cada branch onde `retValue` pode ser definido é _guardado_ pela condição que verifica se ele já foi definido antes.
 
 Em vez de usar `return` antecipadamente na função, usamos o controle de fluxo normal (`if` lógico) para determinar a atribuição de `retValue`'s. No final, simplesmente `retornamos retValue`.
 
@@ -615,7 +616,7 @@ helloFn(); // HELLO!
 
 A variável de parâmetro `msg` no escopo de `foo(..)` é referenciada dentro da função interna. Quando `foo(..)` é executado e a função interna é criada, ele captura o acesso à variável `msg` e retém esse acesso mesmo depois de ser `retornado`.
 
-Uma vez que temos `helloFn`, uma referência à função interna, `foo(..)` terminou e parece que seu escopo deveria ter desaparecido, significando que a variável `msg` não existiria mais. Mas isso não acontecen, porque a função interna tem uma closure sobre `msg` que a mantém viva. A variável closure sobre `msg` sobrevive enquanto a função interna (agora referenciada por `helloFn` em um escopo diferente) permanece. 
+Uma vez que temos `helloFn`, uma referência à função interna, `foo(..)` terminou e parece que seu escopo deveria ter desaparecido, significando que a variável `msg` não existiria mais. Mas isso não acontece, porque a função interna tem uma closure sobre `msg` que a mantém viva. A variável closure sobre `msg` sobrevive enquanto a função interna (agora referenciada por `helloFn` em um escopo diferente) permanece. 
 
 Vejamos mais alguns exemplos das closures em ação: 
 
@@ -678,7 +679,7 @@ addTo37(13); // 50
 
 Normalmente, uma função `sum(..)` tomaria ambas as entradas `x` e `y` para adicioná-los. Mas, neste exemplo, recebemos e lembramos (por meio de closure) o(s) valor(es) de `x` primeiro, quanto o(s) valor(es) `y` são especificados separadamente mais tarde.
 
-**Nota:** Esta técnica de especificar entradas em chamadas de função sucessiva é muito comum em PF e vem em duas formas: aplicação parcial e currying. Vamos mergulhar neles mais profudamente no [Capítulo 3](ch3.md/#some-now-some-later). 
+**Nota:** Esta técnica de especificar entradas em chamadas de função sucessiva é muito comum em PF e vem em duas formas: aplicação parcial e currying. Vamos mergulhar neles mais profundamente no [Capítulo 3](ch3.md/#some-now-some-later). 
 
 Obviamente, como as funções são apenas valores em JS, podemos lembrar os valores das funções por meio de closure:
 
@@ -713,7 +714,7 @@ Usaremos muito as closures no restante do texto. Pode ser apenas a prática fund
 
 Antes de prosseguirmos com esta introdução sobre funções, vamos discutir um pouco sobre sua sintaxe.
 
-Mais do que muitas outras partes deste texto, as discussões nesta seção são principalmente opiniões e preferências, quer você concorde com as visões apresentadas aqui ou opte por outras. Essas idéias são altamente subjetivas, embora muitas pessoas acreditam nessas idéias.
+Mais do que muitas outras partes deste texto, as discussões nesta seção são principalmente opiniões e preferências, quer você concorde com as visões apresentadas aqui ou opte por outras. Essas ideias são altamente subjetivas, embora muitas pessoas acreditam nessas ideias.
 
 Em última análise, você decide.
 
@@ -745,7 +746,7 @@ O que exatamente queremos dizer com anônimo, a propósito? Especificamente, as 
 
 As funções anônimas são geralmente exibidas como `(função anônima)`.
 
-Se você ja teve que debugar um programa JS com nada além de um rastreamento de pilha de uma exceção, provavelmente sentiu a dor de ver `(função anônima)` aparecer linha após linha. Esta lista não da ao desenvolvedor nenhuma pista quanto ao caminho de onde veio a exceção. Ela não está fazendo nenhum favor ao desenvolvedor.
+Se você já teve que debugar um programa JS com nada além de um rastreamento de pilha de uma exceção, provavelmente sentiu a dor de ver `(função anônima)` aparecer linha após linha. Esta lista não da ao desenvolvedor nenhuma pista quanto ao caminho de onde veio a exceção. Ela não está fazendo nenhum favor ao desenvolvedor.
 
 Se você nomear suas expressões de função, o nome será sempre usado. Portanto, se você usar um bom nome como `handleProfileClicks` em veze de `foo`, você obterá rastreamentos de pilha muito mais úteis. 
 
@@ -774,7 +775,7 @@ foo(x); // x
 foo(function () {}); //
 ```
 
-Quando o nome não pode ser inferido dentro dos parentêses, ele permanece uma string vazia. Tal função será relatada como `(função anônima)` em um rastreamento de pilha, caso ocorra.
+Quando o nome não pode ser inferido dentro dos parênteses, ele permanece uma string vazia. Tal função será relatada como `(função anônima)` em um rastreamento de pilha, caso ocorra.
 
 Existem outros benefícios em um função sendo nomeada, além da questão de depuração. Primeiro, o nome sintático (também conhecido como nome léxico) é útil para auto referência interna. A auto referência é necessária para recursão (em sincronismo e assincronismo) e também é útil com manipuladores de eventos.
 
@@ -823,7 +824,7 @@ document.getElementById("onceBtn").addEventListener(
 );
 ```
 
-Em todos esses casos, o nome léxico da função nomeada era uma auto-referência útil e confiável de dentro dela mesma. 
+Em todos esses casos, o nome léxico da função nomeada era uma auto referência útil e confiável de dentro dela mesma. 
 
 Além disso, mesmo em casos simples com funções de uma linha, nomeá-los tende a tornar o código mais auto explicativo e, portanto, mais fácil de ler para quem nunca o leu antes:
 
@@ -844,7 +845,7 @@ Outro lugar onde as expressões de função anônimas são comuns é com express
 })();
 ```
 
-Você virtualmente nunca vê IIFEs usando nomes para suas expressões de função, mas deveriam. Porque? Pelas mesmas razões que acabamos de examinar: depuração de rastreamento de pilha, auto-referência confiável e legibilidade. Se você não conseguir encontrar outro nome para seu IIFE, pelo menos use a palavra IIFE:
+Você virtualmente nunca vê IIFEs usando nomes para suas expressões de função, mas deveriam. Porque? Pelas mesmas razões que acabamos de examinar: depuração de rastreamento de pilha, auto referência confiável e legibilidade. Se você não conseguir encontrar outro nome para seu IIFE, pelo menos use a palavra IIFE:
 
 ```js
 (function IIFE() {
@@ -894,7 +895,7 @@ Isso mesmo, as funções de seta `=>` são lexicamente anônimas, não há como 
 
 Se `person.nicknames` não for definido por algum motivo, uma exceção será lançada, o que significa que esta `(função anônima)` estará no topo da pilha de rastreamento. ECA.
 
-Honestamente, o anonimato das funções de seta `=>` é um `=>` punhal no coração, para mim. Não posso tolerar a perda de um nome. É mais difícil de ler, mais difícil de debugar e impossível de auto referênciar.
+Honestamente, o anonimato das funções de seta `=>` é um `=>` punhal no coração, para mim. Não posso tolerar a perda de um nome. É mais difícil de ler, mais difícil de debugar e impossível de auto referenciar.
 
 Mas se isso não fosse ruim o suficiente, o outro tapa na cara é que existem muitas variações sintáticas sutis, que você deve percorrer se tiver diferentes cenários para a definição de sua função. Não vou cobrir todos eles em detalhes aqui, mas resumidamente:
 
@@ -918,7 +919,7 @@ people.map((person) => ({
 
 O caso de empolgação com `=>` no mundo da PF é principalmente que ela segue quase que exatamente a notação matemática para funções, especialmente em linguagens de PF como Haskell. A forma sintática da função de seta `=>` se comunica matematicamente.
 
-Indo ainda mais longe, sugiro que um argumento a favor de `=>` é que usando uma sintaxe muito mais leve, reduzimos os limites visuais entre as funções, o que nos permite usar expressões de função mais simples, da mesma forma que usaríamos expressões preguiçõsas, outro favorito dos programadores funcionais.
+Indo ainda mais longe, sugiro que um argumento a favor de `=>` é que usando uma sintaxe muito mais leve, reduzimos os limites visuais entre as funções, o que nos permite usar expressões de função mais simples, da mesma forma que usaríamos expressões preguiçosas, outro favorito dos programadores funcionais.
 
 Acho que a maioria dos programadores funcionais vai ignorar as preocupações que estou compartilhando. Eles adoram funções anônimas e adoram economizar na sintaxe. Mas como eu disse antes: você decide.
 
@@ -1007,7 +1008,7 @@ Login.doLogin("fred", "123456");
 
 **Nota:** `Object.assign(..)` é um utilitário ES6+ para fazer uma cópia de atribuição superficial de propriedades de um ou mais objetos de origem para um único objeto de destino: `Object.assign (target, source1, ...)`.
 
-Caso você esteja tendo problemas para analisar o que este código faz: nós temos dois objetos separados `Login` e `Auth`, onde `Login` executa a delegação de protótipo para `Auth`. Atravéz da delegação e do compartilhamento de contexto implícito `this`, esses dois objetos virtualmente compõem durante a chamada da função `this.authorize()`, de modo que as propriedades/métodos em `this` são dinamicamente compartilhados com a função `Auth.authorize(..)`. 
+Caso você esteja tendo problemas para analisar o que este código faz: nós temos dois objetos separados `Login` e `Auth`, onde `Login` executa a delegação de protótipo para `Auth`. Através da delegação e do compartilhamento de contexto implícito `this`, esses dois objetos virtualmente compõem durante a chamada da função `this.authorize()`, de modo que as propriedades/métodos em `this` são dinamicamente compartilhados com a função `Auth.authorize(..)`. 
 
 O código _this_ não se encaixa em vários princípios da PF por uma variedade de razões, mas um dos obstáculos óbvios é o compartilhamento implícito de `this`. Poderíamos ser mais explícitos sobre isso e manter o código mais próximo do estilo amigável da PF.
 
@@ -1042,7 +1043,7 @@ Funções são poderosas.
 
 Mas vamos deixar claro o que é uma função. Não é apenas uma coleções de instruções/operações. Especificamente, uma função precisa de uma ou mais entradas (de preferência, apenas uma!) e uma saída.
 
-Funções dentro de funções podem ter fechamento sobre variáveis externas e lembrá-las para depois. Este é um dos conceitos mais importantes em toda a programação e uma base fundamental da Progamação Funcional.
+Funções dentro de funções podem ter fechamento sobre variáveis externas e lembrá-las para depois. Este é um dos conceitos mais importantes em toda a programação e uma base fundamental da Programação Funcional.
 
 Tenha cuidado com as funções anônimas, especialmente as funções de seta `=>`. Elas são convenientes de escrever, mas transferem o custo do autor para o leitor. O motivo pelo qual estamos estudando PF aqui é para escrever um código mais legível, então não se precipite nesse momento.
 
