@@ -5,11 +5,19 @@
 
 [Chapter 2](ch2.md) explored the core nature of JS `function`s, and laid the foundation for what makes a `function` an FP *function*. But to leverage the full power of FP, we also need patterns and practices for manipulating functions to shift and adjust their interactions -- to bend them to our will.
 
+[Capítulo 2](ch2.md) explorou a natureza central das `funções` JS e lançou as bases para o que torna uma `função` em uma *função* da PF. Mas para alavancar todo o poder da PF, também precisamos de padrões e práticas para manipular funções para mudar e ajustar suas interações, para dobrá-las à nossa vontade.
+
 Specifically, our attention for this chapter will be on the parameter inputs of functions. As you bring functions of all different shapes together in your programs, you'll quickly face incompatibilities in the number/order/type of inputs, as well as the need to specify some inputs at different times than others.
+
+Especificamente, nossa atenção neste capítulo estará nas entradas de parâmetros das funções. Ao reunir funções de todas as formas diferentes em seus programas, você rapidamente enfrentará incompatibilidades no número/ordem/tipo de entradas, bem como a necessidade de especificar algumas entradas em momentos diferentes de outras.
 
 As a matter of fact, for stylistic purposes of readability, sometimes you'll want to define functions in a way that hides their inputs entirely!
 
+Na verdade, para fins estilísticos de legibilidade, às vezes você vai querer definir funções de uma forma que esconda totalmente suas entradas!
+
 These kinds of techniques are absolutely essential to making functions truly *function*-al.
+
+Esses tipos de técnicas são absolutamente essenciais para tornar as funções realmente *funcionais*.
 
 ## All for One
 
@@ -17,7 +25,11 @@ These kinds of techniques are absolutely essential to making functions truly *fu
 
 Imagine you're passing a function to a utility, where the utility will send multiple arguments to that function. But you may only want the function to receive a single argument.
 
+Imagine que você está passando uma função para um utilitário, onde o utilitário enviará vários argumentos para essa função. Mas você pode querer que a função receba apenas um único argumento.
+
 We can design a simple helper that wraps a function call to ensure only one argument will pass through. Since this is effectively enforcing that a function is treated as unary, let's name it as such:
+
+Podemos desenvolver um auxiliar simples que envolve uma chamada de função para garantir que apenas um argumento seja transmitido. Já que isso está efetivamente garantindo que uma função seja tratada como unária, vamos chamá-la assim:
 
 <a name="unary"></a>
 
@@ -31,6 +43,8 @@ function unary(fn) {
 
 Many FPers tend to prefer the shorter `=>` arrow function syntax for such code (see [Chapter 2, "Functions without `function`"](ch2.md/#functions-without-function)), such as:
 
+Muitos programadores tendem a preferir a sintaxe de função de seta mais curta `=>` para esse código (consulte no [Capítulo 2, "Funções sem `função`"](ch2.md/#functions-without-function)), como: 
+
 ```js
 var unary =
     fn =>
@@ -40,9 +54,15 @@ var unary =
 
 **Note:** No question this is more terse, sparse even. But I personally feel that whatever it may gain in symmetry with the mathematical notation, it loses more in overall readability with the functions all being anonymous, and by obscuring the scope boundaries, making deciphering closure a little more cryptic.
 
+**Nota:** Com certeza isso é mais conciso e espaçado. Mas eu pessoalmente sinto que tudo o que pode ganhar em simetria com a notação matemática, perde mais em legibilidade geral com as funções sendo todas anônimas, obscurecendo os limites do escopo e tornando o closure de decifração um pouco mais enigmático. 
+
 A commonly cited example for using `unary(..)` is with the `map(..)` utility (see [Chapter 9, "Map"](ch9.md/#map)) and `parseInt(..)`. `map(..)` calls a mapper function for each item in a list, and each time it invokes the mapper function, it passes in three arguments: `value`, `idx`, `arr`.
 
+Um exemplo comumente citado para usar `unário(..)` é com o utilitário `map(..)` (consulte no [Capítulo 9, "Map"](ch9.md/#map)) e `parseInt(..)`. `map(..)` chama uma função que mapeia para cada item em uma lista e cada vez que ele invoca a função map, ele passa três argumentos: `valor`, `idx` e `arr`.
+
 That's usually not a big deal, unless you're trying to use something as a mapper function that will behave incorrectly if it's passed too many arguments. Consider:
+
+Isso geralmente não é um bom negócio, a menos que você esteja tentando usar algo como uma função de mapeamento que se comportará incorretamente se receber muitos argumentos. Considere:
 
 ```js
 ["1","2","3"].map( parseInt );
@@ -51,7 +71,11 @@ That's usually not a big deal, unless you're trying to use something as a mapper
 
 For the signature `parseInt(str,radix)`, it's clear that when `map(..)` passes `index` in the second argument position, it's interpreted by `parseInt(..)` as the `radix`, which we don't want.
 
+Para a assinatura `parseIn(str, radix)`, é claro que quando `map(..)` passa `index` na posição do segundo argumento, ele é interpretado por `parseInt(..)` como o `radix`, que nós não queremos.
+
 `unary(..)` creates a function that will ignore all but the first argument passed to it, meaning the passed-in `index` is never received by `parseInt(..)` and mistaken as the `radix`:
+
+`unary(..)` cria uma função que irá ignorar todos, exceto o primeiro argumento passado a ele, significando que o `índice` passado nunca é recebido por `parseInt(..)` e confundido com o `radix`:
 
 <a name="mapunary"></a>
 
