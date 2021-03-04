@@ -1,6 +1,8 @@
 # Functional-Light JavaScript
 # Chapter 3: Managing Function Inputs
 
+# Capítulo 3: Gerenciando entradas de função
+
 [Chapter 2](ch2.md) explored the core nature of JS `function`s, and laid the foundation for what makes a `function` an FP *function*. But to leverage the full power of FP, we also need patterns and practices for manipulating functions to shift and adjust their interactions -- to bend them to our will.
 
 Specifically, our attention for this chapter will be on the parameter inputs of functions. As you bring functions of all different shapes together in your programs, you'll quickly face incompatibilities in the number/order/type of inputs, as well as the need to specify some inputs at different times than others.
@@ -10,6 +12,8 @@ As a matter of fact, for stylistic purposes of readability, sometimes you'll wan
 These kinds of techniques are absolutely essential to making functions truly *function*-al.
 
 ## All for One
+
+## Todos por um
 
 Imagine you're passing a function to a utility, where the utility will send multiple arguments to that function. But you may only want the function to receive a single argument.
 
@@ -57,6 +61,8 @@ For the signature `parseInt(str,radix)`, it's clear that when `map(..)` passes `
 ```
 
 ### One on One
+
+### Um a um
 
 Speaking of functions with only one argument, another common base utility in the FP toolbelt is a function that takes one argument and does nothing but return the value untouched:
 
@@ -108,6 +114,8 @@ You also may see `identity(..)` used as a default transformation function for `m
 
 ### Unchanging One
 
+### Inalterável
+
 Certain APIs don't let you pass a value directly into a method, but require you to pass in a function, even if that function literally just returns the value. One such API is the `then(..)` method on JS Promises:
 
 ```js
@@ -149,6 +157,8 @@ p1.then( foo ).then( constant( p2 ) ).then( bar );
 **Warning:** Although the `() => p2` arrow function version is shorter than `constant(p2)`, I would encourage you to resist the temptation to use it. The arrow function is returning a value from outside of itself, which is a bit worse from the FP perspective. We'll cover the pitfalls of such actions later in the book (see [Chapter 5](ch5.md)).
 
 ## Adapting Arguments to Parameters
+
+## Adaptando Argumentos a Parãmetros
 
 There are a variety of patterns and tricks we can use to adapt a function's signature to match the kinds of arguments we want to provide to it.
 
@@ -238,6 +248,8 @@ function combineFirstTwo([ v1, v2 ]) {
 ```
 
 ## Some Now, Some Later
+
+## Um pouco agora, um pouco mais tarde
 
 If a function takes multiple arguments, you may want to specify some of those up front and leave the rest to be specified later.
 
@@ -399,6 +411,8 @@ The `map(..)` utility will loop through the array (`[1,2,3,4,5]`) and repeatedly
 
 ### `bind(..)`
 
+### `bind(..)`
+
 JavaScript functions all have a built-in utility called `bind(..)`. It has two capabilities: presetting the `this` context and partially applying arguments.
 
 I think it's incredibly misguided to conflate these two capabilities in one utility. Sometimes you'll want to hard-bind the `this` context and not partially apply arguments. Other times you'll want to partially apply arguments but not care about `this` binding at all. I have never needed both at the same time.
@@ -414,6 +428,8 @@ var getPerson = ajax.bind( null, "http://some.api/person" );
 That `null` just bugs me to no end. Despite this *this* annoyance, it's mildly convenient that JS has a built-in utility for partial application. However, most FP programmers prefer using the dedicated `partial(..)` utility in their chosen FP library.
 
 ### Reversing Arguments
+
+### Invertendo Argumentos
 
 Recall that the signature for our Ajax function is: `ajax( url, data, cb )`. What if we wanted to partially apply the `cb` but wait to specify `data` and `url` later? We could create a utility that wraps a function to reverse its argument order:
 
@@ -504,6 +520,8 @@ f( 1, 2, 3, 4 );    // 1 2 3 [4,"z:last"]
 The value `"z:last"` is only applied to the `z` parameter in the case where `f(..)` is called with exactly two arguments (matching `x` and `y` parameters). In all other cases, the `"z:last"` will just be the rightmost argument, however many arguments precede it.
 
 ## One at a Time
+
+## Um por vez
 
 Let's examine a technique similar to partial application, where a function that expects multiple arguments is broken down into successive chained functions that each take a single argument (arity: 1) and return another function to accept the next argument.
 
@@ -641,6 +659,8 @@ Both currying and partial application use closure to remember the arguments over
 
 ### Visualizing Curried Functions
 
+### Visualizando Funções Curried
+
 Let's examine more closely the `curriedSum(..)` from the previous section. Recall its usage: `curriedSum(1)(2)(3)(4)(5)`; five subsequent (chained) function calls.
 
 What if we manually defined a `curriedSum(..)` instead of using `curry(..)`? How would that look?
@@ -687,6 +707,8 @@ But the reason I show it that way is that it happens to look almost identical to
 
 ### Why Currying and Partial Application?
 
+### Por que Currying e Aplicação Parcial
+
 With either style -- currying (such as `sum(1)(2)(3)`) or partial application (such as `partial(sum,1,2)(3)`) -- the call-site unquestionably looks stranger than a more common one like `sum(1,2,3)`. So **why would we ever go this direction** when adopting FP? There are multiple layers to answering that question.
 
 The first and most obvious reason is that both currying and partial application allow you to separate in time/space (throughout your codebase) when and where separate arguments are specified, whereas traditional function calls require all the arguments to be present at the same time. If you have a place in your code where you'll know some of the arguments and another place where the other arguments are determined, currying or partial application are very useful.
@@ -730,6 +752,8 @@ That's what abstraction is all about: separating two sets of details -- in this 
 Whether you use currying or partial application, creating specialized functions from generalized ones is a powerful technique for semantic abstraction and improved readability.
 
 ### Currying More Than One Argument?
+
+### Currying Mais de Um Argumento?
 
 The definition and implementation I've given of currying thus far is, I believe, as true to the spirit as we can likely get in JavaScript.
 
@@ -781,6 +805,8 @@ function looseCurry(fn,arity = fn.length) {
 Now each curried-call accepts one or more arguments (as `nextArgs`). We'll leave it as an exercise for the interested reader to define the ES6 `=>` version of `looseCurry(..)` similar to how we did it for `curry(..)` earlier.
 
 ### No Curry for Me, Please
+
+### Sem Curry para Mim, Por Favor
 
 It may also be the case that you have a curried function that you'd like to essentially un-curry -- basically, to turn a function like `f(1)(2)(3)` back into a function like `g(1,2,3)`.
 
@@ -836,6 +862,8 @@ uncurriedSum( 1, 2, 3 )( 4 )( 5 );          // 15
 Probably the more common case of using `uncurry(..)` is not with a manually curried function as just shown, but with a function that comes out curried as a result of some other set of operations. We'll illustrate that scenario later in this chapter in the ["No Points" discussion](#no-points).
 
 ## Order Matters
+
+## Ordem Importa
 
 In Chapter 2, we explored the [named arguments pattern](ch2.md/#named-arguments). One primary advantage of named arguments is not needing to juggle argument ordering, thereby improving readability.
 
@@ -898,6 +926,8 @@ Even with currying or partial application, order doesn't matter anymore! We can 
 
 ### Spreading Properties
 
+### Propriedades de Espalhamento (Spreading)
+
 Unfortunately, we can only take advantage of currying with named arguments if we have control over the signature of `foo(..)` and define it to destructure its first parameter. What if we wanted to use this technique with a function that had its parameters individually listed (no parameter destructuring!), and we couldn't change that function signature? For example:
 
 ```js
@@ -956,6 +986,8 @@ While order is no longer a concern, usage of functions defined in this style req
 Weigh these trade-offs carefully.
 
 ## No Points
+
+## Sem Pontos
 
 A popular style of coding in the FP world aims to reduce some of the visual clutter by removing unnecessary parameter-argument mapping. This style is formally called tacit programming, or more commonly: point-free style. The term "point" here is referring to a function's parameter input.
 
@@ -1138,6 +1170,8 @@ What do you think? Points or no points for you?
 **Note:** Want more practice with point-free style coding? We'll revisit this technique in [Chapter 4, "Revisiting Points"](ch4.md/#revisiting-points), based on newfound knowledge of function composition.
 
 ## Summary
+
+## Resumo
 
 Partial application is a technique for reducing the arity (that is, the expected number of arguments to a function) by creating a new function where some of the arguments are preset.
 
