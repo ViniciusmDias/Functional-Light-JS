@@ -90,6 +90,8 @@ Para a assinatura `parseIn(str, radix)`, é claro que quando `map(..)` passa `in
 
 Speaking of functions with only one argument, another common base utility in the FP toolbelt is a function that takes one argument and does nothing but return the value untouched:
 
+Falando em funções com apenas um argumento, outro utilitário básico comum no conjunto de ferramentas da PF é uma função que recebe um argumento e não faz nada além de retornar o valor não alterado:
+
 ```js
 function identity(v) {
     return v;
@@ -103,7 +105,11 @@ var identity =
 
 This utility looks so simple as to hardly be useful. But even simple functions can be helpful in the world of FP. Like they say in acting: there are no small parts, only small actors.
 
+Este utilitário parece tão simples que dificilmente será útil. Mas mesmo funções simples podem ser úteis no mundo da PF. Como se costuma dizer na atuação: não há pequenos papéis, apenas pequenos atores.
+
 For example, imagine you'd like to split up a string using a regular expression, but the resulting array may have some empty values in it. To discard those, we can use JS's `filter(..)` array operation (see [Chapter 9, "Filter"](ch9.md/#filter)) with `identity(..)` as the predicate:
+
+Por exemplo, imagine que você gostaria de dividir uma string usando uma expressão regular, mas a matriz resultante pode conter alguns valores vazios. Para descartá-los, podemos usar a operação de array `filter(..)` do JS (Veja no [Capítulo 9, "Filter"](ch9.md/#filter)) com `identity(..)``como predicado:
 
 ```js
 var words = "   Now is the time for all...  ".split( /\s|\b/ );
@@ -116,9 +122,15 @@ words.filter( identity );
 
 Because `identity(..)` simply returns the value passed to it, JS coerces each value into either `true` or `false`, and that determines whether to keep or exclude each value in the final array.
 
+Como a `identity(..)` simplesmente retorna o valor passado a ela, o JS força cada valor em `verdadeiro` ou `falso` e isso determina se deve manter ou excluir cada valor na matriz final.
+
 **Tip:** Another unary function that can be used as the predicate in the previous example is JS's built-in `Boolean(..)` function, which explicitly coerces a value to `true` or `false`.
 
+**Dica:** Outra função unária que pode ser usada como o predicado no exemplo anterior é a função `Boolean(..)`, integrada do JS, que coage explicitamente um valor para `verdadeiro` ou `falso`.
+
 Another example of using `identity(..)` is as a default function in place of a transformation:
+
+Outro exemplo de uso de `identity(..)` é com uma função padrão no lugar de uma transformação:
 
 ```js
 function output(msg,formatFn = identity) {
@@ -136,11 +148,15 @@ output( "Hello World" );            // Hello World
 
 You also may see `identity(..)` used as a default transformation function for `map(..)` calls or as the initial value in a `reduce(..)` of a list of functions; both of these utilities will be covered in [Chapter 9](ch9.md).
 
+Você também pode ver `identity(..)` usado como uma função de transformação padrão para as chamadas `map(..)` ou como valor inicial em um `reduce(..)` de uma lista de funções, ambos os utilitários serão abordados no [Capítulo 9](ch9.md).
+
 ### Unchanging One
 
 ### Inalterável
 
 Certain APIs don't let you pass a value directly into a method, but require you to pass in a function, even if that function literally just returns the value. One such API is the `then(..)` method on JS Promises:
+
+Certas APIs não permitem que você passe um valor diretamente para um método, mas exigem que você passe uma função, mesmo que essa função literalmente apenas retorne o valor. Uma dessas APIs é o método `then(..)` nas Promises do JS.
 
 ```js
 // doesn't work:
@@ -152,11 +168,15 @@ p1.then( foo ).then( function(){ return p2; } ).then( bar );
 
 Many claim that ES6 `=>` arrow functions are the best "solution":
 
+Muitos afirmam que as funções de seta ES6 `=>` são a melhor "solução":
+
 ```js
 p1.then( foo ).then( () => p2 ).then( bar );
 ```
 
 But there's an FP utility that's more well suited for the task:
+
+Mas existe um utilitário da PF que é mais adequado para a tarefa:
 
 ```js
 function constant(v) {
@@ -174,11 +194,15 @@ var constant =
 
 With this tidy little FP utility, we can solve our `then(..)` annoyance properly:
 
+Com este pequeno utilitário organizado da PF, podemos resolver nosso incômodo `then(..)` corretamente:
+
 ```js
 p1.then( foo ).then( constant( p2 ) ).then( bar );
 ```
 
 **Warning:** Although the `() => p2` arrow function version is shorter than `constant(p2)`, I would encourage you to resist the temptation to use it. The arrow function is returning a value from outside of itself, which is a bit worse from the FP perspective. We'll cover the pitfalls of such actions later in the book (see [Chapter 5](ch5.md)).
+
+**Aviso:** Embora a versão da função de seta `() => p2` seja menor do que a `constant(p2)`, eu encorajo você a resistir à tentação de usá-la. A função de seta está retornando um valor externo a si mesma, o que é um pouco pior do ponto de vista da PF. Abordaremos as armadilhas de tais ações posteriormente no livro (consulte no [Capítulo 5](ch5.md)).
 
 ## Adapting Arguments to Parameters
 
@@ -186,7 +210,11 @@ p1.then( foo ).then( constant( p2 ) ).then( bar );
 
 There are a variety of patterns and tricks we can use to adapt a function's signature to match the kinds of arguments we want to provide to it.
 
+Há uma variedade de padrões e truques que podemos usar para adaptar a assinatura de uma função para corresponder aos tipos de argumentos que desejamos fornecer a ela.
+
 Recall [this function signature from Chapter 2](ch2.md/#user-content-funcparamdestr) which highlights using array parameter destructuring:
+
+Lembre-se de [esta assinatura de função do Capítulo 2](ch2.md/#user-content-funcparamdestr) que destaca o uso da desestruturação do parâmetro do array:
 
 ```js
 function foo( [x,y,...args] = [] ) {
@@ -194,7 +222,11 @@ function foo( [x,y,...args] = [] ) {
 
 This pattern is handy if an array will be passed in but you want to treat its contents as individual parameters. `foo(..)` is thus technically unary -- when it's executed, only one argument (an array) will be passed to it. But inside the function, you get to address different inputs (`x`, `y`, etc) individually.
 
+Esse padrão é útil quando passado dentro de um array, mas você precisa tratar seu conteúdo como parâmetros individuais. `foo(..)` é, portanto, tecnicamente unário, quando é executado, apenas um argumento (um array) será passado para ele. Mas dentro da função, você pode endereçar diferentes entradas (`x`,`y`, etc) individualmente.
+
 However, sometimes you won't have the ability to change the declaration of the function to use array parameter destructuring. For example, imagine these functions:
+
+No entanto, às vezes você não terá a capacidade de alterar a declaração da função para usar a desestruturação de parâmetros de um array. Por exemplo, imagine estas funções: 
 
 ```js
 function foo(x,y) {
@@ -210,11 +242,19 @@ bar( foo );         // fails
 
 Do you spot why `bar(foo)` fails?
 
+Você percebe por que `bar (foo)` falha?
+
 The array `[3,9]` is sent in as a single value to `fn(..)`, but `foo(..)` expects `x` and `y` separately. If we could change the declaration of `foo(..)` to be `function foo([x,y]) { ..`, we'd be fine. Or, if we could change the behavior of `bar(..)` to make the call as `fn(...[3,9])`, the values `3` and `9` would be passed in individually.
+
+O array `[3,9]` é enviado como um único valor para `fn(..)`, mas `foo(..)` expera `x` e `y` separadamente. Se púdessemos mudar a declaração de `foo(..)` para ser `function foo([x,y]) {..` estaríamos bem. Ou, se pudéssemos mudar o comportamento de `bar(..)` para fazer a chamada como `fn(...[3,9])`, os valores `3` e `9` seriam passados individualmente.
 
 There will be occasions when you have two functions that are incompatible in this way, and you won't be able to change their declarations/definitions. So, how can you use them together?
 
+Haverá ocasiões em que você terá duas funções imcompatíveis dessa forma e não poderá alterar suas declarações/definições. Então como você pode usá-los juntos?
+
 We can define a helper to adapt a function so that it spreads out a single received array as its individual arguments:
+
+Podemos definir um auxiliar para adaptar uma função dem odo que ela espalhe uma única matriz recebida como seus argumentos individuais:
 
 <a name="spreadargs"></a>
 
@@ -234,7 +274,11 @@ var spreadArgs =
 
 **Note:** I called this helper `spreadArgs(..)`, but in libraries like Ramda it's commonly called `apply(..)`.
 
+**Nota:** Chamei este auxiliar de `spreadArgs(..)`, mas em bibliotecas como Ramda é comumente chamado de `apply(..)`.
+
 Now we can use `spreadArgs(..)` to adapt `foo(..)` to work as the proper input to `bar(..)`:
+
+Agora podemos usar `spreadArgs(..)` para adaptar `foo(..)` para funcionar como a entrada adequada para `bar(..)`:
 
 ```js
 bar( spreadArgs( foo ) );           // 12
@@ -242,7 +286,11 @@ bar( spreadArgs( foo ) );           // 12
 
 It won't seem clear yet why these occasions arise, but you will see them often. Essentially, `spreadArgs(..)` allows us to define functions that `return` multiple values via an array, but still have those multiple values treated independently as inputs to another function.
 
+Não parecera claro ainda por que essas ocasiões surgem, mas você as verá com frequência. Essencialmente, `spreadArgs(..)` nos permite definir funções que `retornam` múltiplos valores por meio de um array, mas ainda têm esses múltiplos valores tratados independentemente como entradas para outra função.
+
 While we're talking about a `spreadArgs(..)` utility, let's also define a utility to handle the opposite action:
+
+Enquanto estamos falando sobre um utilitário `spreadArgs(..)`, vamos também definir um utilitário para lidar com a ação oposta:
 
 ```js
 function gatherArgs(fn) {
@@ -260,7 +308,11 @@ var gatherArgs =
 
 **Note:** In Ramda, this utility is referred to as `unapply(..)`, being that it's the opposite of `apply(..)`. I think the "spread"/"gather" terminology is a little more descriptive for what's going on.
 
+**Nota:** No Ramda, este utilitário é referido como `unapply(..)`, sendo o oposto de `apply(..)`. Acho que a terminologia "spread"/"gather" é um pouco mais descritiva para o que está acontecendo.
+
 We can use this utility to gather individual arguments into a single array, perhaps because we want to adapt a function with array parameter destructuring to another utility that passes arguments separately. We will [cover `reduce(..)` more fully in Chapter 9](ch9.md/#reduce); in short, it repeatedly calls its reducer function with two individual parameters, which we can now *gather* together:
+
+Podemos usar esse utilitário para reunir argumentos individuais em um único array, talvez porque queremos adaptar uma função com desestruturação de parâmetros de array para outro utilitário que passa argumentos separadamente. Iremos [cobrir `reduce(..)` mais completamente no Capítulo 9](ch9.md/#reduce). Em suma, ele chama repetidamente sua função redutora com dois parâmetros individuais, que agora podemos *gather* juntos:
 
 ```js
 function combineFirstTwo([ v1, v2 ]) {
