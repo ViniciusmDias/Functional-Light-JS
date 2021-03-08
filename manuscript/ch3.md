@@ -329,7 +329,11 @@ function combineFirstTwo([ v1, v2 ]) {
 
 If a function takes multiple arguments, you may want to specify some of those up front and leave the rest to be specified later.
 
+Se uma função receber vários argumentos, você pode querer especificar alguns deles antecipadamente e deixar o resto para ser especificado mais tarde.
+
 Consider this function:
+
+Considere esta função:
 
 ```js
 function ajax(url,data,callback) {
@@ -339,9 +343,15 @@ function ajax(url,data,callback) {
 
 Let's imagine you'd like to set up several API calls where the URLs are known up front, but the data and the callback to handle the response won't be known until later.
 
+Vamos imaginar que você gostaria de configurar várias chamadas de API em que os URLS são conhecidos antecipadamente, mas os dados e o retorno da chamada para lidar com a resposta só serão conhecidos mais tarde.
+
 Of course, you can just defer making the `ajax(..)` call until all the bits are known, and refer to some global constant for the URL at that time. But another way is to create a function reference that already has the `url` argument preset.
 
+Claro, você pode simplesmente adiar a realização da chamada `àjax(..)` até que todos os bits sejam conhecidos e referir-se a alguma constante global para a URL naquele momento. Mas outra maneira é criar uma referência de função que já tenha o argumento `url` predefinido.
+
 What we're going to do is make a new function that still calls `ajax(..)` under the covers, and it manually sets the first argument to the API URL you care about, while waiting to accept the other two arguments later:
+
+O que vamos fazer é criar uma nova função que ainda chama `ajax(..)` nos bastidores e definir manualmente o primeiro argumento para a URL da API de seu interesse, enquanto esperamos para aceitar os outros dois argumentos mais tarde:
 
 ```js
 function getPerson(data,cb) {
@@ -355,6 +365,8 @@ function getOrder(data,cb) {
 
 Manually specifying these function call wrappers is certainly possible, but it may get quite tedious, especially if there will also be variations with different arguments preset, like:
 
+Especificar manualmente esses wrappers de chamada de função realmente é possível, mas pode ser um pouco tedioso, especialmente se também houver variações com diferentes argumentos predefinidos, como:
+
 ```js
 function getCurrentUser(cb) {
     getPerson( { user: CURRENT_USER_ID }, cb );
@@ -363,13 +375,23 @@ function getCurrentUser(cb) {
 
 One practice an FPer gets very used to is looking for patterns where we do the same sorts of things repeatedly, and trying to turn those actions into generic reusable utilities. As a matter of fact, I'm sure that's already the instinct for many of you readers, so that's not uniquely an FP thing. But it's unquestionably important for FP.
 
+Uma prática com a qual um FPer se acostuma é procurar padrões em que fazemos o mesmo tipo de coisas repetidamente e tentar transformar essas ações em utilitários reutilizáveis genéricos. Na verdade, tenho certeza de que esse já é o instinto para muitos de vocês, leitores, então isso não é apenas uma coisa da PF. Mas é inquestionavelmente importante para a Programação Funcional.
+
 To conceive such a utility for argument presetting, let's examine conceptually what's going on, not just looking at the manual implementations shown here.
+
+Para conceber tal utilidade para a predefinição de argumento, vamos examinar conceitualmente o que está acontecendo, não apenas observando as implementações manuais mostradas aqui.
 
 One way to articulate what's going on is that the `getOrder(data,cb)` function is a *partial application* of the `ajax(url,data,cb)` function. This terminology comes from the notion that arguments are *applied* to parameters at the function call-site. And as you can see, we're only applying some of the arguments up front -- specifically, the argument for the `url` parameter -- while leaving the rest to be applied later.
 
+Uma maneira de ver com clareza o que está acontencendo é que a função `getOrder(data, cb)` é uma *aplicação parcial* da função `ajax(url, data, cb)`. Essa terminologia vem da noção de que os argumentos são *aplicados* a parâmetros no local de chamada de função. E como você pode ver, estamos apenas aplicando alguns dos argumentos iniciais, especificamente, o argumento para o parâmetro `url`, enquanto deixamos o resto para ser aplicado mais tarde.
+
 To be a tiny bit more formal about this pattern, partial application is strictly a reduction in a function's arity; remember, that's the number of expected parameter inputs. We reduced the original `ajax(..)` function's arity from 3 to 2 for the `getOrder(..)` function.
 
+Para ser um pouco mais formal sobre esse padrão, a aplicação parcial é estritamente uma redução na aridade de uma função. Lembre-se, esse é o número de entradas de parâmetros esperadas. Reduzimos a aridade da função `ajax(..)` original de 3 para 2 na função `getOrder(..)`.
+
 Let's define a `partial(..)` utility:
+
+Vamos definir um utilitário `partial(..)`:
 
 ```js
 function partial(fn,...presetArgs) {
@@ -387,13 +409,23 @@ var partial =
 
 **Tip:** Don't just take this snippet at face value. Pause for a few moments to digest what's going on with this utility. Make sure you really *get it*.
 
+**Dica:** Não aceite este snippet pelo valor de cara. Pare por alguns momentos para digerir o que está acontecendo com este utilitário. Certifique-se de que você realmente *entendeu*.
+
 The `partial(..)` function takes an `fn` for which function we are partially applying. Then, any subsequent arguments passed in are gathered into the `presetArgs` array and saved for later.
+
+A função `partial(..)` recebe um `fn` para a qual estamos aplicando parcialmente. Então, quaisquer argumentos passados subsequentes são reunidos no array `presetArgs` e salvos para mais tarde.
 
 A new inner function (called `partiallyApplied(..)` just for clarity) is created and `return`ed; the inner function's own arguments are gathered into an array called `laterArgs`.
 
+Uma nova função interna (chamada `partialllyApplied(..)` apenas para maior clareza) é criada e `retornada`. Os próprios argumentos da função interna são reunidos em um array chamado de `laterArgs`.
+
 Notice the references to `fn` and `presetArgs` inside this inner function? How does that work? After `partial(..)` finishes running, how does the inner function keep being able to access `fn` and `presetArgs`? If you answered **closure**, you're right on track! The inner function `partiallyApplied(..)` closes over both the `fn` and `presetArgs` variables so it can keep accessing them later, no matter where the function runs. This is why understanding closure is critical!
 
+Percebe as referências à `fn` e `presetArgs` dentro desta função interna? Como isso funciona? Depois que `partial(..)` termina a execução, como a função interna continua sendo capaz de acessar `fn` e `presetArgs`? Se você responseu **closure**, está no caminho certo! A função interna `partiallyApplied(..)` fecha sobre as variáveis `fn` e `presetArgs` para que possa continuar acessando-as mais tarde, não importa onde a função seja executada. É por isso que entender o fechamento é fundamental!
+
 When the `partiallyApplied(..)` function is later executed somewhere else in your program, it uses the closed over `fn` to execute the original function, first providing any of the (closed over) `presetArgs` partial application arguments, then any further `laterArgs` arguments.
+
+
 
 If any of that was confusing, stop and go re-read it. Trust me, you'll be glad you did as we get further into the text.
 
