@@ -425,11 +425,15 @@ Percebe as referências à `fn` e `presetArgs` dentro desta função interna? Co
 
 When the `partiallyApplied(..)` function is later executed somewhere else in your program, it uses the closed over `fn` to execute the original function, first providing any of the (closed over) `presetArgs` partial application arguments, then any further `laterArgs` arguments.
 
-
+Quando a função `partiallyApplied(..)` é posteriormente executada em algum outro lugar em seu programa, ela usa o `fn` fechado para executar a função original, primeiro fornecendo qualquer um dos argumentos parciais da aplicação `presetArgs` (fechado), depois quaisquer outros argumentos em `laterArgs`.
 
 If any of that was confusing, stop and go re-read it. Trust me, you'll be glad you did as we get further into the text.
 
+Se alguma coisa estiver confusa, pare e releia. Confie em mim, você ficará feliz por ter feito isso à medida que avançamos no texto.
+
 Let's now use the `partial(..)` utility to make those earlier partially applied functions:
+
+Vamos agora usar o utilitário `partial(..)` para fazer aquelas funções que foram parcialmente aplicadas anteriormente:
 
 ```js
 var getPerson = partial( ajax, "http://some.api/person" );
@@ -439,6 +443,8 @@ var getOrder = partial( ajax, "http://some.api/order" );
 
 Take a moment to consider the shape/internals of `getPerson(..)`. It will look sorta like this:
 
+Tire um momento para considerar a forma/partes internas de `getPerson(..)`. Será mais ou menos assim:
+
 ```js
 var getPerson = function partiallyApplied(...laterArgs) {
     return ajax( "http://some.api/person", ...laterArgs );
@@ -446,6 +452,8 @@ var getPerson = function partiallyApplied(...laterArgs) {
 ```
 
 The same will be true of `getOrder(..)`. But what about `getCurrentUser(..)`?
+
+O mesmo será verdadeiro para `getOrder(..)`. Mas e quanto a `getCurrentUser(..)`?
 
 ```js
 // version 1
@@ -461,9 +469,15 @@ var getCurrentUser = partial( getPerson, { user: CURRENT_USER_ID } );
 
 We can either define `getCurrentUser(..)` with both the `url` and `data` arguments specified directly (version 1), or define `getCurrentUser(..)` as a partial application of the `getPerson(..)` partial application, specifying only the additional `data` argument (version 2).
 
+Podemos definir `getCurrentUser(..)` com os argumentos `url` e `data` especificados diretamente (versão 1), ou definir `getCurrentUser(..)` como uma aplicação parcial do `getPerson(..)` aplicado parcialmente, especificando apenas o argumento adicional `data` (versão 2).
+
 Version 2 is a little cleaner to express because it reuses something already defined. As such, I think it fits a little closer to the spirit of FP.
 
+A versão 2 é um pouco mais limpa de se expressar porque reutiliza algo já definido. Como tal, acho que se encaixa um pouco mais no espírito da PF.
+
 Just to make sure we understand how these two versions will work under the covers, they look respectively kinda like:
+
+Só para ter certeza de que entendemos como essas duas versões funcionarão nos bastidores, elas se parecem com:
 
 ```js
 // version 1
@@ -487,9 +501,15 @@ var getCurrentUser = function outerPartiallyApplied(...outerLaterArgs){
 
 Again, stop and re-read those code snippets to make sure you understand what's going on there.
 
+Novamente, pare e releia esses trechos de código para ter certeza de entender o que está acontecendo lá.
+
 **Note:** Version 2 has an extra layer of function wrapping involved. That may smell strange and unnecessary, but this is just one of those things in FP that you'll want to get really comfortable with. We'll be wrapping many layers of functions onto each other as we progress through the text. Remember, this is *function*al programming!
 
+**Nota:** A versão 2 tem uma camada extra de quebra de função envolvida. Isso pode cheirar estranho e desnecessário, mas esta é apenas uma daquelas coisas na PF com que você vai querer se sentir realmente confortável. Estaremos agrupando muitas camadas de funções umas nas outras conforme progredimos no texto. Lembre-se, isso é programação *funcional*!
+
 Let's take a look at another example of the usefulness of partial application. Consider an `add(..)` function which takes two arguments and adds them together:
+
+Vamos dar uma olhada em outro exemplo da utilidade da aplicação parcial. Considere uma função `add(..)` que pega dois argumentos e os adiciona:
 
 ```js
 function add(x,y) {
@@ -498,6 +518,8 @@ function add(x,y) {
 ```
 
 Now imagine we'd like take a list of numbers and add a certain number to each of them. We'll use the `map(..)` utility (see [Chapter 9, "Map"](ch9.md/#map)) built into JS arrays:
+
+Agora imagine que gostaríamos de pegar uma lista de números e adicionar um certo número a cada um deles. Usaremos o utilitário `map(..)` (veja no [Capítulo 9, "Map"](ch9.md/#map)) integrado aos arrays JS:
 
 ```js
 [1,2,3,4,5].map( function adder(val){
@@ -508,6 +530,8 @@ Now imagine we'd like take a list of numbers and add a certain number to each of
 
 The reason we can't pass `add(..)` directly to `map(..)` is because the signature of `add(..)` doesn't match the mapping function that `map(..)` expects. That's where partial application can help us: we can adapt the signature of `add(..)` to something that will match:
 
+A razão pela qual não podemos passar `add(..)` diretamente para `map(..)` é porque a assinatura de `add(..)` não corresponde à função de mapeamento que `map(..)` espera. É aí que a aplicação parcial pode nos ajudar: podemos adaptar a assinatura de `add(..)` para algo que corresponda a:
+
 ```js
 [1,2,3,4,5].map( partial( add, 3 ) );
 // [4,5,6,7,8]
@@ -515,7 +539,11 @@ The reason we can't pass `add(..)` directly to `map(..)` is because the signatur
 
 The `partial(add,3)` call produces a new unary function which is expecting only one more argument.
 
+A chamada `partial(add, 3)` produz uma nova função unátia que espera apenas mais um argumento.
+
 The `map(..)` utility will loop through the array (`[1,2,3,4,5]`) and repeatedly call this unary function, once for each of those values, respectively. So, the calls made will effectively be `add(3,1)`, `add(3,2)`, `add(3,3)`, `add(3,4)`, and `add(3,5)`. The array of those results is `[4,5,6,7,8]`.
+
+O utilitário `map(..)` fará um loop através do array (`[1,2,3,4,5]`) e repetidamente chamará esta função unária, uma vez para cada um desses valores, respectivamente. Assim, as chamadas feitas serão efetivamente `add(3,1)`, `add(3,2)`, `add(3,3)`, `add(3,4)` e `add(3,5)`. A matriz desses resultados é `[4,5,6,7,8]`.
 
 ### `bind(..)`
 
