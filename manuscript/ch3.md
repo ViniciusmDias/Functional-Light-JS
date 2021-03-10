@@ -551,11 +551,19 @@ O utilitário `map(..)` fará um loop através do array (`[1,2,3,4,5]`) e repeti
 
 JavaScript functions all have a built-in utility called `bind(..)`. It has two capabilities: presetting the `this` context and partially applying arguments.
 
+Todas as funções JavaScript têm um utilitário embutido chamado `bind(..)`. Ele tem dois recursos: predefinir o contexto `this` e aplicar argumentos parcialmente.
+
 I think it's incredibly misguided to conflate these two capabilities in one utility. Sometimes you'll want to hard-bind the `this` context and not partially apply arguments. Other times you'll want to partially apply arguments but not care about `this` binding at all. I have never needed both at the same time.
+
+Acho que é incrivelmente equivocado combinar esses dois recursos em um utilitário. Às vezes, você desejará vincular fisicamente o contexto `this` e não aplicar argumentos parcialmente. Outras vezes, você desejará aplicar argumentos parcialmente, mas não se preocupará com a vinculação `this`. Nunca precisei dos dois ao mesmo tempo.
 
 The latter scenario (partial application without setting `this` context) is awkward because you have to pass an ignorable placeholder for the `this`-binding argument (the first one), usually `null`.
 
+Em último cenário (aplicação parcial sem definir o contexto `this`) é estranho porque você tem que passar um marcador ignorável para o argumento de ligação `this` (o primeiro), normalmente `nulo`.
+
 Consider:
+
+Considere:
 
 ```js
 var getPerson = ajax.bind( null, "http://some.api/person" );
@@ -563,11 +571,15 @@ var getPerson = ajax.bind( null, "http://some.api/person" );
 
 That `null` just bugs me to no end. Despite this *this* annoyance, it's mildly convenient that JS has a built-in utility for partial application. However, most FP programmers prefer using the dedicated `partial(..)` utility in their chosen FP library.
 
+Esse `nulo` me incomoda sem fim. Apesar desse *aborrecimento*, é razoalvelmente conveniente que JS tenha um utilitário embutido para aplicação parcial. No entanto, a maioria dos programadores da PF prefere usar o utilitário `partial(..)` dedicado em sua biblioteca de PF escolhida.
+
 ### Reversing Arguments
 
 ### Invertendo Argumentos
 
 Recall that the signature for our Ajax function is: `ajax( url, data, cb )`. What if we wanted to partially apply the `cb` but wait to specify `data` and `url` later? We could create a utility that wraps a function to reverse its argument order:
+
+Lembre-se de que a assinatura para nossa função Ajax é :`ajax(url, data, cb)`. E se quiséssemos aplicar parcialmente o `cb`, mas esperar para especificar `data` e `url` mais tarde? Poderíamos criar um utilitário que envolva uma função para inverter a ordem de seus argumentos.
 
 ```js
 function reverseArgs(fn) {
@@ -585,6 +597,8 @@ var reverseArgs =
 
 Now we can reverse the order of the `ajax(..)` arguments, so that we can then partially apply from the right rather than the left. To restore the expected order, we'll then reverse the subsequent partially applied function:
 
+Agora podemos inverter a ordem dos argumentos `ajax(..)`, para que possamos então aplicar parcialmente da direita em vez da esquerda. Para restaurar a ordem esperada, reverteremos a função aplicada parcialmente depois:
+
 ```js
 var cache = {};
 
@@ -599,6 +613,8 @@ cacheResult( "http://some.api/person", { user: CURRENT_USER_ID } );
 ```
 
 Instead of manually using `reverseArgs(..)` (twice!) for this purpose, we can define a `partialRight(..)` which partially applies the rightmost arguments. Under the covers, it can use the same double-reverse trick:
+
+Em vez de usar manualmente `reverseArgs(..)` (duas vezes!) para este propósito, podemos definir um `partialRight(..)` que aplica parcialmente os argumentos mais à direita. Sob as cobertas, ele pode usar o mesmo truque duplo-reverso.
 
 <a name="partialright"></a>
 
@@ -619,6 +635,8 @@ cacheResult( "http://some.api/person", { user: CURRENT_USER_ID } );
 
 Another more straightforward (and certainly more performant) implementation of `partialRight(..)` that doesn't use the double-reverse trick:
 
+Outra implementação mais direta (e certamente com mais desempenho) de `partialRight(..)` que não usa o truque duplo-reverso:
+
 ```js
 function partialRight(fn,...presetArgs) {
     return function partiallyApplied(...laterArgs){
@@ -635,7 +653,11 @@ var partialRight =
 
 None of these implementations of `partialRight(..)` guarantee that a specific parameter will receive a specific partially applied value; it only ensures that the partially applied value(s) appear as the rightmost (aka, last) argument(s) passed to the original function.
 
+Nenhuma dessas implementações de `partialRight(..)` garantem que um parâmetro específico receberá um valor específico parcialmente aplicado, ela apenas garante que os valores parcialmente aplicados apareçam como o(s) argumento(s) mais à direita (aka, último) passado para a função original.
+
 For example:
+
+Por exemplo:
 
 ```js
 function foo(x,y,z,...rest) {
@@ -655,15 +677,23 @@ f( 1, 2, 3, 4 );    // 1 2 3 [4,"z:last"]
 
 The value `"z:last"` is only applied to the `z` parameter in the case where `f(..)` is called with exactly two arguments (matching `x` and `y` parameters). In all other cases, the `"z:last"` will just be the rightmost argument, however many arguments precede it.
 
+O valor `"z:last"` só é aplicado ao parâmetro `z` no caso em que `f(..)` é chamado com exatamente dois argumentos (correspondendo aos parâmetros `x` e `y`). Em todos os outros casos, o `"z:last"` será apenas o argumento mais à direita, não importa quantos argumentos o precedam.
+
 ## One at a Time
 
 ## Um por vez
 
 Let's examine a technique similar to partial application, where a function that expects multiple arguments is broken down into successive chained functions that each take a single argument (arity: 1) and return another function to accept the next argument.
 
+Vamos examinar uma técnica semelhante à aplicação parcial, em que uma função que espera vários argumentos é dividida em funções encadeadas sucessivas em que cada uma recebe um único argumento (aridade: 1) e retorna outra função para aceitar o próximo argumento.
+
 This technique is called currying.
 
+Essa técnica é chamada de currying.
+
 To first illustrate, let's imagine we had a curried version of `ajax(..)` already created. This is how we'd use it:
+
+Para ilustrar primeiro, vamos imaginar que já tínhamos uma versão curry de `ajax(..)` criada. é assim que o usaríamos:
 
 ```js
 curriedAjax( "http://some.api/person" )
@@ -672,6 +702,8 @@ curriedAjax( "http://some.api/person" )
 ```
 
 The three sets of `(..)`s denote three chained function calls. But perhaps splitting out each of the three calls helps see what's going on better:
+
+Os três conjuntos `(..)`s denotam três chamadas de função em cadeia. Mas talvez dividir cada uma das três chamadas ajude a ver o que está acontecendo melhor:
 
 ```js
 var personFetcher = curriedAjax( "http://some.api/person" );
@@ -683,15 +715,27 @@ getCurrentUser( function foundUser(user){ /* .. */ } );
 
 Instead of taking all the arguments at once (like `ajax(..)`), or some of the arguments up front and the rest later (via `partial(..)`), this `curriedAjax(..)` function receives one argument at a time, each in a separate function call.
 
+Em vez de pegar todos os argumentos de uma vez (como `ajax(..)`), ou alguns dos argumentos logo no inicio e o resto depois (via `parcial(..)`), esta função `curriedAjax(..)` recebe um argumento de cada vez, cada um em uma chamada de função separada.
+
 Currying is similar to partial application in that each successive curried call partially applies another argument to the original function, until all arguments have been passed.
+
+Currying é semelhante à aplicação parcial em que cada chamada curried sucessiva aplica parcialmente outro argumento à função original, até que todos os argumentos tenham sido passados.
 
 The main difference is that `curriedAjax(..)` will return a function (we call it `personFetcher(..)`) that expects **only the next argument** `data`, not one that (like the earlier `getPerson(..)`) can receive all the rest of the arguments.
 
+A principal diferença é que `curriedAjax(..)` retornará uma função (nós a chamamos de `personFetcher(..)`) que espera **somente o próximo argumento** com os dados, não um que (como o anterior `getPerson(..)`) pode receber todos os outros argumentos.
+
 If an original function expected five arguments, the curried form of that function would take just the first argument, and return a function to accept the second. That one would take just the second argument, and return a function to accept the third. And so on.
+
+Se uma função original esperava cinco argumentos, a forma curry dessa função pegaria apenas o primeiro argumento e retornaria uma função para aceitar o segundo. Esse pegaria apenas o segundo argumento e retornaria uma função para aceitar o terceiro. E assim por diante.
 
 So currying unwinds a single higher-arity function into a series of chained unary functions.
 
+Portanto, currying desdobra uma única função de aridade superior em uma série de funções unárias encadeadas.
+
 How might we define a utility to do this currying? Consider:
+
+Como podemos definir um utilitário para fazer este currying? Considere:
 
 <a name="curry"></a>
 
@@ -730,11 +774,19 @@ var curry =
 
 The approach here is to start a collection of arguments in `prevArgs` as an empty `[]` array, and add each received `nextArg` to that, calling the concatenation `args`. While `args.length` is less than `arity` (the number of declared/expected parameters of the original `fn(..)` function), make and return another `curried(..)` function to collect the next `nextArg` argument, passing the running `args` collection along as its `prevArgs`. Once we have enough `args`, execute the original `fn(..)` function with them.
 
+A abordagem aqui é iniciar uma coleção de argumentos em `prevArgs` como um array `[]` vazio, e adicionar cada `nextArg` recebido a ele, chamando a concatenação `args`. Enquanto `args.length` é menor que `arity` (o número de parâmetros declarados/esperados da função `fn(..)` original), faça e retorne outra função `curried(..)` para coletar o próximo argumento `nextArg`, passando a coleção `args` em execução junto com seu `prevArgs`. Assim que tivermos `args` suficientes, execute a função `fn(..)` original com eles.
+
 By default, this implementation relies on being able to inspect the `length` property of the to-be-curried function to know how many iterations of currying we'll need before we've collected all its expected arguments.
+
+Por padrão, esta implementação depende da capacidade de inspecionar a propriedade `length` da função a ser curried para saber quantas iterações da currying precisaremos antes de coletar todos os seus argumentos esperados.
 
 **Note:** If you use this implementation of `curry(..)` with a function that doesn't have an accurate `length` property, you'll need to pass the `arity` (the second parameter of `curry(..)`) to ensure `curry(..)` works correctly. `length` will be inaccurate if the function's parameter signature includes default parameter values, parameter destructuring, or is variadic with `...args` (see [Chapter 2](ch2.md)).
 
+**Nota:** Se você usar esta implementação de `curry(..)` com uma função que não tem uma propriedade `length` precisa, você precisará passar o `arity` (o segundo parâmetro de `curry(..)`) para garantir que `curry(..)` funcione corretamente. `length` será impreciso se a assinatura do parâmetro da função incluir valores de parâmetro padrão, desestruturação de parâmetro ou sua variável com `...args` (Veja no [Capítulo 2](ch2.md)).
+
 Here's how we would use `curry(..)` for our earlier `ajax(..)` example:
+
+Aqui está como usaríamos `curry(..)` para nosso exemplo anterior de `ajax(..)`:
 
 ```js
 var curriedAjax = curry( ajax );
@@ -748,7 +800,11 @@ getCurrentUser( function foundUser(user){ /* .. */ } );
 
 Each call partially applies one more argument to the original `ajax(..)` call, until all three have been provided and `ajax(..)` is actually invoked.
 
+Cada chamada aplica parcialmente mais um argumento à chamada original `ajax(..)`, até que todos os três tenham sido fornecidos e `ajax(..)` seja realmente invocado.
+
 Remember our example from the discussion of partial application about adding `3` to each value in a list of numbers? As currying is similar to partial application, we could do that task with currying in almost the same way:
+
+Lembra-se do nosso exemplo da discussão de aplicação parcial sobre adicionar `3` a cada valor em uma lista de números? Como currying é semelhante à aplicação parcial, poderíamos fazer essa tarefa com currying quase da mesma maneira:
 
 ```js
 [1,2,3,4,5].map( curry( add )( 3 ) );
@@ -757,7 +813,11 @@ Remember our example from the discussion of partial application about adding `3`
 
 The difference between the two? `partial(add,3)` vs `curry(add)(3)`.
 
+A diferença entre os dois? `partial(add,3)` vs `curry(add)(3)`.
+
 Why might you choose `curry(..)` over `partial(..)`? It might be helpful in the case where you know ahead of time that `add(..)` is the function to be adapted, but the value `3` isn't known yet:
+
+Por que você deve escolher `curry(..)` em vez de `partial(..)`? Pode ser útil no caso em que você sabe com antecedência que `add(..)` é a função a ser adaptada, mas o valor `3` ainda não é conhecido:
 
 ```js
 var adder = curry( add );
@@ -768,6 +828,8 @@ var adder = curry( add );
 ```
 
 Let's look at another numbers example, this time adding a list of them together:
+
+Vejamos outro exemplo de números, desta vez adicionando uma lista deles:
 
 ```js
 function sum(...nums) {
@@ -789,9 +851,15 @@ curriedSum( 1 )( 2 )( 3 )( 4 )( 5 );        // 15
 
 The advantage of currying here is that each call to pass in an argument produces another function that's more specialized, and we can capture and use *that* new function later in the program. Partial application specifies all the partially applied arguments up front, producing a function that's waiting for all the rest of the arguments **on the next call**.
 
+A vantagem de currying aqui é que cada chamada para passar um argumento produz outra função que é mais especializada e podemos capturar e usar *aquela* nova função posteriormente no programa. A aplicação parcial específica todos os argumentos parcialmente aplicados antecipadamente, produzindo uma função que está esperando por todos os outros argumentos **na próxima chamada**.
+
 If you wanted to use partial application to specify one parameter (or several!) at a time, you'd have to keep calling `partial(..)` again on each successive partially applied function. By contrast, curried functions do this automatically, making working with individual arguments one-at-a-time more ergonomic.
 
+Se você quiser usar a aplicação parcial para especificar um parâmetro (ou vários!) por vez, terá que continuar chamando `partial(..)` novamente em cada função parcialmente aplicada sucessivamente. Em contraste, as funções curried fazem isso automaticamente, tornando o trabalho com argumentos individuais um de cada vez mais ergonômicos. 
+
 Both currying and partial application use closure to remember the arguments over time until all have been received, and then the original function can be invoked.
+
+O currying e a aplicação parcial usam closure para lembrar os argumentos ao longo do tempo até que todos tenham sido recebidos e, em seguida, a função original pode ser chamada.
 
 ### Visualizing Curried Functions
 
