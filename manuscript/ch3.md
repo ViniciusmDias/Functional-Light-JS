@@ -867,7 +867,11 @@ O currying e a aplicação parcial usam closure para lembrar os argumentos ao lo
 
 Let's examine more closely the `curriedSum(..)` from the previous section. Recall its usage: `curriedSum(1)(2)(3)(4)(5)`; five subsequent (chained) function calls.
 
+Vamos examinar mais de perto o `curriedSum(..)` da seção anterior. Lembre-se de seu uso: `curriedSum(1)(2)(3)(4)(5)`, cinco chamadas de função subsequentes (encadeadas).
+
 What if we manually defined a `curriedSum(..)` instead of using `curry(..)`? How would that look?
+
+E se definirmos manualmente um `curriedSum(..)` em vez de usar `curry(..)`? Como ficaria isso?
 
 ```js
 function curriedSum(v1) {
@@ -885,9 +889,15 @@ function curriedSum(v1) {
 
 Definitely uglier, no question. But this is an important way to visualize what's going on with a curried function. Each nested function call is returning another function that's going to accept the next argument, and that continues until we've specified all the expected arguments.
 
+Definitivamente mais feio, sem dúvidas. Mas essa é uma maneira importante de visualizar o que está acontecendo com uma função de curry. Cada chamada de função aninhada está retornando outra função que aceitará o próximo argumento e isso continua até que tenhamos específicado todos os argumentos esperados.
+
 When trying to decipher curried functions, I've found it helps me tremendously if I can unwrap them mentally as a series of nested functions.
 
+Ao tentar decifrar as funções curried, descobri que me ajuda tremendamente se eu puder desembrulhá-las mentalmente como uma série de funções aninhadas.
+
 In fact, to reinforce that point, let's consider the same code but written with ES6 arrow functions:
+
+Na verdade, para reforçar esse ponto, vamos considerar o mesmo código, mas escrito com as funções de seta do ES6:
 
 ```js
 curriedSum =
@@ -901,27 +911,43 @@ curriedSum =
 
 And now, all on one line:
 
+E agora, tudo em uma linha:
+
 ```js
 curriedSum = v1 => v2 => v3 => v4 => v5 => sum( v1, v2, v3, v4, v5 );
 ```
 
 Depending on your perspective, that form of visualizing the curried function may be more or less helpful to you. For me, it's a fair bit more obscured.
 
+Dependendo da sua perspectiva, essa forma de visualizar a função curried pode ser mais ou menos útil para você. Para mim, é um pouco mais obscuro.
+
 But the reason I show it that way is that it happens to look almost identical to the mathematical notation (and Haskell syntax) for a curried function! That's one reason why those who like mathematical notation (and/or Haskell) like the ES6 arrow function form.
+
+Mas a razão pela qual mostro dessa forma é que ela parece quase idêntica à notação matemática (e à sintaxe de Haskell) para uma função cirred! Essa é uma razão pela qual aqueles que gostam de notação matemática (e/ou Haskell) gostam da forma de função de seta do ES6.
 
 ### Why Currying and Partial Application?
 
-### Por que Currying e Aplicação Parcial
+### Por que Currying e Aplicação Parcial?
 
 With either style -- currying (such as `sum(1)(2)(3)`) or partial application (such as `partial(sum,1,2)(3)`) -- the call-site unquestionably looks stranger than a more common one like `sum(1,2,3)`. So **why would we ever go this direction** when adopting FP? There are multiple layers to answering that question.
 
+Com qualquer estilo, currying (como `sum(1)(2)(3)`) ou aplicação parcial (como `partial(sum,1,2)(3)`), o call-site inquestionavelmente parece mais estranho do que um mais comum como `sum(1,2,3)`. Então, **por que iríamos nessa direção** ao adotar a PF? Existem várias camadas para responder a essa pergunta.
+
 The first and most obvious reason is that both currying and partial application allow you to separate in time/space (throughout your codebase) when and where separate arguments are specified, whereas traditional function calls require all the arguments to be present at the same time. If you have a place in your code where you'll know some of the arguments and another place where the other arguments are determined, currying or partial application are very useful.
+
+O primeiro e mais óbvio motivo é que o currying e o aplicativo parcial permitem que você separe no tempo/espaço (em toda a sua base de código) quando e onde argumentos separados são específicados, enquanto as chamadas de função tradicionais exigem que todos os argumentos estejam presentes ao mesmo tempo. Se você tem um lugar em seu código onde você conhece alguns dos argumentos e outro lugar onde os outros argumentos são determinados, currying ou aplicação parcial são muito úteis.
 
 Another layer to this answer, specifically for currying, is that composition of functions is much easier when there's only one argument. So a function that ultimately needs three arguments, if curried, becomes a function that needs just one, three times over. That kind of unary function will be a lot easier to work with when we start composing them. We'll tackle this topic later in [Chapter 4](ch4.md).
 
+Outra camada para essa resposta, específicamente para currying, é que a composição de funções é muito mais fácil quando há apenas um argumento. Portanto, uma função que precisa de três argumentos em última instância, se for curried, torna-se uma função que precisa de apenas um, três vezes. Esse tipo de função unária será muito mais fácil de trabalhar quando começarmos a compô-los. Abordaremos esse tópico posteriormente no [Capítulo 4](ch4.md).
+
 But the most important layer is specialization of generalized functions, and how such abstraction improves readability of code.
 
+Mas a camada mais importante é a especialização de funções generalizadas e como essa abastração melhora a legibilidade do código.
+
 Consider our running `ajax(..)` example:
+
+Considere nosso exemplo de execução `ajax(..)`:
 
 ```js
 ajax(
@@ -933,7 +959,11 @@ ajax(
 
 The call-site includes all the information necessary to pass to the most generalized version of the utility (`ajax(..)`). The potential readability downside is that it may be the case that the URL and the data are not relevant information at this point in the program, but yet that information is cluttering up the call-site nonetheless.
 
+O call-site inclui todas as informações necessárias para passar para a versão mais generalizada do utilitário (`ajax(..)`). A desvantagem potencial da legibilidade é que pode ser o caso de que a URL e os dados não sejam informações relevantes neste ponto do programa, mas mesmo assim essas informações estão confundindo o call-site.
+
 Now consider:
+
+Agora considere:
 
 ```js
 var getCurrentUser = partial(
@@ -949,11 +979,19 @@ getCurrentUser( function foundUser(user){ /* .. */ } );
 
 In this version, we define a `getCurrentUser(..)` function ahead of time that already has known information like URL and data preset. The call-site for `getCurrentUser(..)` then isn't cluttered by information that **at that point of the code** isn't relevant.
 
+Nesta versão, definimos uma função `getCurrentUser(..)` antecipadamente que já possui informações conhecidas como a URL e a predefinição dos dados. O call-site para `getCurrentUser(..)` não está confuso com informações que **naquele ponto do código** não são relevantes.
+
 Moreover, the semantic name for the function `getCurrentUser(..)` more accurately depicts what is happening than just `ajax(..)` with a URL and data would.
+
+Além disso, o nome semântico para a função `getCurrentUser(..)` representa com mais precisão o que está acontecendo do que apenas `ajax(..)` com uma URL e os dados.
 
 That's what abstraction is all about: separating two sets of details -- in this case, the *how* of getting a current user and the *what* we do with that user -- and inserting a semantic boundary between them, which eases the reasoning of each part independently.
 
+É disso que trata a abstração: separar dois conjuntos de detalhes, neste caso, o *como* obter um usuário atual e *o que* fazemos com esse usuário e inserir um limite semântico entre eles, o que facilita o raciocínio de cada parte de forma independente.
+
 Whether you use currying or partial application, creating specialized functions from generalized ones is a powerful technique for semantic abstraction and improved readability.
+
+Quer você use currying ou aplicação parcial, criar funções especializadar a partir de funções generalizadas é uma técnica poderosa para abstração semântica e legibilidade aprimorada.
 
 ### Currying More Than One Argument?
 
