@@ -999,9 +999,15 @@ Quer você use currying ou aplicação parcial, criar funções especializadar a
 
 The definition and implementation I've given of currying thus far is, I believe, as true to the spirit as we can likely get in JavaScript.
 
+A definição e implementação que dei sobre currying até agora são, acredito, tão fiéis ao espírito quanto podemos obter em JavaScript.
+
 Specifically, if we look briefly at how currying works in Haskell, we can observe that multiple arguments always go in to a function one at a time, one per curried call -- other than tuples (analogous to arrays for our purposes) that transport multiple values in a single argument.
 
+Especificamente, se olharmos brevemente como currying funciona em Haskell, podemos observar que vários argumentos sempre vão para uma função, um por vez, um por chamada curried, exceto tuplas (análogas a matrizes para nossos propósitos) que transportam múltiplos valores em um único argumento.
+
 For example, in Haskell:
+
+Por exemplo, em Haskell:
 
 ```haskell
 foo 1 2 3
@@ -1009,11 +1015,19 @@ foo 1 2 3
 
 This calls the `foo` function, and has the result of passing in three values `1`, `2`, and `3`. But functions are automatically curried in Haskell, which means each value goes in as a separate curried-call. The JS equivalent of that would look like `foo(1)(2)(3)`, which is the same style as the `curry(..)` I presented earlier.
 
+Esso chama a função `foo` e tem o resultado de passar três valores `1`, `2` e `3`. Mas as função são automaticamente curried em Haskell, o que significa que cada valor entra como uma chamada curry separada. O equivalente em JS seria semelhante a `foo(1)(2)(3)`, que é o mesmo estilo de `curry(..)` que apresentei anteriormente.
+
 **Note:** In Haskell, `foo (1,2,3)` is not passing in those three values at once as three separate arguments, but a tuple (kinda like a JS array) as a single argument. To work, `foo` would need to be altered to handle a tuple in that argument position. As far as I can tell, there's no way in Haskell to pass all three arguments separately with just one function call; each argument gets its own curried-call. Of course, the presence of multiple calls is transparent to the Haskell developer, but it's a lot more syntactically obvious to the JS developer.
+
+**Nota:** Em Haskell, `foo(1,2,3)` não está passando esses três valores de uma vez como três argumentos separados, mas uma tupla (como uma matriz JS) como um único argumento. Para isso funcionar, `foo` precisaria ser alterado para lidar com uma tupla nessa posição de argumento. Pelo que eu posso dizer, não há como em Haskell passar todos os trẽs argumentos separadamente com apenas uma chamada de função, cada argumento recebe sua própria chamada de curried. Claro, a presença de várias chamadas é transparente para o desenvolvedor Haskell, mas é muito mais sintaticamente óbvio para o desenvolvedor JS.
 
 For these reasons, I think the `curry(..)` that I demonstrated earlier is a faithful adaptation, or what I might call "strict currying". However, it's important to note that there's a looser definition used in most popular JavaScript FP libraries.
 
+Por essas razões, acho que o `curry(..)` que demonstrei anteriormente é uma adaptação fiel, ou o que eu poderia chamar de "currying estrito". No entanto, é importante observar que há uma definição mais ampla usada nas bibliotecas JavaScript de PF.
+
 Specifically, JS currying utilities typically allow you to specify multiple arguments for each curried-call. Revisiting our `sum(..)` example from before, this would look like:
+
+Especificamente, os utilitários currying JS geralmente permitem que você especifique vários argumentos para cada chamada curried. Revisitando nosso exemplo `sum(..)` anterior, ficaria assim:
 
 ```js
 var curriedSum = looseCurry( sum, 5 );
@@ -1023,7 +1037,11 @@ curriedSum( 1 )( 2, 3 )( 4, 5 );            // 15
 
 We see a slight syntax savings of fewer `( )`, and an implied performance benefit of now having three function calls instead of five. But other than that, using `looseCurry(..)` is identical in end result to the narrower `curry(..)` definition from earlier. I would guess the convenience/performance factor is probably why frameworks allow multiple arguments. This seems mostly like a matter of taste.
 
+vemos uma ligeira economia de sintaxe de menos `( )` e um benefício de desempenho implícito de agora ter três chamadas de função em vez de cinco. Mas, fora isso, usar `looseCurry(..)` é idêntico em resultado final à definição mais restrita de `curry(..)` anterior. Eu acho que o fator conveniência/desempenho é provavelmente o motivo pelo qual os frameworks permitem vários argumentos. Isso parece mais uma questão de gosto.
+
 We can adapt our previous currying implementation to this common looser definition:
+
+Podemos adaptar nossa implementação de currying anterior a esta definição mais comum:
 
 <a name="loosecurry"></a>
 
@@ -1045,6 +1063,8 @@ function looseCurry(fn,arity = fn.length) {
 ```
 
 Now each curried-call accepts one or more arguments (as `nextArgs`). We'll leave it as an exercise for the interested reader to define the ES6 `=>` version of `looseCurry(..)` similar to how we did it for `curry(..)` earlier.
+
+Agora, cada chamada curried aceita um ou mais argumentos (como `nextArgs`). Vamos deixar como um exercício para o leitor interessado definir a versão ES6 `=>` de `looseCurry(..)` semelhante a como fizemos para `curry(..)` anteriormente.
 
 ### No Curry for Me, Please
 
