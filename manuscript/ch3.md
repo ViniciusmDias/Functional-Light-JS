@@ -1072,7 +1072,11 @@ Agora, cada chamada curried aceita um ou mais argumentos (como `nextArgs`). Vamo
 
 It may also be the case that you have a curried function that you'd like to essentially un-curry -- basically, to turn a function like `f(1)(2)(3)` back into a function like `g(1,2,3)`.
 
+Também poder ser o caso de você ter uma função curry que gostaria essencialmente de desfazer o curry, basicamente, transformar uma função como `f(1)(2)(3)` de volta em uma função como `g(1,2,3)`.
+
 The standard utility for this is (un)shockingly typically called `uncurry(..)`. Here's a simple naive implementation:
+
+O padrão utilizado para isso é (des)chocantemente chamado de `uncurry(..)`. Aqui está uma implementação simples e ingênua:
 
 ```js
 function uncurry(fn) {
@@ -1103,6 +1107,8 @@ var uncurry =
 
 **Warning:** Don't just assume that `uncurry(curry(f))` has the same behavior as `f`. In some libraries the uncurrying would result in a function like the original, but not all of them; certainly our example here does not. The uncurried function acts (mostly) the same as the original function if you pass as many arguments to it as the original function expected. However, if you pass fewer arguments, you still get back a partially curried function waiting for more arguments; this quirk is illustrated in the following snippet:
 
+**Aviso:** Não presuma apenas que `uncurry(curry(f))` tem o mesmo comportamento que `f`. Em algumas bibliotecas, a falta de pressa resultaria em uma função como a original, mas não em todas, certamente não no nosso exemplo aqui. A função não recorrente atua (principalmente) da mesma forma que a função original se você passar para ela tantos argumentos quanto a função original esperava. No entanto, se você passar menos argumentos, ainda receberá de volta uma função parcialmente curried esperando por mais argumentos. Essa peculiaridade é ilustrada no seguinte trecho:
+
 ```js
 function sum(...nums) {
     var sum = 0;
@@ -1123,19 +1129,31 @@ uncurriedSum( 1, 2, 3 )( 4 )( 5 );          // 15
 
 Probably the more common case of using `uncurry(..)` is not with a manually curried function as just shown, but with a function that comes out curried as a result of some other set of operations. We'll illustrate that scenario later in this chapter in the ["No Points" discussion](#no-points).
 
+Provavelmente, o caso mais comum de usar `uncurry(..)` não é com uma função curry manualmente como mostrado, mas com uma função que sai curried como resultado de algum outro conjunto de operações. Ilustraremos esse cenário posteriormente neste capítulo na [discussão "Sem pontos"](#no-points).
+
 ## Order Matters
 
 ## Ordem Importa
 
 In Chapter 2, we explored the [named arguments pattern](ch2.md/#named-arguments). One primary advantage of named arguments is not needing to juggle argument ordering, thereby improving readability.
 
+No Capítulo 2, exploramos o [padrão de argumentos nomeados](ch2.md/#named-arguments). Uma vantagem principal dos argumentos nomeados é não precisar conciliar a ordem dos argumentos, melhorando assim a legibilidade.
+
 We've looked at the advantages of using currying/partial application to provide individual arguments to a function separately. But the downside is that these techniques are traditionally based on positional arguments; argument ordering is thus an inevitable headache.
+
+Vimos as vantagens de usar currying/aplicação parcial para fornecer argumentos individuais para uma função separadamente. Mas a desvantagem é que essas técnicas são tradicionalmente baseadas em argumentos posicionas, a ordenação de argumentos é, portanto, uma dor de cabeça inevitável.
 
 Utilities like `reverseArgs(..)` (and others) are necessary to juggle arguments to get them into the right order. Sometimes we get lucky and define a function with parameters in the order that we later want to curry them, but other times that order is incompatible and we have to jump through hoops to reorder.
 
+Utilitários como `reverseArgs(..)` (e outros) são necessários para manipular argumentos para colocá-los na ordem correta. Às vezes, temos sorte e definimos uma função com parâmetros na ordem em que mais tarde queremos curried eles, mas outras vezes essa ordem é incompatível e temos que pular para reordernar.
+
 The frustration is not merely that we need to use some utility to juggle the properties, but the fact that the usage of the utility clutters up our code a bit with extra noise. These kinds of things are like little paper cuts; one here or there isn't a showstopper, but the pain can certainly add up.
 
+A frustração não é apenas que precisamos usar algum utilitário para manipular as propriedades, mas o fato de que o uso do utilitário confunde nosso código um pouco com o ruído extra. Esses tipos de coisas são como pequenos cortes de papel, um aqui ou não há um obstáculo, mas a dor pode certamente aumentar.
+
 Can we improve currying/partial application to free it from these ordering concerns? Let's apply the tricks from named arguments style and invent some helper utilities for this adaptation:
+
+Podemos melhorar o currying/aplicação parcial para liberá-lo dessas preocupações de pedido? Vamos aplicar os truques do estilo de argumentos nomeados e inventar alguns utilitários auxiliares para esta adaptação:
 
 ```js
 function partialProps(fn,presetArgsObj) {
@@ -1165,7 +1183,11 @@ function curryProps(fn,arity = 1) {
 
 **Tip:** We don't even need a `partialPropsRight(..)` because we don't need to care about what order properties are being mapped; the name mappings make that ordering concern moot!
 
+**Dica:** Nós nem mesmo precisamos de `partialPropsRight(..)` porque não precisamos nos preocupar com qual ordem as propriedades estão sendo mapeadas, os mapeamentos de nomes tornam essa questão de ordem discutível!
+
 Here's how to use those helpers:
+
+Veja como usar esses ajudantes:
 
 ```js
 function foo({ x, y, z } = {}) {
@@ -1184,7 +1206,11 @@ f2( { z: 3, x: 1 } );
 
 Even with currying or partial application, order doesn't matter anymore! We can now specify which arguments we want in whatever sequence makes sense. No more `reverseArgs(..)` or other nuisances. Cool!
 
+Mesmo com currying ou aplicação parcial, a ordem não importa mais! Agora podemos especificar quais argumentos queremos em qualquer sequência que faça sentido. Chega de `reverseArgs(..)` ou outros incômodos. Legal!
+
 **Tip:** If this style of function arguments seems useful or interesting to you, check out coverage of my [FPO library in Appendix C](apC.md/#bonus-fpo).
+
+**Dica:** Se este estilo de argumentos de função parece útil ou interessante para você, verifique a cobertura da minha [biblioteca FPO no Apêndice C](apC.md/#bonus-fpo).
 
 ### Spreading Properties
 
