@@ -1299,9 +1299,16 @@ Pese essas compensações com cuidado.
 
 A popular style of coding in the FP world aims to reduce some of the visual clutter by removing unnecessary parameter-argument mapping. This style is formally called tacit programming, or more commonly: point-free style. The term "point" here is referring to a function's parameter input.
 
+Um estilo popular de código no mundo da PF visa reduzir parte da desordem visual, removendo o mapeamento de parâmetro-argumento desnecessário. Esse estilo é formalmente chamado de programação tácita ou, mais comumente: estilo sem pontos. O termo "ponto" aqui se refere à entrada de parâmetro de uma função.
+
 **Warning:** Stop for a moment. Let's make sure we're careful not to take this discussion as an unbounded suggestion that you go overboard trying to be point-free in your FP code at all costs. This should be a technique for improving readability, when used in moderation. But as with most things in software development, you can definitely abuse it. If your code gets harder to understand because of the hoops you have to jump through to be point-free, stop. You won't win a blue ribbon just because you found some clever but esoteric way to remove another "point" from your code.
 
+**Aviso:** Pare por um momento. Vamos nos certificar de que tomamos o cuidado de não tomar essa discussão como uma sugestão ilimitada de que você exagere ao tentar ser livre de pontos em seu código de PF a todo custo. Esta deve ser uma técnica para melhorar a legibilidade, quando usada com moderação. Mas, como acontece com a maioria das coisas no desenvolvimento de software, você pode definitivamente abusar dela. Se o seu código ficar mais difícil de entender por causa dos obstáculos que você precisa percorrer para fiar sem pontos, pare. Você não ganhará uma fita azul só porque encontrou uma maneira inteligente, mas esotérica, de remover outro "ponto" de seu código.
+
 Let's start with a simple example:
+
+Vamos começar com um simples exemplo:
+
 
 ```js
 function double(x) {
@@ -1316,6 +1323,8 @@ function double(x) {
 
 Can you see that `mapper(..)` and `double(..)` have the same (or compatible, anyway) signatures? The parameter ("point") `v` can directly map to the corresponding argument in the `double(..)` call. As such, the `mapper(..)` function wrapper is unnecessary. Let's simplify with point-free style:
 
+Você pode ver que `mapper(..)` e `double(..)` têm as mesmas (ou compatíveis, de qualquer maneira) assinaturas? O parâmetro ("ponto") `v` pode mapear diretamente para o argumento correspondente na chamada `double(..)`. Como tal, o wrapper da função `mapper(..)` é desnecessário. Vamos simplificar com o estilo sem pontos:
+
 ```js
 function double(x) {
     return x * 2;
@@ -1327,6 +1336,8 @@ function double(x) {
 
 Let's revisit an example from earlier:
 
+Vamos revisitar um exemplo anterior:
+
 ```js
 ["1","2","3"].map( function mapper(v){
     return parseInt( v );
@@ -1336,7 +1347,11 @@ Let's revisit an example from earlier:
 
 In this example, `mapper(..)` is actually serving an important purpose, which is to discard the `index` argument that `map(..)` would pass in, because `parseInt(..)` would incorrectly interpret that value as a `radix` for the parsing.
 
+Neste exemplo, `mapper(..)` está realmente servindo a um propósito importante, que é descartar o argumento `index` que `map(..)` passaria, porque `parseInt(..)` interpretaria incorretamente esse valor como uma `raiz` para a análise.
+
 If you recall from the beginning of this chapter, this was an example where `unary(..)` helps us out:
+
+Se você se lembra do início deste capítulo, este foi um exemplo em que `unário(..)` nos ajuda:
 
 ```js
 ["1","2","3"].map( unary( parseInt ) );
@@ -1345,13 +1360,21 @@ If you recall from the beginning of this chapter, this was an example where `una
 
 Point-free!
 
+Sem pontos!
+
 The key thing to look for is if you have a function with parameter(s) that is/are directly passed to an inner function call. In both of the preceding examples, `mapper(..)` had the `v` parameter that was passed along to another function call. We were able to replace that layer of abstraction with a point-free expression using `unary(..)`.
 
+A principal coisa a procurar é se você tem uma função com parâmetro(s) que é/são passados diretamente para uma chamada de função interna. Em ambos os exemplos anteriores, `mapper(..)` tinha o parâmetro `v` que foi passado para outra chamada de função. Conseguimos substituir essa camada de abstração por uma expressão sem pontos usando `unário(..)`.
+
 **Warning:** You might have been tempted, as I was, to try `map(partialRight(parseInt,10))` to right-partially apply the `10` value as the `radix`. However, as we saw earlier, `partialRight(..)` only guarantees that `10` will be the last argument passed in, not that it will be specifically the second argument. Since `map(..)` itself passes three arguments (`value`, `index`, `arr`) to its mapping function, the `10` value would just be the fourth argument to `parseInt(..)`; it only pays attention to the first two.
+
+**Aviso:** Você pode ter ficado tentado, como eu, a tentar `map(partialRight(parseInt,10))` para aplicar parcialmente à direita o valor `10` como o `radix`. No entanto, como vimos anteriormente, `partialRight(..)` apenas garante que `10` será o ultimo argumento passado, não que será especificamente o segundo argumento. Como o próprio `map(..)` passa três argumentos (`valor`, `índice`, `arr`) para sua função de mapeamento, o valor `10` seria apenas o quarto argumento para `parseInt(..)`, ele só presta atenção aos dois primeiros.
 
 <a name="shortlongenough"></a>
 
 Here's another example:
+
+Aqui está outro exemplo:
 
 ```js
 // convenience to avoid any potential binding issue
@@ -1379,6 +1402,8 @@ printIf( isShortEnough, msg2 );
 
 Now let's say you want to print a message only if it's long enough; in other words, if it's `!isShortEnough(..)`. Your first thought is probably this:
 
+Agora, digamos que você deseja imprimir uma mensagem apenas se for longa o suficiente, em outras palavras, se for `!isShortEnough(..)`. Seu primeiro pensamento é provavelmente este:
+
 ```js
 function isLongEnough(str) {
     return !isShortEnough( str );
@@ -1390,7 +1415,11 @@ printIf( isLongEnough, msg2 );          // Hello World
 
 Easy enough... but "points" now! See how `str` is passed through? Without re-implementing the `str.length` check, can we refactor this code to point-free style?
 
+Bastante fácil... mas "aponta" agora! Vê como `str` é passado? Sem reimplementar a verificação `str.lenght`, podemos refatorar este código para o estilo ponto-livre?
+
 Let's define a `not(..)` negation helper (often referred to as `complement(..)` in FP libraries):
+
+Vamos definir um auxiliar de negação `not(..)` (muitas vezes referido como `complemento(..)` em bibliotecas de PF):
 
 ```js
 function not(predicate) {
@@ -1408,6 +1437,8 @@ var not =
 
 Next, let's use `not(..)` to alternatively define `isLongEnough(..)` without "points":
 
+A seguir, vamos usar `not(..)` para definir alternativamente `isLongEnough(..)` sem "pontos":
+
 ```js
 var isLongEnough = not( isShortEnough );
 
@@ -1416,7 +1447,11 @@ printIf( isLongEnough, msg2 );          // Hello World
 
 That's pretty good, isn't it? But we *could* keep going. `printIf(..)` could be refactored to be point-free itself.
 
+Isso é muito bom, não é? Mas nós *poderíamos* continuar. `printIf(..)` poderia ser refatorado para ser ele próprio livre de pontos.
+
 We can express the `if` conditional part with a `when(..)` utility:
+
+Podemos expressar a parte condicional do `if` com um utilitário `when(..)`:
 
 ```js
 function when(predicate,fn) {
@@ -1436,15 +1471,23 @@ var when =
 
 Let's mix `when(..)` with a few other helper utilities we've seen earlier in this chapter, to make the point-free `printIf(..)`:
 
+Vamos misturar `when(..)` com alguns outros utilitários auxiliares que vimos anteriormente neste capítulo, tornar o `printIf(..)` livre de pontos:
+
 ```js
 var printIf = uncurry( partialRight( when, output ) );
 ```
 
 Here's how we did it: we right-partially-applied the `output` method as the second (`fn`) argument for `when(..)`, which leaves us with a function still expecting the first argument (`predicate`). *That* function when called produces another function expecting the message string; it would look like this: `fn(predicate)(str)`.
 
+Veja como fizemos: Aplicamos parcilamente à direita o método `output` como segundo argumento (`fn`) para `when(..)`, o que nos deixa com uma função ainda esperando o primeiro argumento (`predicate`). *Essa* função, quando chamada produz outra função que espera a string da mensagem, ficaria assim: `fn(predicate)(str)`.
+
 A chain of multiple (two) function calls like that looks an awful lot like a curried function, so we `uncurry(..)` this result to produce a single function that expects the two `str` and `predicate` arguments together, which matches the original `printIf(predicate,str)` signature.
 
+Uma cadeia de múltiplas (duas) chamadas de função como essa se parece muito com uma função curried, então nós `uncurry(..)` este resultado para produzir uma única função que espera os dois argumentos `str` e `predicate` juntos, que corresponde à assinatura original `printIf(predicate, str)`.
+
 Here's the whole example put back together (assuming various utilities we've already detailed in this chapter are present):
+
+Aqui está o exemplo completo (assumindo que vários utilitários já detalhados neste capítulo estejam presentes):
 
 <a name="finalshortlong"></a>
 
@@ -1473,9 +1516,15 @@ printIf( isLongEnough, msg2 );          // Hello World
 
 Hopefully the FP practice of point-free style coding is starting to make a little more sense. It'll still take a lot of practice to train yourself to think this way naturally. **And you'll still have to make judgement calls** as to whether point-free coding is worth it, as well as what extent will benefit your code's readability.
 
+Esperançosamente, a prática da PF de codificação de estilo sem pontos está começando a fazer um pouco mais de sentido. Ainda será necessária muita prática para treinar a si mesmo para pensar dessa forma naturalmente. **E você ainda terá que fazer julgamentos** para saber se a codificação sem pontos vale a pena, bem como até o que ponto irá beneficiar a legibilidade do seu código.
+
 What do you think? Points or no points for you?
 
+O que você acha? Pontos ou nenhum ponto para você?
+
 **Note:** Want more practice with point-free style coding? We'll revisit this technique in [Chapter 4, "Revisiting Points"](ch4.md/#revisiting-points), based on newfound knowledge of function composition.
+
+**Observação:** Quer mais prática com codificação de estilo sem pontos? Revisitaremos essa técnica no [Capítulo 4, "Revisitando pontos"](ch4.md/#revisiting-points), com base no conhecimento recente da composição de funções.
 
 ## Summary
 
@@ -1483,10 +1532,20 @@ What do you think? Points or no points for you?
 
 Partial application is a technique for reducing the arity (that is, the expected number of arguments to a function) by creating a new function where some of the arguments are preset.
 
+A aplicação parcial é uma técnica para reduzir a aridade (ou seja, o número esperado de argumentos para uma função) criando uma nova função em que alguns dos argumentos são predefinidos.
+
 Currying is a special form of partial application where the arity is reduced to 1, with a chain of successive chained function calls, each which takes one argument. Once all arguments have been specified by these function calls, the original function is executed with all the collected arguments. You can also undo a currying.
+
+Currying é uma forma especial de aplicação parcial em que a aridade é reduzida a 1, com uma cadeia de chamadas de função em cadeia sucessivas, cada uma com um argumento. Depois que todos os arugmentos foram especificados por essas chamadas de função, a função original é executada com todos os argumentos coletados. Você também pode desfazer um currying.
 
 Other important utilities like `unary(..)`, `identity(..)`, and `constant(..)` are part of the base toolbox for FP.
 
+Outros utilitários importantes como `unary(..)`, `identity(..)` e `constant(..)` fazem parte da caixa de ferramentas base para a PF.
+
 Point-free is a style of writing code that eliminates unnecessary verbosity of mapping parameters ("points") to arguments, with the goal of making code easier to read/understand.
 
+Livre de pontos é um estilo de escrever código que elimina o detalhamento desnecessário de parâmetros de mapeamento ("pontos") para argumentos, com o objetivo de tornar o código mais fácil de ler/entender.
+
 All of these techniques twist functions around so they can work together more naturally. With your functions shaped compatibly now, the next chapter will teach you how to combine them to model the flows of data through your program.
+
+Todas essas técnicas distorcem as funções para que possam funcionar juntas de maneira mais natural. Com suas funções configuradas de forma compatível agora, o próximo capítulo ensinará como combiná-las para modelar os fluxos de dados por meio de seu programa.
