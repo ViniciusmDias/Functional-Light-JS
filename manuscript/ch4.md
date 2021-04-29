@@ -1,19 +1,34 @@
 # Functional-Light JavaScript
 # Chapter 4: Composing Functions
+# Capítulo 4: Funções de composição
 
 By now, I hope you're feeling much more comfortable with what it means to use functions for functional programming.
 
+Por agora, espero que você esteja se sentindo muito mais confortável com o que significa usar funções para programação funcional.
+
 A functional programmer sees every function in their program like a simple little Lego piece. They recognize the blue 2x2 brick at a glance, and know exactly how it works and what they can do with it. When they begin building a bigger, more complex Lego model, as they need each next piece, they already have an instinct for which of their many spare pieces to grab.
+
+Um programador funcional vê cada função em seu programa como uma peça de Lego. Eles reconhecem o tijolo 2x2 azul de relance e sabem exatamente como funciona e o que podem fazer com ele. Quando eles começam a construir um modelo de Lego maior e mais complexo, elas já têm um instinto de qual de de suas muitas peças sobressalentes utilizar.
 
 But sometimes you take the blue 2x2 brick and the gray 4x1 brick and put them together in a certain way, and you realize, "that's a useful piece that I need often".
 
+Mas às vezes você pega o tijolo 2x2 azul e o tijolo 4x1 cinza e os coloca juntos de uma certa maneira, e você percebe, "essa é uma peça útil que eu preciso frequentemente".
+
 So now you've come up with a new "piece", a combination of two other pieces, and you can reach for that kind of piece now anytime you need it. It's more effective to recognize and use this compound blue-gray L-brick thing where it's needed than to separately think about assembling the two individual bricks each time.
+
+Portanto, agora você criou uma nova "peça", uma combinação de duas outras peças, e pode pegar esse tipo de peça sempre que precisar. É mais eficaz reconhecer e usar essa coisa composta de tijolo L cinza-azulado onde for necessário do que pensar separadamente em montar os dois tijolos individuais a cada vez.
 
 Functions come in a variety of shapes and sizes. And we can define a certain combination of them to make a new compound function that will be handy in various parts of the program. This process of using functions together is called composition.
 
+As funções vêm em uma variedade de formas e tamanhos. E podemos definir uma certa combinação deles para fazer uma nova função composta que será útil em varias partes do programa. Esse processo de usar funções juntas é chamado de composição.
+
 Composition is how an FPer models the flow of data through the program. In some senses, it's the most foundational concept in all of FP, because without it, you can't declaratively model data and state changes. In other words, everything else in FP would collapse without composition.
 
+Composição é como um programador funcional modela o fluxo de dados através do programa. Em alguns sentidos, é o conceito mais fundamental em toda a PF, porque sem ele, você não pode modelar dados e mudanças de estado declarativamente. Em outras palavras, tudo o mais na PF entraria em colapso sem composição.
+
 ## Output to Input
+
+## Saída para entrada
 
 We've already seen a few examples of composition. For example, our discussion of [`unary(..)` in Chapter 3](ch3.md/#user-content-unary) included this expression: [`[..].map(unary(parseInt))`](ch3.md/#user-content-mapunary). Think about what's happening there.
 
@@ -125,6 +140,8 @@ You probably recognize it by now: the unfolding revolution in candy factory desi
 
 ### Machine Making
 
+### Fabricação de Máquinas
+
 The candy factory is humming along nicely, and thanks to all the saved space, they now have plenty of room to try out making new kinds of candies. Building on the earlier success, management is keen to keep inventing new fancy compound machines for their growing candy assortment.
 
 But the factory engineers struggle to keep up, because each time a new kind of fancy compound machine needs to be made, they spend quite a bit of time making the new outer box and fitting the individual machines into it.
@@ -167,6 +184,8 @@ var uniqueWords = compose2( unique, words );
 
 ### Composition Variation
 
+### Variação de Composição
+
 It may seem like the `<-- unique <-- words` combination is the only order these two functions can be composed. But we could actually compose them in the opposite order to create a utility with a bit of a different purpose:
 
 ```js
@@ -184,6 +203,8 @@ Admittedly, this is a contrived example. But the point is that function composit
 The candy factory better be careful if they try to feed the wrapped candies into the machine that mixes and cools the chocolate!
 
 ## General Composition
+
+## Composição Geral
 
 If we can define the composition of two functions, we can just keep going to support composing any number of functions. The general data visualization flow for any number of functions being composed looks like this:
 
@@ -296,6 +317,8 @@ You can also `curry(..)` a composition instead of partial application, though be
 **Note:** Because `curry(..)` (at least [the way we implemented it in Chapter 3](ch3.md/#user-content-curry)) relies on either detecting the arity (`length`) or having it manually specified, and `compose(..)` is a variadic function, you'll need to manually specify the intended arity like `curry(.. , 3)`.
 
 ### Alternative Implementations
+
+### Implementações Alternativas
 
 While you may very well never implement your own `compose(..)` to use in production, and rather just use a library's implementation as provided, I've found that understanding how it works under the covers actually helps solidify general FP concepts very well.
 
@@ -412,6 +435,8 @@ Others will find the recursive approach quite a bit more daunting to mentally ju
 
 ## Reordered Composition
 
+## Composição Reordenada
+
 We talked earlier about the right-to-left ordering of standard `compose(..)` implementations. The advantage is in listing the arguments (functions) in the same order they'd appear if doing the composition manually.
 
 The disadvantage is they're listed in the reverse order that they execute, which could be confusing. It was also more awkward to have to use `partialRight(compose, ..)` to pre-specify the *first* function(s) to execute in the composition.
@@ -475,6 +500,8 @@ As you may recall from our first implementation of [`partialRight(..)` in Chapte
 *In this specific case*, the slight performance advantage to using `pipe(..)` is, because we're not trying to preserve the right-to-left argument order of `compose(..)`, we don't need to reverse the argument order back, like we do inside `partialRight(..)`. So `partial(pipe, ..)` is a little more efficient here than `partialRight(compose, ..)`.
 
 ## Abstraction
+
+## Abstração
 
 Abstraction plays heavily into our reasoning about composition, so let's examine it in more detail.
 
@@ -560,6 +587,8 @@ Moreover, **composition is helpful even if there's only one occurrence of someth
 
 ### Separation Enables Focus
 
+### Separação Ativa O Foco
+
 Aside from generalization vs. specialization, I think there's another more useful definition for abstraction, as revealed by this quote:
 
 > ... abstraction is a process by which the programmer associates a name with a potentially complicated program fragment, which can then be thought of in terms of its purpose of function, rather than in terms of how that function is achieved. By hiding irrelevant details, abstraction reduces conceptual complexity, making it possible for the programmer to focus on a manageable subset of the program text at any particular time.
@@ -612,6 +641,8 @@ Instead, you read `[ a ,,, b ] = ..` and can see the assignment pattern merely t
 
 ### Composition as Abstraction
 
+### Composição como Abstração
+
 What's all this have to do with function composition? Function composition is also declarative abstraction.
 
 Recall the `shorterWords(..)` example from earlier. Let's compare an imperative and declarative definition for it:
@@ -657,6 +688,8 @@ Function composition isn't just about saving code with DRY. Even if the usage of
 Composition is a powerful tool for abstraction that transforms imperative code into more readable declarative code.
 
 ## Revisiting Points
+
+## Revisitando Pontos
 
 Now that we've thoroughly covered composition (a trick that will be immensely helpful in many areas of FP), let's watch it in action by revisiting point-free style from [Chapter 3, "No Points"](ch3.md/#no-points) with a scenario that's a fair bit more complex to refactor:
 
@@ -837,6 +870,8 @@ partial( ajax, "http://some.api/order", { id: -1 } )
 This snippet is less verbose for sure, but I think it's less readable than the previous snippet where each operation is its own variable. Either way, composition helped us with our point-free style.
 
 ## Summary
+
+## Resumo
 
 Function composition is a pattern for defining a function that routes the output of one function call into another function call, and its output to another, and so on.
 
