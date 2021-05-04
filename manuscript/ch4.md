@@ -186,15 +186,23 @@ Você provavelmente já deve ter percebido: a revolução que se desenrola no de
 
 The candy factory is humming along nicely, and thanks to all the saved space, they now have plenty of room to try out making new kinds of candies. Building on the earlier success, management is keen to keep inventing new fancy compound machines for their growing candy assortment.
 
+A fábrica de doces está funcionando muito bem, e, graças a todo o espaço economizado, eles agora têm espaço de sobre para experimentar fazer novos tipos de doces. Com base no sucesso anterior, a administração está empenhada em continuar inventando novas máquinas sofisticadas de compostos para sua crescente variedade de doces.
+
 But the factory engineers struggle to keep up, because each time a new kind of fancy compound machine needs to be made, they spend quite a bit of time making the new outer box and fitting the individual machines into it.
 
+Mas os engenheiros da fábrica lutam para acompanhar, porque cada vez que um novo tipo de máquina composta precisa ser feita, eles passam um bom tempo fazendo a nova caixa externa e encaixando as máquinas individuais nela.
+
 So the factory engineers contact an industrial machine vendor for help. They're amazed to find out that this vendor offers a **machine-making** machine! As incredible as it sounds, they purchase a machine that can take a couple of the factory's smaller machines -- the chocolate cooling one and the cutting one, for example -- and wire them together automatically, even wrapping a nice clean bigger box around them. This is surely going to make the candy factory really take off!
+
+Assim, os engenheiros da fábrica entram em contato com um fornecedor de máquina industrial para obter ajuda. Eles ficam surpresos ao descobrir que este fornecedor oferece uma máquina de **fabricação de máquinas**! Por incrível que pareça, eles compram uma máquina que pode pegar algumas máquinas menores da fábrica -- a de resfriamento de chocolate e a de corte, por exemplo -- e conectá-las automaticamente, até mesmo envolvendo uma caixa maior e mais limpa em torno delas. Isso certamente fará a fábrica de doces realmente decolar!
 
 <p align="center">
     <img src="images/fig5.png" width="50%">
 </p>
 
 Back to code land, let's consider a utility called `compose2(..)` that creates a composition of two functions automatically, exactly the same way we did manually:
+
+De volta ao mundo do código, vamos considerar um utilitário chamado `compose2(..)` que cria uma composição de duas funções automaticamente, exatamente da mesma forma que fizemos manualmente:
 
 ```js
 function compose2(fn2,fn1) {
@@ -212,13 +220,23 @@ var compose2 =
 
 Did you notice that we defined the parameter order as `fn2,fn1`, and furthermore that it's the second function listed (aka `fn1` parameter name) that runs first, then the first function listed (`fn2`)? In other words, the functions compose from right-to-left.
 
+Você notou que definimos a ordem dos parâmetros como `fn2,fn1`, e, além disso, que é a segunda função listada (também conhecida como nome do parâmetro `fn1`) que executa primeiro, depois a primeira função listada (`fn2`)? Em outras palavras, as funções são compostas da direita para esquerda.
+
 That may seem like a strange choice, but there are some reasons for it. Most typical FP libraries define their `compose(..)` to work right-to-left in terms of ordering, so we're sticking with that convention.
+
+Pode parecer uma escolha estranha, mas existem algumas razões para isso. A maioria das bibliotecas típicas da PF definem seu `compose(..)` para trabalhar da direita para a esquerda em termos de ordenação, então estamos mantendo essa convenção.
 
 But why? I think the easiest explanation (but perhaps not the most historically accurate) is that we're listing them to match the order they are written in code manually, or rather the order we encounter them when reading from left-to-right.
 
+Mas por que? Acho que a explicação mais fácil (mas talvez não a mais historicamente precisa) é que os listamos para corresponder à ordem em que são escritos manualmente no código, ou melhor, a ordem em que os encontramos ao ler da esquerda para a direita.
+
 `unique(words(str))` lists the functions in the left-to-right order `unique, words`, so we make our `compose2(..)` utility accept them in that order, too. The execution order is right-to-left, but the code order is left-to-right. Pay close attention to keep those distinct in your mind.
 
+`unique(words(str))` lista as funções na ordem da esquerda para a direita `unique, words`, então fazemos nosso utilitário `compose2(..)` aceitá-las nessa ordem também. A ordem de execução é da direita para a esquerda, mas a ordem do código é da esquerda para a direita. Preste muita atenção para mantê-los distintos em sua mente.
+
 Now, the more efficient definition of the candy making machine is:
+
+Agora, a definição mais eficiente da máquina de fazer doces é:
 
 ```js
 var uniqueWords = compose2( unique, words );
@@ -230,6 +248,8 @@ var uniqueWords = compose2( unique, words );
 
 It may seem like the `<-- unique <-- words` combination is the only order these two functions can be composed. But we could actually compose them in the opposite order to create a utility with a bit of a different purpose:
 
+Pode parecer que a combinação `<-- unique <-- words` é a única ordem em que essas duas funções podem ser compostas. Mas poderíamos realmente compồ-los na ordem oposta para criar um utilitário com um propósito um pouco diferente:
+
 ```js
 var letters = compose2( words, unique );
 
@@ -240,9 +260,15 @@ chars;
 
 This works because the `words(..)` utility, for value-type safety sake, first coerces its input to a string using `String(..)`. So the array that `unique(..)` returns -- now the input to `words(..)` -- becomes the string `"H,o,w, ,a,r,e,y,u,n,?"`, and then the rest of the behavior in `words(..)` processes that string into the `chars` array.
 
+Isso funciona porque o utilitário `words(..)`, para fins de segurança do tipo de valor, primeiro coage sua entrada para uma string usando `String(..)`. Assim, a matriz que retorna `unique(..)` -- agora a entrada para `words(..)` -- torna-se a string `"H,o,w, ,a,r,e,y,u,n,?"` e então o resto do comportamento em `palavras(..)` processa essa string no array `chars`.
+
 Admittedly, this is a contrived example. But the point is that function compositions are not always unidirectional. Sometimes we put the gray brick on top of the blue brick, and sometimes we put the blue brick on top.
 
+Reconhecidamente, este é um exemplo artificial. Mas a questão é que as composições de funções nem sempre são unidirecionais. Às vezes, colocamos o tijolo cinza em cima do tijolo azul, e às vezes colocamos o tijolo azul em cima.
+
 The candy factory better be careful if they try to feed the wrapped candies into the machine that mixes and cools the chocolate!
+
+A fábrica de doces deve ter cudiado se tentar colocar os doces embrulhados na máquina que mistura e esfria o chocolate!
 
 ## General Composition
 
