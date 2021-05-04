@@ -32,9 +32,15 @@ Composição é como um programador funcional modela o fluxo de dados através d
 
 We've already seen a few examples of composition. For example, our discussion of [`unary(..)` in Chapter 3](ch3.md/#user-content-unary) included this expression: [`[..].map(unary(parseInt))`](ch3.md/#user-content-mapunary). Think about what's happening there.
 
+Já vimos alguns exemplos de composição. Por exemplo, nossa discussão sobre [`unary(..)` no Capítulo3](ch3.md/#user-content-unary) incluiu esta expressão: [`[..].map(unary(parseInt))`](ch3.md/user-content-mapunary). Pense no que está acontecendo lá.
+
 To compose two functions together, pass the output of the first function call as the input of the second function call. In `map(unary(parseInt))`, the `unary(parseInt)` call returns a value (a function); that value is directly passed as an argument to `map(..)`, which returns an array.
 
+Para compor duas funções juntas, passe a saída da primeira chamada de função como a entrada da segunda chamada de função. Em `map(unary(parseInt))`, a chamada `unary(parseInt)` return um valor (uma função), esse valor é diretamente passado como um argumento para `map(..)`, que retorna um array.
+
 To take a step back and visualize the conceptual flow of data, consider:
+
+Para dar um passo para trás e visualizar o fluxo conceitual de dados, considere:
 
 ```txt
 arrayValue <-- map <-- unary <-- parseInt
@@ -42,15 +48,23 @@ arrayValue <-- map <-- unary <-- parseInt
 
 `parseInt` is the input to `unary(..)`. The output of `unary(..)` is the input to `map(..)`. The output of `map(..)` is `arrayValue`. This is the composition of `map(..)` and `unary(..)`.
 
+`parseInt` é a entrada para `unary(..)`. A saída de `unary(..)` é a entrada para `map(..)`. A saída de `map(..)` é `arrayValue`. Esta é a composição de `map(..)` e `unary(..)`.
+
 **Note:** The right-to-left orientation here is on purpose, though it may seem strange at this point in your learning. We'll come back to explain that more fully later.
 
+**Nota:** A orientação da direita para a esquerda aqui é proposital, embora possa parecer estranho neste ponto do seu aprendizado. Voltaremos para explicar isso detalhadamente mais tarde.
+
 Think of this flow of data like a conveyor belt in a candy factory, where each operation is a step in the process of cooling, cutting, and wrapping a piece of candy. We'll use the candy factory metaphor throughout this chapter to explain what composition is.
+
+Pense neste fluxo de dados como uma correia transportadora em uma fábrica de doces, onde cada operação é uma etapa no processo de resfriamento, corte e embalagem de um pedaço de doce. Usaremos a metáfora da fábrica de doces ao longo deste capítulo para explicar o que é composição.
 
 <p align="center">
     <img src="images/fig2.png">
 </p>
 
 Let's examine composition in action one step at a time. Consider these two utilities you might have in your program:
+
+Vamos examinar a composição em ação com um passo de cada vez. Considere estes dois utilitários que você talvez tenha em seu programa:
 
 ```js
 function words(str) {
@@ -78,7 +92,11 @@ function unique(list) {
 
 `words(..)` splits a string into an array of words. `unique(..)` takes a list of words and filters it to not have any repeat words in it.
 
+`words(..)` divide uma string em um array de palavras. `unique(..)` pega uma lista de palavras e filtra para não ter palavras repetidas.
+
 To use these two utilities to analyze a string of text:
+
+Como usar esses dois utilitários para analisar uma string de texto:
 
 ```js
 var text = "To compose two functions together, pass the \
@@ -96,17 +114,29 @@ wordsUsed;
 
 We name the array output of `words(..)` as `wordsFound`. The input of `unique(..)` is also an array, so we can pass the `wordsFound` into it.
 
+Nomeamos a saída do array de `words(..)` como `wordsFound`. A entrada de `unique(..)` é também um array, então podemos passar o `wordsFound` para ele.
+
 Back to the candy factory assembly line: the first machine takes as "input" the melted chocolate, and its "output" is a chunk of formed and cooled chocolate. The next machine a little down the assembly line takes as its "input" the chunk of chocolate, and its "output" is a cut-up piece of chocolate candy. Next, a machine on the line takes small pieces of chocolate candy from the conveyor belt and outputs wrapped candies ready to bag and ship.
+
+De volta para à linha de montagem da fábrica de doces: a primeira linha da máquina leva como "entrada" o chocolate derretido, e sua "saida" é um pedaço de chocolate formado e resfriado. A proxima máquina um pouco abaixo na linha de montagem toma como "entrada" o pedaço de chocolate, e sua "saída" é um pedaço cortado de bombom de chocolate. Em seguida, uma máquina na linha pega pequenos pedaços de chocolate da esteira transportadora e produz os doces embalados prontos para embalar e enviar.
 
 <img src="images/fig3.png" align="right" width="9%" hspace="20">
 
 The candy factory is fairly successful with this process, but as with all businesses, management keeps searching for ways to grow.
 
+A fábrica de doces é muito bem sucedida nesse processo, mas, como acontece com todos os negócios, a administração continua buscando maneiras de crescer.
+
 To keep up with demand for more candy production, they decide to take out the conveyor belt contraption and just stack all three machines on top of one another, so that the output valve of one is connected directly to the input valve of the one below it. There's no longer sprawling wasted space where a chunk of chocolate slowly and noisily rumbles down a conveyor belt from the first machine to the second.
+
+Para acompanhar a demanda por mais produção de doces, eles decidem retirar a engenhoca da correia transportadora e apenas empilhar as três máquinas uma em cima da outra, de modo que a válvula de saída de uma seja conectada diretamente à válvula de entrada da que está abaixo dela.
 
 This innovation saves a lot of room on the factory floor, so management is happy they'll get to make more candy each day!
 
+Esta inovação economiza muito espaço no chão de fábrica, então a gerência fica feliz em fazer mais doces a cada dia!
+
 The code equivalent of this improved candy factory configuration is to skip the intermediate step (the `wordsFound` variable in the earlier snippet), and just use the two function calls together:
+
+O código equivalente a essa configuração de fábrica de doces aprimorada é pular a etapa intermediária (a variável `wordsFound` no snippet anterior) e apenas usar as duas chamadas de função juntas:
 
 ```js
 var wordsUsed = unique( words( text ) );
@@ -114,15 +144,25 @@ var wordsUsed = unique( words( text ) );
 
 **Note:** Though we typically read the function calls left-to-right -- `unique(..)` and then `words(..)` -- the order of operations will actually be more right-to-left, or inner-to-outer. `words(..)` will run first and then `unique(..)`. Later we'll talk about a pattern that matches the order of execution to our natural left-to-right reading, called `pipe(..)`.
 
+**Nota:** Embora normalmente leiamos as chamadas de função da esquerda para a direita -- `unique(..)` e, em seguida, `words(..)` -- a ordem das operações será, na verdade, mais da direita para esquerda, ou interno para externo. `words(..)` será executado primeiro e, em seguida, `exclusivo(..)`. Mais tarde, falaremos sobre um padrão que corresponde à ordem de execução de nossa leitura natural da esquerda para a direita, chamado `pipe(..)`.
+
 The stacked machines are working fine, but it's kind of clunky to have the wires hanging out all over the place. The more of these machine-stacks they create, the more cluttered the factory floor gets. And the effort to assemble and maintain all these machine stacks is awfully time intensive.
+
+As máquinas empilhadas estão funcionando bem, mas é meio desajeitado ter os fios espalhados por todo o lugar. Quaanto mais pilhas de máquinas eles criam, mais desordenado fica o chão de fábrica. E o esforço para montar e manter todas essas pilhas de máquinas consome muito tempo.
 
 <img src="images/fig4.png" align="left" width="15%" hspace="20">
 
 One morning, an engineer at the candy factory has a great idea. She figures that it'd be much more efficient if she made an outer box to hide all the wires; on the inside, all three of the machines are hooked up together, and on the outside everything is now neat and tidy. On the top of this fancy new machine is a valve to pour in melted chocolate and on the bottom is a valve that spits out wrapped chocolate candies. Brilliant!
 
+Certa manhã, um engenheiro da fábrica de doces tem uma ótima ideia. Ela acha que seria muito mais eficiente se ela fizesse uma caixa externa para esconder todos os fios, por dentro, todas as três máquinas estão conectadas e, por fora, tudo ficaria limpo e organizado. No topo dessa nova máquina sofisticada está uma válvula para despejar chocolate derretido e, na parte inferior, uma válvula que cospe bombons de chocolate embrulhados. Brilhante!
+
 This single compound machine is much easier to move around and install wherever the factory needs it. The workers on the factory floor are even happier because they don't need to fidget with buttons and dials on three individual machines anymore; they quickly prefer using the single fancy machine.
 
+Esta máquina de composto único é muito mais fácil de mover e instalar onde quer que a fábrica precise. Os trabalhadores do chão de fábrica estão ainda mais felizes porque não precisam mais se preocupar com botões e mostradores em três máquinas individuais, eles rapidamente preferem usar a máquina sofisticada.
+
 Relating back to the code: we now realize that the pairing of `words(..)` and `unique(..)` in that specific order of execution (think: compound Lego) is something we could use in several other parts of our application. So, let's define a compound function that combines them:
+
+Em relação ao código: agora percebemos que o emparelhamento de `palavras(..)` e `único(..)` naquela ordem específica de execução (pense: Lego composto) é algo que poderiamos usar em várias outras partes da nossa aplicação. Então, vamos definir uma função composta que os combina:
 
 ```js
 function uniqueWords(str) {
@@ -137,6 +177,8 @@ wordsUsed <-- unique <-- words <-- text
 ```
 
 You probably recognize it by now: the unfolding revolution in candy factory design is function composition.
+
+Você provavelmente já deve ter percebido: a revolução que se desenrola no design da fábrica de doces é a composição de funções.
 
 ### Machine Making
 
