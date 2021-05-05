@@ -276,6 +276,8 @@ A fábrica de doces deve ter cudiado se tentar colocar os doces embrulhados na m
 
 If we can define the composition of two functions, we can just keep going to support composing any number of functions. The general data visualization flow for any number of functions being composed looks like this:
 
+Se pudermos definir a composição de duas funções, podemos simplesmente continuar a suportar a composição de qualquer número de funções. O fluxo geral de visualização de dados para qualquer número de funções sendo compostas é semelhante a este:
+
 ```txt
 finalValue <-- func1 <-- func2 <-- ... <-- funcN <-- origValue
 ```
@@ -286,7 +288,11 @@ finalValue <-- func1 <-- func2 <-- ... <-- funcN <-- origValue
 
 Now the candy factory owns the best machine of all: a machine that can take any number of separate smaller machines and spit out a big fancy machine that does every step in order. That's one heck of a candy operation! It's Willy Wonka's dream!
 
+Agora, a fábrica de doces possui a melhor máquina de todas: uma máquina que pode pegar qualquer número de máquinas menores separadas e cuspir uma grande máquina extravagante que executa cada passo na ordem. Essa é uma operação incrível de doces! É o sonho de Willy Wonka!
+
 We can implement a general `compose(..)` utility like this:
+
+Podemos implementar um utilitário `compose(..)` geral como este:
 
 <a name="generalcompose"></a>
 
@@ -324,7 +330,11 @@ var compose =
 
 **Warning:** `fns` is a collected array of arguments, not a passed-in array, and as such, it's local to `compose(..)`. It may be tempting to think the `[...fns]` would thus be unnecessary. However, in this particular implementation, `.pop()` inside the inner `composed(..)` function is mutating the list, so if we didn't make a copy each time, the returned composed function could only be used reliably once. We'll revisit this hazard in [Chapter 6](ch6.md/#user-content-hiddenmutation).
 
+**Aviso:** `fns` é um array coletado de argumentos, não um array passado e, como tal, é local para `compose(..)`. Pode ser tentador pensar que `[...fns]` seria desnecessário. No entanto, nesta implementação particular, `.pop()` dentro da função interna `composed(..)` está alterando a lista, portanto, se não fizéssemos uma cópia a cada vez, a função composta retornada só poderia ser usada de forma confiável uma vez. Revisitaremos esse perigo no [Capítulo 6](ch6.md/#user-content-hiddenmutation).
+
 Now let's look at an example of composing more than two functions. Recalling our `uniqueWords(..)` composition example, let's add a `skipShortWords(..)` to the mix:
+
+Agora vamos ver um exemplo de composição de mais de duas funções. Recordando nosso exemplo de composição `uniqueWords(..)`, vamos adicionar um `skipShortWords(..)` à mistura:
 
 ```js
 function skipShortWords(words) {
@@ -342,6 +352,8 @@ function skipShortWords(words) {
 
 Let's define `biggerWords(..)` that includes `skipShortWords(..)`. The manual composition equivalent is `skipShortWords( unique( words( text ) ) )`, so let's do that with `compose(..)`:
 
+Vamos definir `largeWords(..)` que inclui `skipShortWords(..)`. O equivalente de composição manual é `skipShortWords( unique ( words ( text ) ) )`, então vamos fazer isso com `compose(..)`:
+
 ```js
 var text = "To compose two functions together, pass the \
 output of the first function call as the input of the \
@@ -358,7 +370,11 @@ wordsUsed;
 
 To do something more interesting with composition, let's use [`partialRight(..)`, which we first looked at in Chapter 3](ch3.md/#user-content-partialright). We can build a right-partial application of `compose(..)` itself, pre-specifying the second and third arguments (`unique(..)` and `words(..)`, respectively); we'll call it `filterWords(..)`.
 
+Para fazer algo mais interessante com composição, vamos usar [`partialRight(..)`, que vimos primeiro no Capítulo 3](ch3.md/#user-content-partialright). Podemos construir uma aplicação parcial à direita do próprio `compose(..)`, pré-especificando o segundo e o terceiro argumento (`unique(..)` e `words(..)`), respectivamente), vamos chamá-lo de `filterWords(..)`.
+
 Then, we can complete the composition multiple times by calling `filterWords(..)`, but with different first-arguments respectively:
+
+Então, podemos completar a composição várias vezes chamando `filterWords(..)`, mas com diferentes primeiros argumentos, respectivamente:
 
 ```js
 // Note: uses a `<= 4` check instead of the `> 4` check
@@ -380,9 +396,15 @@ shorterWords( text );
 
 Take a moment to consider what the right-partial application on `compose(..)` gives us. It allows us to specify ahead of time the first step(s) of a composition, and then create specialized variations of that composition with different subsequent steps (`biggerWords(..)` and `shorterWords(..)`). This is one of the most powerful tricks of FP!
 
+Reserve um momento para considerar o que a aplicação parcial à direita em `compose(..)` nos oferece. Ele nos permite especificar com antecedência a(s) primeira(s) etapa(s) de uma composição e, em seguida, criar variações especializadas dessa composição com diferentes etapas subsequentes (`biggerWords(..)` and `shorterWords(..)`). Esté é um dos truques mais poderosos da PF!
+
 You can also `curry(..)` a composition instead of partial application, though because of right-to-left ordering, you might more often want to `curry( reverseArgs(compose), ..)` rather than just `curry( compose, ..)` itself.
 
+Você também pode `curry(..)` uma composição em vez de uma aplicação parcial, embora por causa da ordem da direita para a esquerda, você pode querer mais frequentemente `curry( reverseArgs(compose), ..)` em vez de apenas `curry( compose, ..)` em si.
+
 **Note:** Because `curry(..)` (at least [the way we implemented it in Chapter 3](ch3.md/#user-content-curry)) relies on either detecting the arity (`length`) or having it manually specified, and `compose(..)` is a variadic function, you'll need to manually specify the intended arity like `curry(.. , 3)`.
+
+**Nota:** Porque `curry(..)` (pelo menos [á forma como implementamos no Capítulo 3](ch3.md/#user-content-curry)) depende da detecção de aridade (`comprimento`) ou tê-lo especificado manualmente e `compose(..)` é uma função variável, você precisará especificar manualmente a aridade pretendida como `curry(.., 3)`.
 
 ### Alternative Implementations
 
