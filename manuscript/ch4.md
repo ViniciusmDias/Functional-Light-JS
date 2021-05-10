@@ -661,9 +661,15 @@ Como você deve se lembrar da nossa primeira implementação de [`partialRight(.
 
 Abstraction plays heavily into our reasoning about composition, so let's examine it in more detail.
 
+A abstração influencia muito nosso raciocínio sobre composição, portanto, vamos examiná-la com mais detalhes. 
+
 Similar to how partial application and currying (see [Chapter 3](ch3.md/#some-now-some-later)) allow a progression from generalized to specialized functions, we can abstract by pulling out the generality between two or more tasks. The general part is defined once, so as to avoid repetition. To perform each task's specialization, the general part is parameterized.
 
+Semelhante a como a aplicação parcial e currying (ver [Capítulo 3](ch3.md/#some-now-some-later) permitem uma progressão de funções generalizadas para especializadas, podemos abstrair extraindo a generalidade entre duas ou mais tarefas. A parte geral é definida uma vez, para evitar repetições. Para realizar a especialização de cada tarefa, a parte geral é parametrizada.
+
 For example, consider this (obviously contrived) code:
+
+Por exemplo, considere este código (obviamente inventado):
 
 ```js
 function saveComment(txt) {
@@ -681,7 +687,11 @@ function trackEvent(evt) {
 
 Both of these utilities are storing a value in a data source. That's the generality. The specialty is that one of them sticks the value at the end of an array, while the other sets the value at a property name of an object.
 
+Ambos os utilitários estão armazenando um valor em uma fonte de dados. Essa é a generalidade. A especialidade é que um deles coloca o valor no final de uma matriz, enquanto o outro define o valor em um nome de propriedade de um objeto.
+
 So let's abstract:
+
+Então, vamos abstrair:
 
 ```js
 function storeData(store,location,value) {
@@ -703,11 +713,19 @@ function trackEvent(evt) {
 
 The general task of referencing a property on an object (or array, thanks to JS's convenient operator overloading of `[ ]`) and setting its value is abstracted into its own function `storeData(..)`. While this utility only has a single line of code right now, one could envision other general behavior that was common across both tasks, such as generating a unique numeric ID or storing a timestamp with the value.
 
+A tarefa geral de referenciar uma propriedade em um objeto (ou array, graças à sobrecarga de operador conveniente do JS de `[ ]`) e definir se seu valor é abstraído em sua própria função `storeData(..)`. Embora este utilitário tenha apenas uma única linha no momento, pode-se imaginar outro comportamento geral que era comum em ambas as tarefas, como gerar um ID numérico exclusivo ou armazenar um carimbo de data/hora com o valor.
+
 If we repeat the common general behavior in multiple places, we run the maintenance risk of changing some instances but forgetting to change others. There's a principle at play in this kind of abstraction, often referred to as "don't repeat yourself" (DRY).
+
+Se repetirmos o comportamento geral comum em vários lugares, corremos o risco de manutenção de alterar algumas instâncias, mas nos esquecendo de alterar outras. Há um princípio em jogo neste tipo de abstração, frequentemente referido como "não se repita" (DRY).
 
 DRY strives to have only one definition in a program for any given task. An alternative aphorism to motivate DRY coding is that programmers are just generally lazy and don't want to do unnecessary work.
 
+O DRY se esforça para ter apenas uma definição em um programa para qualquer tarefa. Um aforismo alternativo para motivar a codificação DRY é que os programadores geralmente são preguiçosos e não querem fazer trabalho desnecessário.
+
 Abstraction can be taken too far. Consider:
+
+A abstração pode ser levada longe demais. Considerar:
 
 ```js
 function conditionallyStoreData(store,location,value,checkFn) {
@@ -735,11 +753,19 @@ function trackEvent(evt) {
 
 In an effort to be DRY and avoid repeating an `if` statement, we moved the conditional into the general abstraction. We also assumed that we *may* have checks for non-empty strings or non-`undefined` values elsewhere in the program in the future, so we might as well DRY those out, too!
 
+Em um esforço para ser DRY e evitar repetir uma instrução `if`, movemos o condicional para a abstração geral. Também assumimos que *podemos* ter verificações de strings não vazias ou valores `não definidos` em outro lugar no programa no futuro, então também podemos DRY-los também.
+
 This code *is* more DRY, but to an overkill extent. Programmers must be careful to apply the appropriate levels of abstraction to each part of their program, no more, no less.
+
+Este código *é* mais DRY, mas em um extensão exagerada. Os programadores devem ter o cuidado de aplicar os níveis apropriados de abstração a cada parte de seu programa, nem mais, nem menos.
 
 Regarding our greater discussion of function composition in this chapter, it might seem like its benefit is this kind of DRY abstraction. But let's not jump to that conclusion, because I think composition actually serves a more important purpose in our code.
 
+Em relação à nossa maior discussão sobre composição de funções neste capítulo, pode parecer que seu benefício é esse tipo de abstração DRY. Mas não vamos pular para essa conclusão, porque acho que a composição realmente serve a um propósito mais importante em nosso código.
+
 Moreover, **composition is helpful even if there's only one occurrence of something** (no repetition to DRY out).
+
+Além disso, **composição é útil mesmo se houver apenas uma ocorrência de algo** (sem repetição para aplicar o DRY).
 
 ### Separation Enables Focus
 
