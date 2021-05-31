@@ -1,5 +1,6 @@
 # Functional-Light JavaScript
 # Chapter 5: Reducing Side Effects
+# Chapter 5: Reduzindo Efeitos Colaterais
 
 In [Chapter 2](ch2.md), we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
 
@@ -10,6 +11,7 @@ But let me not bury the lede here. The punchline to this chapter: it's impossibl
 The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
 
 ## Effects on the Side, Please
+## Efeitos no lado, Por Favor
 
 Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know that the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
@@ -84,6 +86,7 @@ Guess who's good at running your program? The JS engine. Guess who's not as good
 If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
 ### Hidden Causes
+### Causas Ocultas
 
 Outputs, changes in state, are the most commonly cited manifestation of side effects. But another readability-harming practice is what some refer to as side causes. Consider:
 
@@ -114,6 +117,8 @@ Might we be surprised that the call to `foo(1)` returned different results from 
 To aid readability, all of the causes that will contribute to determining the effect output of `foo(..)` should be made as direct and obvious inputs to `foo(..)`. The reader of the code will clearly see the cause(s) and effect.
 
 #### Fixed State
+#### Estado Fixo
+
 
 Does avoiding side causes mean the `foo(..)` function cannot reference any free variables?
 
@@ -166,6 +171,7 @@ In both cases, `PI` and `bar` are not part of the state of the program. They're 
 **Note:** The use of `const` here does not, in my opinion, make the case that `PI` is absolved as a side cause; `var PI` would lead to the same conclusion. The lack of reassigning `PI` is what matters, not the inability to do so. We'll discuss [`const` in Chapter 6](ch6.md/#reassignment).
 
 #### Randomness
+#### Aleatoriedade
 
 You may never have considered it before, but randomness is a side cause. A function that uses `Math.random()` cannot have predictable output based on its input. So any code that generates unique random IDs/etc. will by definition be considered reliant on the program's side causes.
 
@@ -176,6 +182,7 @@ Some languages let you specify the seed value for the random number generation. 
 In JS, the randomness of `Math.random()` calculation is based on an indirect input, because you cannot specify the seed. As such, we have to treat built-in random number generation as a side cause.
 
 ### I/O Effects
+### Efeitos E/S
 
 The most common (and essentially unavoidable) form of side cause/effect is input/output (I/O). A program with no I/O is totally pointless, because its work cannot be observed in any way. Useful programs must at a minimum have output, and many also need input. Input is a side cause and output is a side effect.
 
@@ -184,6 +191,7 @@ The typical input for the browser JS programmer is user events (mouse, keyboard)
 As a matter of fact, these sources can be both input and output, both cause and effect. Take the DOM, for example. We update (side effect) a DOM element to show text or an image to the user, but the current state of the DOM is an implicit input (side cause) to those operations as well.
 
 ### Side Bugs
+### Bugs Colaterais
 
 The scenarios where side causes and side effects can lead to bugs are as varied as the programs in existence. But let's examine a scenario to illustrate these hazards, in hopes that they help us recognize similar mistakes in our own programs.
 
@@ -283,6 +291,7 @@ Functional programmers detest these sorts of side cause/effect bugs because of h
 There are multiple different strategies for avoiding/fixing side causes/effects. We'll talk about some later in this chapter, and others in later chapters. I'll say one thing for certain: **writing with side causes/effects is often of our normal default** so avoiding them is going to require careful and intentional effort.
 
 ## Once Is Enough, Thanks
+## Uma Vez é o Suficiente, Obrigado
 
 If you must make side effect changes to state, one class of operations that's useful for limiting the potential trouble is idempotence. If your update of a value is idempotent, then data will be resilient to the case where you might have multiple such updates from different side effect sources.
 
@@ -304,6 +313,7 @@ function updateCounter(obj) {
 This function mutates an object via reference by incrementing `obj.count`, so it produces a side effect on that object. If `updateCounter(o)` is called multiple times -- while `o.count` is less than `10`, that is -- the program state changes each time. Also, the output of `updateCounter(..)` is a Boolean, which is not suitable to feed back into a subsequent call of `updateCounter(..)`.
 
 ### Mathematical Idempotence
+### Idempotência Matemática
 
 From the mathematical point of view, idempotence means an operation whose output won't ever change after the first call, if you feed that output back into the operation over and over again. In other words, `foo(x)` would produce the same output as `foo(foo(x))` and `foo(foo(foo(x)))`.
 
@@ -386,6 +396,7 @@ currency( -3.1 ) == currency( currency( -3.1 ) );   // true
 Wherever possible, restricting side effects to idempotent operations is much better than unrestricted updates.
 
 ### Programming Idempotence
+### Idempotência de Programação
 
 The programming-oriented definition for idempotence is similar, but less formal. Instead of requiring `f(x) === f(f(x))`, this view of idempotence is just that `f(x);` results in the same program behavior as `f(x); f(x);`. In other words, the result of calling `f(x)` subsequent times after the first call doesn't change anything.
 
@@ -427,6 +438,7 @@ The key difference illustrated here is that the idempotent update replaces the D
 It won't always be possible to define your operations on data in an idempotent way, but if you can, it will definitely help reduce the chances that your side effects will crop up to break your expectations when you least expect it.
 
 ## Pure Bliss
+## Puro Êxtase
 
 A function with no side causes/effects is called a pure function. A pure function is idempotent in the programming sense, because it cannot have any side effects. Consider:
 
@@ -497,6 +509,7 @@ Impure functions are undesirable because they make all of their calls harder to 
 **Note:** An interesting thing to ponder: is the heat produced by the CPU while performing any given operation an unavoidable side effect of even the most pure functions/programs? What about just the CPU time delay as it spends time on a pure operation before it can do another one?
 
 ### Purely Relative
+### Puramente Relativo
 
 We have to be very careful when talking about a function being pure. JavaScript's dynamic value nature makes it all too easy to have non-obvious side causes/effects.
 
@@ -636,6 +649,7 @@ Purity is about confidence. But we have to admit that in many cases, **any confi
 The more pure, the better. The more effort you put into making a function pure(r), the higher your confidence will be when you read code that uses it, and that will make that part of the code more readable.
 
 ## There or Not
+## Lá ou Não
 
 So far, we've defined function purity both as a function without side causes/effects and as a function that, given the same input(s), always produces the same output. These are just two different ways of looking at the same characteristics.
 
@@ -680,6 +694,7 @@ console.log( "The average is:", avg );      // The average is: 9
 The only difference between these two snippets is that in the latter one, we skipped the `calculateAverage(nums)` call and just inlined its output (`9`). Since the rest of the program behaves identically, `calculateAverage(..)` has referential transparency, and is thus a pure function.
 
 ### Mentally Transparent
+### Mentalmente Transparente
 
 The notion that a referentially transparent pure function *can be* replaced with its output does not mean that it *should literally be* replaced. Far from it.
 
@@ -694,6 +709,7 @@ Hopefully the importance of this characteristic of a pure function is obvious. W
 The reader shouldn't need to keep re-computing some outcome that isn't going to change (and doesn't need to). If you define a pure function with referential transparency, the reader won't have to.
 
 ### Not So Transparent?
+### Não é Tão Transparente?
 
 What about a function that has a side effect, but this side effect isn't ever observed or relied upon anywhere else in the program? Does that function still have referential transparency?
 
@@ -725,6 +741,7 @@ Is a side cause/effect that's unobserved like this tree:
 By the narrowest definition of referential transparency, I think you'd have to say `calculateAverage(..)` is still a pure function. However, because we're trying to avoid a strictly academic approach in favor of balancing it with pragmatism, I also think this conclusion needs more perspective. Let's explore.
 
 #### Performance Effects
+#### Efeitos de Desempenho
 
 You'll generally find these kind of side-effects-that-go-unobserved being used to optimize the performance of an operation. For example:
 
@@ -810,6 +827,7 @@ The purpose of reducing side causes/effects is not per se to have a program wher
 If side causes/effects can happen, the writer and reader must mentally juggle them. Make it so they can't happen, and both writer and reader will find more confidence over what can and cannot happen in any part.
 
 ## Purifying
+## Purificante
 
 The first best option in writing functions is that you design them from the beginning to be pure. But you'll spend plenty of time maintaining existing code, where those kinds of decisions were already made; you'll run across a lot of impure functions.
 
@@ -854,6 +872,7 @@ But what can you do if you have an impure function where the refactoring is not 
 You need to figure what kind of side causes/effects the function has. It may be that the side causes/effects come variously from lexical free variables, mutations-by-reference, or even `this` binding. We'll look at approaches that address each of these scenarios.
 
 ### Containing Effects
+### Contendo Efeitos
 
 If the nature of the concerned side causes/effects is with lexical free variables, and you have the option to modify the surrounding code, you can encapsulate them using scope.
 
@@ -908,6 +927,7 @@ Regardless of whether this will be a practical technique for refactoring to pure
 Be very careful, though. Any part of the program that's impure, even if it's wrapped with and only ever used via a pure function, is a potential source of bugs and confusion for readers of the code. The overall goal is to reduce side effects wherever possible, not just hide them.
 
 ### Covering Up Effects
+### Efeitos de Encobrimento
 
 Many times you will be unable to modify the code to encapsulate the lexical free variables inside the scope of a wrapper function. For example, the impure function may be in a third-party library file that you do not control, containing something like:
 
@@ -997,6 +1017,7 @@ That's a lot of manual work to avoid a few side causes/effects; it'd be a lot ea
 **Note:** This technique really only works when you're dealing with synchronous code. Asynchronous code can't reliably be managed with this approach because it can't prevent surprises if other parts of the program access/modify the state variables in the interim.
 
 ### Evading Effects
+### Efeitos de Evasão
 
 When the nature of the side effect to be dealt with is a mutation of a direct input value (object, array, etc.) via reference, we can again create an interface function to interact with instead of the original impure function.
 
@@ -1038,6 +1059,7 @@ function safer_handleInactiveUsers(userList,dateCutoff) {
 The success of this technique will be dependent on the thoroughness of the *copy* you make of the value. Using `[...userList]` would not work here, since that only creates a shallow copy of the `userList` array itself. Each element of the array is an object that needs to be copied, so we need to take extra care. Of course, if those objects have objects inside them (they might!), the copying needs to be even more robust.
 
 ### `this` Revisited
+### `this` Revisitado
 
 Another variation of the via-reference side cause/effect is with `this`-aware functions having `this` as an implicit input. See [Chapter 2, "What's This"](ch2.md/#whats-this) for more info on why the `this` keyword is problematic for FPers.
 
@@ -1070,6 +1092,7 @@ These strategies are in no way fool-proof; the safest protection against side ca
 Essentially, we're not really eliminating side causes/effects, but rather containing and limiting them, so that more of our code is verifiable and reliable. If we later run into program bugs, we know that the parts of our code still using side causes/effects are the most likely culprits.
 
 ## Summary
+## Resumo
 
 Side effects are harmful to code readability and quality because they make your code much harder to understand. Side effects are also one of the most common *causes* of bugs in programs, because juggling them is hard. Idempotence is a strategy for restricting side effects by essentially creating one-time-only operations.
 

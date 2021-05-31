@@ -590,7 +590,7 @@ Outra maneira de descrever esse objetivo é com o estilo de programação impera
 
 O código declarativo abstrai *o quê* de *como*. Normalmente, a codificação declarativa é favorecida na legibilidade sobre a imperativa, embora nenhum programa (exceto, é claro, os códigos de máquina 1s e 0s) seja inteiramente um ou outro. O programador deve buscar o equilíbrio entre eles.
 
-ES6 adicionou muitas possibilidades sintáticas que transformam antigas operações imperativas em novas formas declarativas. Talvez uma das mais claras seja a desestruturação. A desestruturação é um padrão de atribuição que descreve como um valor composto (objeto, array) é desmontado em seus valores constituíntes. 
+ES6 adicionou muitas possibilidades sintáticas que transformam antigas operações imperativas em novas formas declarativas. Talvez uma das mais claras seja a desestruturação. A desestruturação é um padrão de atribuição que descreve como um valor composto (objeto, array) é desmontado em seus valores constituintes. 
 
 Aqui está um exemplo de desestruturação de array:
 
