@@ -4,24 +4,38 @@
 
 In [Chapter 2](ch2.md), we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
 
-No [Capítulo 2](ch2.md), discutimos como uma função pode ter saídas além de seu valor de `return`.
+No [Capítulo 2](ch2.md), discutimos como uma função pode ter saídas além de seu valor de `return`. Agora que você deve estar muito confortável com a definição de uma função na PF, a ideia de tais efeitos colaterais deve cheirar estranho.
 
 We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
 
+Vamos examinar as várias formas diferentes de efeitos colaterais e ver por que eles são prejudiciais à qualidade e legibilidade do nosso código.
+
 But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and an empty program.
+
+Mas não me deixe bury the lede aqui. A piada deste capítulo: é impossível escrever um programa sem efeitos colaterais. Bem, não é impossivel, você certamente pode. Mas esse programa não fará nada útil ou observável. Se você escrevesse um programa com zero efeitos colaterais, não seria capaz de dizer a diferença entre ele e um programa vazio.
 
 The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
 
+O código funcional não elimina todos os efeitos colaterais. Em vez disso, o objetivo é limitá-los tanto quanto possível. Para fazer isso, primeiro precisamos entendê-los totalmente.
+
 ## Effects on the Side, Please
-## Efeitos no lado, Por Favor
+## Efeitos ao lado, Por Favor
 
 Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know that the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
+Causa e efeito: uma das observações intuitivas mais fundamentais que nós, humanos, podemos fazer sobre o mundo ao nosso redor. Empurre um livro da borda de uma mesa, ele cai no chão. Você não precisa de um diploma de física para saber que a causa foi você empurrar o livro e o efeito foi a gravidade puxando-o para o chão. Existe uma relação clara e direta.
+
 In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
+
+Na programação, também lidamos inteiramente com causa e efeito. Se você chamar uma função (causa), ela exibe uma mensagem na tela (efeito).
 
 When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
 
+Ao ler um programa, é extremamente importante que o leitor seja capaz de identificar claramente cada causa e cada efeito. Em qualquer medida em que uma relação direta entre causa e efeito não possa ser vista prontamente em uma leitura do programa, a legibilidade desse programa é degradada.
+
 Consider:
+
+Considere:
 
 ```js
 function foo(x) {
@@ -33,7 +47,11 @@ var y = foo( 3 );
 
 In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
 
+Neste programa trivial, é imediatamente claro que chamar foo (a causa) com o valor `3` terá o efeito de retornar o valor `6` que é então atribuído a `y` (o efeito). Não há ambiguidadae aqui.
+
 But now:
+
+Mas agora:
 
 ```js
 function foo(x) {
@@ -47,9 +65,15 @@ foo( 3 );
 
 This program has the exact same outcome. But there's a very big difference. The cause and the effect are disjoint. The effect is indirect. The setting of `y` in this way is what we call a side effect.
 
+Este programa tem exatamente o mesmo resultado. Mas há uma diferença muito grande. A causa e o efeito são separados. O efeito é indireto. A configuração de `y` dessa forma é o que chamamos de efeito colateral.
+
 **Note:** When a function makes a reference to a variable outside itself, this is called a free variable. Not all free variable references will be bad, but we'll want to be very careful with them.
 
+**Nota:** Quando uma função faz referência a uma variável fora dela, isso é chamado de variável livre. Nem todas as referências de variáveis livres serão ruins, mas devemos ter muito cuidado com elas.
+
 What if I gave you a reference to call a function `bar(..)` that you cannot see the code for, but I told you that it had no such indirect side effects, only an explicit `return` value effect?
+
+E se eu der a você uma referência para chamar uma função `bar(..)` para a qual você não pode ver o código, mas eu disse que não tem esses efeitos colaterais indiretos, apenas um valor de `return` explícito?
 
 ```js
 bar( 4 );           // 42
@@ -57,9 +81,15 @@ bar( 4 );           // 42
 
 Because you know that the internals of `bar(..)` do not create any side effects, you can now reason about any `bar(..)` call like this one in a much more straightforward way. But if you didn't know that `bar(..)` had no side effects, to understand the outcome of calling it, you'd have to go read and dissect all of its logic. This is extra mental tax burden for the reader.
 
+Como você sabe que as partes internas de `bar(..)` não criam efeitos colaterais, agora você pode raciocinar sobre qualquer chamada de `bar(..)` como esta de uma maneira muito mais direta. Mas se você não sabia que `bar(..)` não tinha efeitos colaterais, para entender o resultado de chamá-lo, você teria que ler e dissecar toda a sua lógica. Isso é uma carga tributária mental extra para o leitor.
+
 **The readability of a side effecting function is worse** because it requires more reading to understand the program.
 
+**A legibilidade de uma função de efeito colateral é pior** porque requer mais leitura para entender o programa.
+
 But the problem goes deeper than that. Consider:
+
+Mas o problema é mais profundo do que isso. Considerar:
 
 ```js
 var x = 1;
@@ -79,18 +109,31 @@ console.log( x );
 
 How sure are you which values are going to be printed at each `console.log(x)`?
 
+Você tem certeza de quais valores serão impressos em cada `console.log(x)`?
+
 The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, and `baz()` are side-effecting or not, you cannot guarantee what `x` will be at each step unless you inspect the implementations of each, **and** then trace the program from line 1 forward, keeping track of all the changes in state as you go.
+
+A resposta correta é: de forma alguma. Se você não tem certeza se `foo()`, `bar()`, e `baz()` são efeitos colaterais ou não, você não pode garantir o que será o `x` em cada etapa, a menos que você inspecione cada implementação, **e** então rastreie o programa da linha 1 em diante, acompanhando todas as mudanças de estado conforme for avançando.
 
 In other words, the final `console.log(x)` is impossible to analyze or predict unless you've mentally executed the whole program up to that point.
 
+Em outras palavras, o `console.log(x)` final é impossível de analisar ou prever, a menos que você tenha executado mentalmente todo o programa até aquele ponto.
+
 Guess who's good at running your program? The JS engine. Guess who's not as good at running your program? The reader of your code. And yet, your choice to write code (potentially) with side effects in one or more of those function calls means that you've burdened the reader with having to mentally execute your program in its entirety up to a certain line, for them to read and understand that line.
+
+Adivinha quem é bom em rodar o seu programa? O mecanismo JS. Adivinha quem não é tão bom em executar seu programar? O leitor do seu código. E ainda, sua escolha de escrever código (potencialmente) com efeitos colaterais em uma ou mais dessas chamadas de função significa que você sobrecarregou o leitor com a necessidade de executar mentalmente seu programa em sua totalidade até uma determinada linha, para que eles pudessem ler e entender essa linha. 
 
 If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
+Se `foo()`, `bar()`, e `baz()` estivessem livres de efeitos colaterais, eles não poderiam afetar `x`, o que significa que não precisamos executá-los para rastrear mentalmente o que acontece com `x`. Isso é menos imposto mental e torna o código mais legível.
+
 ### Hidden Causes
+
 ### Causas Ocultas
 
 Outputs, changes in state, are the most commonly cited manifestation of side effects. But another readability-harming practice is what some refer to as side causes. Consider:
+
+Saídas, mudanças no estado, são as manifestações de efeitos colaterais mais comumente citadas. Mas outra prática que pejudica a legibilidade é o que alguns chamam de causas colaterais. Considere:
 
 ```js
 function foo(x) {
@@ -104,6 +147,8 @@ foo( 1 );           // 4
 
 `y` is not changed by `foo(..)`, so it's not the same kind of side effect as we saw before. But now, the calling of `foo(..)` actually depends on the presence and current state of a `y`. If later, we do:
 
+`y` não é alterado por `foo(..)`, então não é o mesmo tipo de efeito colateral que vimos antes. Mas agora, a chamada de `foo(..)` realmente depende da presença e do estado atual de um `y`. Se mais tarde, faremos:
+
 ```js
 y = 5;
 
@@ -114,17 +159,27 @@ foo( 1 );           // 6
 
 Might we be surprised that the call to `foo(1)` returned different results from call to call?
 
+Podemos nos surpreender se a chamada para `foo(1)` retornou diferentes resultados de chamada para chamada?
+
 `foo(..)` has an indirection of cause that is harmful to readability. The reader cannot see, without inspecting `foo(..)`'s implementation carefully, what causes are contributing to the output effect. It *looks* like the argument `1` is the only cause, but it turns out it's not.
+
+`foo(..)` tem uma causa indireta que é prejudicial à legibilidade. O leitor não pode ver, sem inspecionar a implementação de `foo(..)` cuidadosamente, causas que estão contribuindo para o efeito de saída. *Parece* que o argumento `1` é a única causa, mas não é.
 
 To aid readability, all of the causes that will contribute to determining the effect output of `foo(..)` should be made as direct and obvious inputs to `foo(..)`. The reader of the code will clearly see the cause(s) and effect.
 
-#### Fixed State
-#### Estado Fixo
+Para ajudar na legibilidade, todas as causas que contribuirão para determinar a saída do efeito de `foo(..)` devem ser feitas como entradas diretas e óbvias para `foo(..)`. O leitor do código verá claramente a(s) causa(s) e o efeito.
 
+#### Fixed State
+
+#### Estado Fixo
 
 Does avoiding side causes mean the `foo(..)` function cannot reference any free variables?
 
+Evitar causas secundárias significa que a função `foo(..)` não pode fazer referência a nenhuma variável livre?
+
 Consider this code:
+
+Considere este código:
 
 ```js
 function foo(x) {
@@ -140,11 +195,19 @@ foo( 3 );           // 9
 
 It's clear that for both `foo(..)` and `bar(..)`, the only direct cause is the `x` parameter. But what about the `bar(x)` call? `bar` is just an identifier, and in JS it's not even a constant (aka, non-reassignable variable) by default. The `foo(..)` function is relying on the value of `bar` -- a variable that references the second function -- as a free variable.
 
+É claro que para `foo(..)` e `bar(..)`, a única causa direta é o parãmetro `x`. Mas e quanto à chamada `bar(x)`? `bar` é apenas um identificador, e em JS nem mesmo é uma constante (também conhecida como variável não reatribuível) por padrão. A função `foo(..)` depende do valor de `bar` -- uma variável que faz referência à segunda função -- como uma variável livre.
+
 So is this program relying on a side cause?
+
+Então, este programa depende de uma causa secundária?
 
 I say no. Even though it is *possible* to overwrite the `bar` variable's value with some other function, I am not doing so in this code, nor is it a common practice of mine or precedent to do so. For all intents and purposes, my functions are constants (never reassigned).
 
+Eu disse não. Embora seja *possível* substituir o valor da variável `bar` por alguma outra função, não estou fazendo isso neste código, nem é uma prática comum minha ou precedente fazer isso. Para todos os efeitos, minhas funções são constantes (nunca reatribuídas).
+
 Consider:
+
+Considere:
 
 ```js
 const PI = 3.141592;
@@ -158,46 +221,83 @@ foo( 3 );           // 9.424776000000001
 
 **Note:** JavaScript has `Math.PI` built-in, so we're only using the `PI` example in this text as a convenient illustration. In practice, always use `Math.PI` instead of defining your own!
 
+**Nota:** JavaScript tem `Math.PI` embutido, então estamos usando apenas o exemplo `PI` neste texto como uma ilustração conveniente. Na prática, sempre use `Math.PI` em vez de definir o seu próprio!
+
 How about the preceding code snippet? Is `PI` a side cause of `foo(..)`?
+
+E quanto ao trecho de código anterior? `PI` é uma causa secundária de `foo(..)`?
 
 Two observations will help us answer that question in a reasonable way:
 
+Duas observações nos ajudarão a responder a essa pergunta de maneira razoável:
+
 1. Think about every call you might ever make to `foo(3)`. Will it always return that `9.424..` value? **Yes.** Every single time. If you give it the same input (`x`), it will always return the same output.
+
+1. Pense em cada chamada que você possa fazer para `foo(3)`. Ele sempre retornará o valor `9.424..`? **Sim.** Sempre. Se você fornecer a mesma entrada (`x`), sempre retornará a mesma saída.
 
 2. Could you replace every usage of `PI` with its immediate value, and could the program run **exactly** the same as it did before? **Yes.** There's no part of this program that relies on being able to change the value of `PI` -- indeed since it's a `const`, it cannot be reassigned -- so the `PI` variable here is only for readability/maintenance sake. Its value can be inlined without any change in program behavior.
 
+2. Você poderia substituir todo uso de `PI` por seu valor imediato e o programa poderia ser executado **exatamente** da mesma forma que antes? **Sim.** Não há nenhuma parte deste programa que dependa da capacidade de alterar o valor de `PI` - na verdade, uma vez que é um `const`, -- ele não pode ser reatribuído -- então a variável `PI` aqui é apenas para facilitar a leitura/manutenção. Seu valor pode ser embutido sem qualquer alteração no comportamento do programa.
+
 My conclusion: `PI` here is not a violation of the spirit of minimizing/avoiding side effects (or causes). Nor is the `bar(x)` call in the previous snippet.
+
+Minha conclusão: `PI` aqui não é uma violação do espírito de minimizar/evitar efeitos colaterais (ou causas). nem é a chamada `bar(x)` no trecho anterior.
 
 In both cases, `PI` and `bar` are not part of the state of the program. They're fixed, non-reassigned references. If they don't change throughout the program, we don't have to worry about tracking them as changing state. As such, they don't harm our readability. And they cannot be the source of bugs related to variables changing in unexpected ways.
 
+Em ambos os casos, `PI` e `bar` não fazem parte do estado do programa. São referências fixas e não reatribuídas. Se eles não mudarem ao longo do programa, não precisamos nos preocupar em rastreá-los como estado de mudança. Como tal, eles não prejudicam nossa legibilidade. E eles não podem ser a fonte de bugs relacionados a variáveis que mudam de maneiras inesperadas.
+
 **Note:** The use of `const` here does not, in my opinion, make the case that `PI` is absolved as a side cause; `var PI` would lead to the same conclusion. The lack of reassigning `PI` is what matters, not the inability to do so. We'll discuss [`const` in Chapter 6](ch6.md/#reassignment).
 
+**Nota:** O uso de `const` aqui não significa, na minha opinião, que `PI` seja absolvido como uma causa secundária; `var PI` levaria à mesma conclusão. A falta de reatribuição de `PI` é o que importa, não a incapacidade de fazê-lo. Discutiremos [`const` no Capítulo 6](ch6.md/#reassignment).
+
 #### Randomness
+
 #### Aleatoriedade
 
 You may never have considered it before, but randomness is a side cause. A function that uses `Math.random()` cannot have predictable output based on its input. So any code that generates unique random IDs/etc. will by definition be considered reliant on the program's side causes.
 
+Você pode nunca ter considerado isso antes, mas a aleatoriedade é uma causa secundária. Uma função que usa `Math.random()` não pode ter uma saída previsível baseada em sua entrada. Portanto, qualquer código que gere IDs aleatórios exclusivos/etc. Serão, por definição, considerados dependentes das causas secundárias do programa.
+
 In computing, we use what's called pseudo-random algorithms for generation. Turns out true randomness is pretty hard, so we just kinda fake it with complex algorithms that produce values that seem observably random. These algorithms calculate long streams of numbers, but the secret is, the sequence is actually predictable if you know the starting point. This starting point is referred to as a seed.
+
+Na computação, usamos o que é chamado de algoritmos pseudo-aleatórios para geração. Acontece que a verdadeira aleatoriedade é muito difícil, então meio que fingimos com algoritmos complexos que produzem valores que parecem aleatórios. Esses algoritmos calculam longos fluxos de números, mas o segredo é que a sequência é realmente previsível se você souber o ponto de partida. Esse ponto de partida é conhecido como semente.
 
 Some languages let you specify the seed value for the random number generation. If you always specify the same seed, you'll always get the same sequence of outputs from subsequent "pseudo-random number" generations. This is incredibly useful for testing purposes, for example, but incredibly dangerous for real-world application usage.
 
+Alguns idiomas permitem que você especifique o valor da semente para a geração de números aleatórios. Se você sempre especificar a mesma semente, sempre obterá a mesma sequência de resultados das gerações subsequentes de "números pseudo-aleatórios". Isso é incrivelmente útil para fins de teste, por exemplo, mas incrivelmente perigoso para o uso de aplicativos do mundo real.
+
 In JS, the randomness of `Math.random()` calculation is based on an indirect input, because you cannot specify the seed. As such, we have to treat built-in random number generation as a side cause.
 
+Em JS, a aleatoriedade do cálculo `Math.random()` é baseada em uma entrada indireta, porque você não pode especificar a semente. Como tal, temos que tratar a geração de números aleatórios embutida como uma causa secundária.
+
 ### I/O Effects
+
 ### Efeitos E/S
 
 The most common (and essentially unavoidable) form of side cause/effect is input/output (I/O). A program with no I/O is totally pointless, because its work cannot be observed in any way. Useful programs must at a minimum have output, and many also need input. Input is a side cause and output is a side effect.
 
+A forma mais comum (e essencialmente inevitável) de causa/efeito colateral é a entrada/saída (E/S). Um programa sem E/S é totalmente inútil, pois seu trabalho não pode ser observado de nenhum jeito. Programas úteis devem ter pelo menos saída e muitos também precisam de entrada. A entrada é uma causa secundária e a saída é um efeito colateral.
+
 The typical input for the browser JS programmer is user events (mouse, keyboard), and for output is the DOM. If you work more in Node.js, you may more likely receive input from, and send output to, the file system, network connections, and/or the `stdin`/`stdout` streams.
+
+A entrada típica para o programador JS do navegador são os eventos do usuário (mouse, teclado) e para saída é o DOM. Se você trabalha mais em Node.js, é mais provável que receba entrada e envie saída para o sistema de arquivo, conexões de rede e/ou fluxos `stdin` / `stdout`.
 
 As a matter of fact, these sources can be both input and output, both cause and effect. Take the DOM, for example. We update (side effect) a DOM element to show text or an image to the user, but the current state of the DOM is an implicit input (side cause) to those operations as well.
 
+Na verdade, essas fontes podem ser tanto de entrada quanto de saída, tanto de causa quanto de efeito. Veja o DOM, por exemplo. Atualizamos (efeito colateral) um elemento DOM para mostrar texto ou uma imagem ao usuário, mas o estado atual do DOM é uma entrada implícita (causa secundária) para essas operações também.
+
 ### Side Bugs
+
 ### Bugs Colaterais
 
-The scenarios where side causes and side effects can lead to bugs are as varied as the programs in existence. But let's examine a scenario to illustrate these hazards, in hopes that they help us recognize similar mistakes in our own programs.
++-The scenarios where side causes and side effects can lead to bugs are as varied as the programs in existence. But let's examine a scenario to illustrate these hazards, in hopes that they help us recognize similar mistakes in our own programs.
+
++-Os cenários onde as causas e efeitos colaterais podem levar bugs são tão variados quanto os programas existentes. Mas vamos examinar um cenário para ilustrar esses riscos, na esperança de que eles nos ajudem a reconhecer erros semelhantes em nossos próprios programas.
 
 Consider:
+
+Considere:
 
 ```js
 var users = {};
@@ -252,11 +352,19 @@ function deleteOrder(orderId) {
 
 I bet for some readers one of the potential bugs here is fairly obvious. If the callback `onOrders(..)` runs before the `onUserData(..)` callback, it will attempt to add a `latestOrder` property to a value (the `user` object at `users[userId]`) that's not yet been set.
 
+Aposto que para alguns leitos um dos possíveis bugs aqui é bastante óbvio. Se o callback `onOrders(..)` for executado antes do callback `onUserData(..)`, ele tentará adicionar uma propriedade `latestOrder` a um valor (o objeto `user` em `users[userId]`) que ainda não foi definido.
+
 So one form of "bug" that can occur with logic that relies on side causes/effects is the race condition of two different operations (async or not!) that we expect to run in a certain order but under some cases may run in a different order. There are strategies for ensuring the order of operations, and it's fairly obvious that order is critical in that case.
+
+Portanto, uma forma de "bug" que pode ocorrer com a lógica que depende de causas/efeitos colaterais é a condição de corrida de duas operações diferentes (async ou não!) que esperamos executar em uma determinada ordem, mas em alguns casos podem ser executadas em uma ordem diferente. Existes estratégias para garantir a ordem das operações e é bastante óbvio que a ordem é crítica nesse caso.
 
 Another more subtle bug can bite us here. Did you spot it?
 
+Outro bug mais sutil pode nos atacar aqui. Você percebeu?
+
 Consider this order of calls:
+
+Considere esta ordem de chamadas:
 
 ```js
 fetchUserData( 123 );
@@ -274,23 +382,43 @@ onDelete(..);
 
 Do you see the interleaving of `fetchOrders(..)` and `onOrders(..)` with the `deleteOrder(..)` and `onDelete(..)` pair? That potential sequencing exposes a weird condition with our side causes/effects of state management.
 
+Você vê a intercalação de `fetchOrder(..)` e `onOrders(..)` com o par `deleteOrder(..)` e `onDelete(..)`? Esse sequenciamento potencial expõe uma condição estranha com nossas causas/efeitos colaterais de gerenciamento de estado.
+
 There's a delay in time (because of the callback) between when we set the `isLatestOrder` flag and when we use it to decide if we should empty the `latestOrder` property of the user data object in `users`. During that delay, if `onOrders(..)` callback fires, it can potentially change which order value that user's `latestOrder` references. When `onDelete(..)` then fires, it will assume it still needs to unset the `latestOrder` reference.
+
+Há um atraso no tempo (por causa do retorno de chamada) entre quando definimos a flag `isLatestOrder` e quando o usamos para decidir se devemos esvaziar a propriedade `latestOrder` do objeto de dados do usuário em `users`. Durante esse atraso, se o retorno da chamada `onOrders(..)` for chamado, ele pode potencialmente alterar o valor do pedido que o `latestOrder` do usuário faz referência. Quando `onDelete(..)` então disparar, ele assumirá que ainda precisa remover a referência `latestOrder`.
 
 The bug: the data (state) *might* now be out of sync. `latestOrder` will be unset, when potentially it should have stayed pointing at a newer order that came in to `onOrders(..)`.
 
+O bug: os dados (estado) *podem* agora estar fora de sincronia. `latestOrder` não será definido, quando potencialmente deveria ter permanecido apontando para um pedido mais recente que veio para `onOrders(..)`.
+
 The worst part of this kind of bug is that you don't get a program-crashing exception like we did with the other bug. We just simply have state that is incorrect; our application's behavior is "silently" broken.
+
+A pior parte desse tipo de bug é que você não obtém uma exceção de travamento como fizemos com o outro bug. Simplesmente temos um estado incorreto. O comportamento da nossa aplicação é interrompido "silenciosamente".
 
 The sequencing dependency between `fetchUserData(..)` and `fetchOrders(..)` is fairly obvious, and straightforwardly addressed. But the potential sequencing dependency between `fetchOrders(..)` and `deleteOrder(..)` is far less obvious. These two seem to be more independent. And ensuring that their order is preserved is more tricky, because you don't know in advance (before the results from `fetchOrders(..)`) whether that sequencing really must be enforced.
 
+A dependência de sequenciamento entre `fetchUserData(..)` e `fetchOrders(..)` é bastante óbvia e abordada de forma direta. Mas a dependência potencial de sequenciamento entre `fetchOrder(..)` e `deleteOrder(..)` é muito menos óbvia. Esses dois parecem ser mais independentes. E garantir que sua ordem seja preservada é mais complicado, poqeu você não sabe com antecedência (antes dos resultados de `fetchOrders(..)`) se essa sequência realmente deve ser aplicada.
+
 Yes, you can recompute the `isLatestOrder` flag once `deleteOrder(..)` fires. But now you have a different problem: your UI state can be out of sync.
+
+Sim, você pode recalcular a flag `isLatestOrder` uma vez que `deleteOrder(..)` for acionado. Mas agora você tem um problema diferente: o estado da interface do usuário pode estar fora de sincronia.
 
 If you had called the `hideLatestOrderDisplay()` previously, you'll now need to call the function `showLatestOrderDisplay()`, but only if a new `latestOrder` has in fact been set. So you'll need to track at least three states: was the deleted order the "latest" originally, and is the "latest" set, and are those two orders different? These are solvable problems, of course. But they're not obvious by any means.
 
+Se você chamou `hideLatestOrderDisplay()` anteriormente, agora você precisará chamar a função `showLatestOrderDisplay()`, mas apenas se uma nova `latestOrder` foi, de fato, definida. Portanto, você precisará acompanhar pelo menos três estados: o pedido excluído era o "mais recente", originalmente, e o "mais recente" foi definido, esses dois pedidos são diferentes? Esses são problemas solucionáveis, é claro. Mas eles não são óbvios de forma alguma.
+
 All of these hassles are because we decided to structure our code with side causes/effects on a shared set of state.
+
+Todas essas dificuldades se devem ao fato de que decidimos estruturar nosso código com causas/efeitos colaterais em um conjunto de estados compartilhado.
 
 Functional programmers detest these sorts of side cause/effect bugs because of how much it hurts our ability to read, reason about, validate, and ultimately **trust** the code. That's why they take the principle to avoid side causes/effects so seriously.
 
+Os programadores funcionais detestam esses tipos de bugs de causa/efeitos colaterais por causa do quanto eles prejudicam nossa capacidade de ler, raciocinar sobre, validar e, finalmente, **confiar** no código. É por isso que eles levam o princípio de evitar causas/efeitos colaterais tão a sério.
+
 There are multiple different strategies for avoiding/fixing side causes/effects. We'll talk about some later in this chapter, and others in later chapters. I'll say one thing for certain: **writing with side causes/effects is often of our normal default** so avoiding them is going to require careful and intentional effort.
+
+Existem varias estratégias diferentes para evitar/corrigir causas/efeitos colaterais. Falaremos sobre alguns posteriormente neste capítulo e outros em capítulos posteriores. Direi uma coisa com certeza: **escrever com causas/efeitos colaterais costuma ser nosso padrão normal**, portanto, evitá-los exigirá um esforço cuidadoso e intencional.
 
 ## Once Is Enough, Thanks
 ## Uma Vez é o Suficiente, Obrigado
