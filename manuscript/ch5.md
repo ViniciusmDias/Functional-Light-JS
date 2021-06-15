@@ -421,13 +421,20 @@ There are multiple different strategies for avoiding/fixing side causes/effects.
 Existem varias estratégias diferentes para evitar/corrigir causas/efeitos colaterais. Falaremos sobre alguns posteriormente neste capítulo e outros em capítulos posteriores. Direi uma coisa com certeza: **escrever com causas/efeitos colaterais costuma ser nosso padrão normal**, portanto, evitá-los exigirá um esforço cuidadoso e intencional.
 
 ## Once Is Enough, Thanks
+
 ## Uma Vez é o Suficiente, Obrigado
 
 If you must make side effect changes to state, one class of operations that's useful for limiting the potential trouble is idempotence. If your update of a value is idempotent, then data will be resilient to the case where you might have multiple such updates from different side effect sources.
 
+Se você precisar fazer alterações de efeito colateral no estado, uma classe de operações que é útil para limitar o problema potencial é a idempotência. Se a atualização de um valor for idempotente, os dados serão resilientes ao caso em que você possa ter várias dessas atualizações de diferentes fontes de efeitos colaterais. 
+
 If you try to research it, the definition of idempotence can be a little confusing; mathematicians use a slightly different meaning than programmers typically do. However, both perspectives are useful for the functional programmer.
 
+Se você tentar pesquisar, a definição de idempotência pode ser um pouco confusa. Os matemáticos usam um significado ligeiramente diferente do que os programadores costumam fazer. No entanto, ambas as perspectivas são úteis para o programador funcional.
+
 First, let's give a counter example that is neither mathematically nor programmingly idempotent:
+
+Primeiro, vamos dar um contra-exemplo que não é nem matematicamente nem idempotente de programação:
 
 ```js
 function updateCounter(obj) {
@@ -442,12 +449,19 @@ function updateCounter(obj) {
 
 This function mutates an object via reference by incrementing `obj.count`, so it produces a side effect on that object. If `updateCounter(o)` is called multiple times -- while `o.count` is less than `10`, that is -- the program state changes each time. Also, the output of `updateCounter(..)` is a Boolean, which is not suitable to feed back into a subsequent call of `updateCounter(..)`.
 
+Esta função altera um objeto por meio de referência incrementando `obj.count`, de modo que produz um efeito colateral naquele objeto. Se `updateCounter(o)` é chamado várias vezes -- enquanto `o.count` é menor que `10`, isto é -- o estado do programa muda a cada vez. Além disso, a saída de `updateCounter(..)` é um booleano, que não é adequado para realimentar uma chamada subsequente de `updateCounter(..)`.
+
 ### Mathematical Idempotence
+
 ### Idempotência Matemática
 
 From the mathematical point of view, idempotence means an operation whose output won't ever change after the first call, if you feed that output back into the operation over and over again. In other words, `foo(x)` would produce the same output as `foo(foo(x))` and `foo(foo(foo(x)))`.
 
+Do ponto de vista matemático, idempotência significa uma operação cuja saída nunca mudará após a primeira chamada, se você alimentar essa saída de volta para a operação repetidamente. Em outras palavras, `foo (x)` produziria a mesma saída que `foo(foo(x))` e `foo(foo(foo(x)))`. 
+
 A typical mathematical example is `Math.abs(..)` (absolute value). `Math.abs(-2)` is `2`, which is the same result as `Math.abs(Math.abs(Math.abs(Math.abs(-2))))`. Other idempotent mathematical utilities include:
+
+Um exemplo matemático típico é `Math.abs(..)`(valor absoluto). `Math.abs(-2)` é `2`, que é o mesmo resultado que `Math.abs(Math.abs(Math.abs(Math.abs(-2))))`. Outros utilitários matemáticos idempotentes incluem:
 
 * `Math.min(..)`
 * `Math.max(..)`
@@ -456,6 +470,8 @@ A typical mathematical example is `Math.abs(..)` (absolute value). `Math.abs(-2)
 * `Math.ceil(..)`
 
 Some custom mathematical operations we could define with this same characteristic:
+
+Algumas operações matemáticas personalizadas que podemos definir com esta mesma característica:
 
 ```js
 function toPower0(x) {
@@ -473,6 +489,8 @@ snapUp3( 3.14 ) == snapUp3( snapUp3( 3.14 ) );      // true
 
 Mathematical-style idempotence is **not** restricted to mathematical operations. Another place we can illustrate this form of idempotence is with JavaScript primitive type coercions:
 
+A idempotência de estilo matemático **não** se restringe a operações matemáticas. Outro lugar em que podemos ilustrar essa forma de idempotência é com as coerções de tipo primitivo do JavaScript:
+
 ```js
 var x = 42, y = "hello";
 
@@ -483,11 +501,15 @@ Boolean( y ) === Boolean( Boolean( y ) );           // true
 
 Earlier in the text, we explored a common FP tool that fulfills this form of idempotence:
 
+No início do texto, exploramos uma ferramenta comum da PF que preenche essa forma de idempotência:
+
 ```js
 identity( 3 ) === identity( identity( 3 ) );    // true
 ```
 
 Certain string operations are also naturally idempotent, such as:
+
+Certas operações de string também são naturalmente idempotentes, como:
 
 ```js
 function upper(x) {
@@ -507,6 +529,8 @@ lower( str ) == lower( lower( str ) );              // true
 
 We can even design more sophisticated string formatting operations in an idempotent way, such as:
 
+Podemos até projetar operações de formatação de strings mais sofisticadas de maneira idempotente, como:
+
 ```js
 function currency(val) {
     var num = parseFloat(
@@ -523,18 +547,30 @@ currency( -3.1 ) == currency( currency( -3.1 ) );   // true
 
 `currency(..)` illustrates an important technique: in some cases the developer can take extra steps to normalize an input/output operation to ensure the operation is idempotent where it normally wouldn't be.
 
+`currency(..)` ilustra uma técnica importante: em alguns casos, o desenvolvedor pode tomar medidas extras para normalizar uma operação de entrada/saída para garantir que a operação seja idempotente onde normalmente não seria.
+
 Wherever possible, restricting side effects to idempotent operations is much better than unrestricted updates.
+
+Sempre que possível, restringir os efeitos colaterais a operações idempotentes é muito melhor do que atualizações irrestritas.
 
 ### Programming Idempotence
 ### Idempotência de Programação
 
 The programming-oriented definition for idempotence is similar, but less formal. Instead of requiring `f(x) === f(f(x))`, this view of idempotence is just that `f(x);` results in the same program behavior as `f(x); f(x);`. In other words, the result of calling `f(x)` subsequent times after the first call doesn't change anything.
 
+A definição orientada à programação para idempotência é semelhante, mas menos formal. Em vez de exigir `f(x) === f(f(x))`, esta visão de idempotência é apenas que `f(x);` resulta no mesmo comportamento de programa que `f(x);f(x)`. Em outras palavras, o resultado de chamar `f(x)` vezes subsequentes após a primeira chamada não muda nada.
+
 That perspective fits more with our observations about side effects, because it's more likely that such an `f(..)` operation creates an idempotent side effect rather than necessarily returning an idempotent output value.
+
+Essa perspectiva se encaixa mais com nossas observações sobre os efeitos colaterais, porque é mais provável que tal operação `f(..)` crie um efeito colateral idempotente ao invés de necessariamente retornar um valor de saída idempotente.
 
 This idempotence-style is often cited for HTTP operations (verbs) such as GET or PUT. If an HTTP REST API is properly following the specification guidance for idempotence, PUT is defined as an update operation that fully replaces a resource. As such, a client could either send a PUT request once or multiple times (with the same data), and the server would have the same resultant state regardless.
 
+Este estilo de idempotência é frequentemente citado para operações HTTP(verbos) como GET ou PUT. Se uma API HTTP REST estiver seguindo adequadamente a orientação de especificação para idempotência, PUT é definido como uma operação de atualização que substitui totalmente um recurso. Assim, um cliente poderia enviar uma solicitação PUT uma ou várias vezes (com os mesmos dados) e o servidor teria o mesmo estado resultante independentemente.
+
 Thinking about this in more concrete terms with programming, let's examine some side effect operations for their idempotence (or lack thereof):
+
+Pensando nisso em termos mais concretos com programação, vamos examinar algumas operações de efeito colateral para sua idempotência (ou falta dela):
 
 ```js
 // idempotent:
@@ -550,7 +586,10 @@ person.lastUpdated = Date.now();
 
 Remember: the notion of idempotence here is that each idempotent operation (like `obj.count = 2`) could be repeated multiple times and not change the program state beyond the first update. The non-idempotent operations change the state each time.
 
+Lembre-se: a noção de idempotência aqui é que cada operação idempotente (como `obj.count = 2`) pode ser repetida várias vezes e não alterar o estado do programa após a primeira atualização. As operações não idempotentes mudam o estado a cada vez.
+
 What about DOM updates?
+E quanto às atualizações do DOM?
 
 ```js
 var hist = document.getElementById( "orderHistory" );
@@ -565,7 +604,11 @@ hist.appendChild( update );
 
 The key difference illustrated here is that the idempotent update replaces the DOM element's content. The current state of the DOM element is irrelevant, because it's unconditionally overwritten. The non-idempotent operation adds content to the element; implicitly, the current state of the DOM element is part of computing the next state.
 
+A principal diferença ilustrada aqui é que a atualização idempotente substitui o conteúdo do elemento DOM. O estado atual do elemento DOM é irrelevante, porque é substituído incondicionalmente. A operação não idempotente adiciona conteúdo ao elemento. implicitamente, o estado atual do elemento DOM faz parte do cálculo do próximmo estado.
+
 It won't always be possible to define your operations on data in an idempotent way, but if you can, it will definitely help reduce the chances that your side effects will crop up to break your expectations when you least expect it.
+
+Nem sempre será possível definir suas operações em dados de uma forma idempotente, mas se você puder, isso certamente ajudará a reduzir as chances de que seus efeitos colaterais surjam para quebrar suas expectativas quando você menos espera.
 
 ## Pure Bliss
 ## Puro Êxtase
