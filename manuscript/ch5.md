@@ -615,6 +615,9 @@ Nem sempre será possível definir suas operações em dados de uma forma idempo
 
 A function with no side causes/effects is called a pure function. A pure function is idempotent in the programming sense, because it cannot have any side effects. Consider:
 
+Uma função sem causas/efeitos colaterais é chamada de função pura. Uma função pura é idempotente no sentido de programação, porque não pode ter efeitos colaterais.
+Considerar:
+
 ```js
 function add(x,y) {
     return x + y;
@@ -623,7 +626,11 @@ function add(x,y) {
 
 All the inputs (`x` and `y`) and outputs (`return ..`) are direct; there are no free variable references. Calling `add(3,4)` multiple times would be indistinguishable from only calling it once. `add(..)` is pure and programming-style idempotent.
 
+Todas as entradas (`x` e `y`) e saídas (`return ..`) são diretas; não há referências de variáveis livres. Chamar `add(3,4)` várias vezes seria indistinguível de chamá-lo apenas uma vez. `add(3,4)` é puro e idempotente de estilo de programação.
+
 However, not all pure functions are idempotent in the mathematical sense, because they don't have to return a value that would be suitable for feeding back in as their own input. Consider:
+
+No entanto, nem todas as funções puras são idempotentes no sentido matemático, porque elas não precisam retornar um valor que seria adequado para realimentação como sua própria entrada. Considerar: 
 
 ```js
 function calculateAverage(nums) {
@@ -639,9 +646,15 @@ calculateAverage( [1,2,4,7,11,16,22] );         // 9
 
 The output `9` is not an array, so you cannot pass it back in: `calculateAverage(calculateAverage( .. ))`.
 
+A saída `9` não é uma matriz, então você não pode passá-la de volta em: `calculateAverage(calculateAverage(..))`.
+
 As we discussed earlier, a pure function *can* reference free variables, as long as those free variables aren't side causes.
 
+Como discutimos anteriormente, uma função pura *pode* fazer referência a variáveis livres, desde que essas variáveis livres não sejam causas secundárias.
+
 Some examples:
+
+Alguns exemplos:
 
 ```js
 const PI = 3.141592;
@@ -657,7 +670,13 @@ function cylinderVolume(radius,height) {
 
 `circleArea(..)` references the free variable `PI`, but it's a constant so it's not a side cause. `cylinderVolume(..)` references the free variable `circleArea`, which is also not a side cause because this program treats it as, in effect, a constant reference to its function value. Both these functions are pure.
 
+`circleArea(..)` referencia a variável livre `PI`, mas é uma constante, então não é uma causa secundária. `cylinderVolume(..)` faz referência à variável livre `circleArea`, o que também não é uma causa secundária porque este programa a trata, na verdade, como uma referência constante ao valor de sua função.
+
+Ambas as funções são puras.
+
 Another example where a function can still be pure but reference free variables is with closure:
+
+Outro exemplo em que uma função ainda pode ser pura, mas com variáveis livres de referência é com closure:
 
 ```js
 function unary(fn) {
@@ -669,24 +688,43 @@ function unary(fn) {
 
 `unary(..)` itself is clearly pure -- its only input is `fn` and its only output is the `return`ed function -- but what about the inner function `onlyOneArg(..)`, which closes over the free variable `fn`?
 
+`unário(..)` em si é claramente puro -- sua única entrada é `fn` e sua única saída é a função `return` -- mas e a função interna `onlyOneArg(..)`, que fecha a variável livre `fn`?
+
 It's still pure because `fn` never changes. In fact, we have full confidence in that fact because lexically speaking, those few lines are the only ones that could possibly reassign `fn`.
+
+Ainda é puro porque `fn` nunca muda. Na verdade, temos total confiança nesse fato porque, lexicamente, essas poucas linhas são as únicas que poderiam possivelmente reatribuir `fn`.
 
 **Note:** `fn` is a reference to a function object, which is by default a mutable value. Somewhere else in the program *could*, for example, add a property to this function object, which technically "changes" the value (mutation, not reassignment). However, because we're not relying on anything about `fn` other than our ability to call it, and it's not possible to affect the callability of a function value, `fn` is still effectively unchanging for our reasoning purposes; it cannot be a side cause.
 
+**Nota:** `fn` é uma referência a um objeto de função, que por padrão é um valor mutável. Em algum outro lugar no programa *poderia*, por exemplo, adicionar uma propriedade a esse objeto de função, que tecnicamente "altera" o valor (mutação, não reatribuição). No entanto, como não estamos contando com nada sobre `fn` além de nossa capacidade de chamá-lo, e não é possível afetar a capacidade de chamada de um valor de função, `fn` ainda é efetivamente imutável para nossos propósitos de raciocínio; não pode ser uma causa secundária.
+
 Another common way to articulate a function's purity is: **given the same input(s), it always produces the same output.** If you pass `3` to `circleArea(..)`, it will always output the same result (`28.274328`).
+
+Outra forma comum de articular a pureza de uma função é: **dada a(s) mesma(s) entrada(s), ela sempre produz a mesma saída. **Se você passar `3` para `circleArea(..)`, ela sempre terá o mesmo resultado como saída (`28.274328`).
 
 If a function *can* produce a different output each time it's given the same inputs, it is impure. Even if such a function always `return`s the same value, if it produces an indirect output side effect, the program state is changed each time it's called; this is impure.
 
+Se uma função *pode* produzir uma saída diferente cada vez que recebe as mesmas entradas, ela é impura. Mesmo que tal função sempre `retorne` o mesmo valor, se ela produz um efeito colateral de saída indireto, o estado do programa é alterado cada vez que é chamado; isso é impuro.
+
 Impure functions are undesirable because they make all of their calls harder to reason about. A pure function's call is perfectly predictable. When someone reading the code sees multiple `circleArea(3)` calls, they won't have to spend any extra effort to figure out what its output will be *each time*.
+
+Funções impuras são indesejáveis porque tornam todas as chamadas mais difíceis de raciocinar. A chamada de uma função pura é perfeitamente previsível. Quando alguém lendo o código vê várias chamadas `circleArea(3)`, eles não terão que gastar nenhum esforço extra para descobrir qual será sua saída *a cada vez*.
 
 **Note:** An interesting thing to ponder: is the heat produced by the CPU while performing any given operation an unavoidable side effect of even the most pure functions/programs? What about just the CPU time delay as it spends time on a pure operation before it can do another one?
 
+**Nota:** Uma coisa interessante a considerar: o calor produzido pela CPU durante a execução de qualquer operação é um efeito colateral inevitável até mesmo das funções/programas mais puros? Que tal apenas o atraso de tempo da CPU, uma vez que ela gasta tempo em uma operação pura antes de poder fazer outra?
+
 ### Purely Relative
+
 ### Puramente Relativo
 
 We have to be very careful when talking about a function being pure. JavaScript's dynamic value nature makes it all too easy to have non-obvious side causes/effects.
 
+Devemos ter muito cuidado ao falar sobre uma função ser pura. A natureza do valor dinâmico do JavaScript torna muito fácil de ter causas/efeitos colaterais não óbvios.
+
 Consider:
+
+Considere:
 
 ```js
 function rememberNumbers(nums) {
@@ -702,7 +740,11 @@ var simpleList = rememberNumbers( list );
 
 `simpleList(..)` looks like a pure function, as it's a reference to the inner function `caller(..)`, which just closes over the free variable `nums`. However, there's multiple ways that `simpleList(..)` can actually turn out to be impure.
 
+`simpleList(..)` parece uma função pura, pois é uma referência à função interna `caller(..)`, que apenas fecha sobre a variável livre `nums`. No entanto, existem várias maneiras pelas quais `simpleList(..)` pode realmente se tornar impuro.
+
 First, our assertion of purity is based on the array value (referenced both by `list` and `nums`) never changing:
+
+Primeiro, nossa afirmação de pureza é baseada no valor do array (referenciado por `list` e `nums`) nunca mudando:
 
 ```js
 function median(nums) {
@@ -722,7 +764,11 @@ simpleList( median );       // 3.5
 
 When we mutate the array, the `simpleList(..)` call changes its output. So, is `simpleList(..)` pure or impure? Depends on your perspective. It's pure for a given set of assumptions. It could be pure in any program that didn't have the `list.push(6)` mutation.
 
+Quando alteramos o array, a chamada `simpleList(..)` altera sua saída. Então, `simpleList(..)` é puro ou impuro? Depende da sua perspectiva. É puro para um determinado conjunto de suposições. Ele poderia ser puro em qualquer programa que não tivesse a mutação `list.push(6)`.
+
 We could guard against this kind of impurity by altering the definition of `rememberNumbers(..)`. One approach is to duplicate the `nums` array:
+
+Poderíamos nos proteger contra esse tipo de impureza alterando a definição de `lembrarNúmeros(..)`. Uma abordagem é duplicar a matriz `nums`:
 
 ```js
 function rememberNumbers(nums) {
@@ -736,6 +782,8 @@ function rememberNumbers(nums) {
 ```
 
 But an even trickier hidden side effect could be lurking:
+
+Mas um efeito colateral oculto ainda mais complicado pode estar à espreita:
 
 ```js
 var list = [1,2,3,4,5];
@@ -758,6 +806,8 @@ var simpleList = rememberNumbers( list );
 
 A perhaps more robust option is to change the signature of `rememberNumbers(..)` to not receive an array in the first place, but rather the numbers as individual arguments:
 
+Uma opção talvez mais robusta é alterar a assinatura de `rememberNumbers(..)` para não receber uma matriz em primeiro lugar, mas sim os números como argumentos individuais:
+
 ```js
 function rememberNumbers(...nums) {
     return function caller(fn){
@@ -771,9 +821,15 @@ var simpleList = rememberNumbers( ...list );
 
 The two `...`s have the effect of copying `list` into `nums` instead of passing it by reference.
 
+Os dois `...`s têm o efeito de copiar `list` em `nums` em vez de passá-lo por referência.
+
 **Note:** The console message side effect here comes not from `rememberNumbers(..)` but from the `...list` spreading. So in this case, both `rememberNumbers(..)` and `simpleList(..)` are pure.
 
+**Nota:** O efeito colateral da mensagem do console aqui não vem de `rememberNumber(..)` mas da propagação de `...list`. Portanto, neste caso, `rememberNumbers(..)` e `simpleList(..)` são puros.
+
 But what if the mutation is even harder to spot? Composition of a pure function with an impure function **always** produces an impure function. If we pass an impure function into the otherwise pure `simpleList(..)`, it's now impure:
+
+Mas e se a mutação for ainda mais difícil de detectar? A composição de uma função pura com uma função impura **sempre** produz uma função impura. Se passarmos uma função impura para `simpleList(..)` pura, agora ela é impura:
 
 ```js
 // yes, a silly contrived example :)
@@ -794,7 +850,11 @@ simpleList( lastValue );    // 1
 
 **Note:** Despite `reverse()` looking safe (like other array methods in JS) in that it returns a reversed array, it actually mutates the array rather than creating a new one.
 
+**Nota:** Apesar de `reverse()` parecer seguro (como outros métodos de array em JS), ele retorna um array invertido, na verdade ele modifica o array ao invés de criar um novo.
+
 We need a more robust definition of `rememberNumbers(..)` to guard against the `fn(..)` mutating its closed over `nums` via reference:
+
+Precisamos de uma definição mais robusta de `rememberNumbers(..)` para nos proteger contra a mutação de `fn(..)` em `nums` via referência:
 
 ```js
 function rememberNumbers(...nums) {
@@ -807,7 +867,11 @@ function rememberNumbers(...nums) {
 
 So is `simpleList(..)` reliably pure yet!? **Nope.** :(
 
+Então `simpleList(..)` é confiavelmente puro ainda!? **Não.** :(
+
 We're only guarding against side effects we can control (mutating by reference). Any function we pass that has other side effects will have polluted the purity of `simpleList(..)`:
+
+Estamos apenas nos protegendo contra os efeitos colaterais que podemos controlar (mutação por referência). Qualquer função que passarmos que tenha outros efeitos colaterais terá poluído a pureza de `simpleList(..)`:
 
 ```js
 simpleList( function impureIO(nums){
@@ -817,9 +881,15 @@ simpleList( function impureIO(nums){
 
 In fact, there's no way to define `rememberNumbers(..)` to make a perfectly pure `simpleList(..)` function.
 
+Na verdade, não há como definir `rememberNumbers(..)` para fazer uma função `simpleList(..)` perfeitamente pura.
+
 Purity is about confidence. But we have to admit that in many cases, **any confidence we feel is actually relative to the context** of our program and what we know about it. In practice (in JavaScript) the question of function purity is not about being absolutely pure or not, but about a range of confidence in its purity.
 
+Pureza é sobre confiança. Mas temos que admitir que, em muitos casos, **qualquer confiança que sentirmos é, na verdade, relativa ao contexto** do nosso programa e ao que sabemos sobre ele. Na prática (em JavaScript), a questão da pureza da função não é sobre ser absolutamente puro ou não, mas sobre uma gama de confiança em sua pureza.
+
 The more pure, the better. The more effort you put into making a function pure(r), the higher your confidence will be when you read code that uses it, and that will make that part of the code more readable.
+
+Quanto mais puro, melhor. Quanto mais esforço você colocar em fazer uma função pura(r), maior será sua confiança ao ler o código que a usa, e isso tornará essa parte do código mais legível.
 
 ## There or Not
 ## Lá ou Não
