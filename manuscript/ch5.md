@@ -892,15 +892,23 @@ The more pure, the better. The more effort you put into making a function pure(r
 Quanto mais puro, melhor. Quanto mais esforço você colocar em fazer uma função pura(r), maior será sua confiança ao ler o código que a usa, e isso tornará essa parte do código mais legível.
 
 ## There or Not
-## Lá ou Não
+## Existe ou Não
 
 So far, we've defined function purity both as a function without side causes/effects and as a function that, given the same input(s), always produces the same output. These are just two different ways of looking at the same characteristics.
 
+Até agora, definimos a pureza da função como sem causas/efeitos colaterais e como uma função que, dada a(s) mesma(s) entrada(s), sempre produz a mesma saída. Essas são apenas duas maneiras diferentes de encarar as mesmas características.
+
 But a third way of looking at function purity, and perhaps the most widely accepted definition, is that a pure function has referential transparency.
+
+Mas uma terceira maneira de olhar para a pureza da função, e talvez a definição mais amplamente aceita, é que uma função pura tem transparência referencial.
 
 Referential transparency is the assertion that a function call could be replaced by its output value, and the overall program behavior wouldn't change. In other words, it would be impossible to tell from the program's execution whether the function call was made or its return value was inlined in place of the function call.
 
+Transparência referencial é a afirmação de que uma chamada de função poderia ser substituída por seu valor de saída e o comportamento geral do programa não mudaria. Em outras palavras, seria impossível dizer, a partir da execução do programa, se a chamada de função foi feita ou se seu valor de retorno foi embutido no lugar da chamada de função.
+
 From the perspective of referential transparency, both of these programs have identical behavior as they are built with pure functions:
+
+Do ponto de vista da transparência referencial, ambos os programas têm comportamento idêntico, pois são construídos com funções puras:
 
 ```js
 function calculateAverage(nums) {
@@ -936,25 +944,41 @@ console.log( "The average is:", avg );      // The average is: 9
 
 The only difference between these two snippets is that in the latter one, we skipped the `calculateAverage(nums)` call and just inlined its output (`9`). Since the rest of the program behaves identically, `calculateAverage(..)` has referential transparency, and is thus a pure function.
 
+A única diferença entre esses dois trechos é que, no último, pulamos a chamada `calculateAverage(nums)` e apenas alinhamos sua saída (`9`). Uma vez que o resto do programa se comporta de forma idêntica, `calculateAverage(..)` tem transparência referencial e, portanto, é uma função pura.
+
 ### Mentally Transparent
 ### Mentalmente Transparente
 
 The notion that a referentially transparent pure function *can be* replaced with its output does not mean that it *should literally be* replaced. Far from it.
 
+A noção de que uma função pura referencialmente transparente *pode ser* substituída por sua saída não significa que ela *deva ser* substituída literalmente. Longe disso.
+
 The reasons we build functions into our programs instead of using pre-computed magic constants are not just about responding to changing data, but also about readability with proper abstractions. The function call to calculate the average of that list of numbers makes that part of the program more readable than the line that just assigns the value explicitly. It tells the story to the reader of where `avg` comes from, what it means, and so on.
+
+As razões pelas quais criamos funções em nossos programas em vez de usar constantes mágicas pré-calculadas não são apenas para responder a dados variáveis, mas também sobre a legibilidade com abstrações adequadas. A chamada de função para calcular a média dessa lista de números torna aquela parte do programa mais legível do que a linha que apenas atribui o valor explicitamente. Conta ao leitor uma história de onde vem o `avg`, o que ele significa e assim por diante.
 
 What we're really suggesting with referential transparency is that as you're reading a program, once you've mentally computed what a pure function call's output is, you no longer need to think about what that exact function call is doing when you see it in code, especially if it appears multiple times.
 
+O que estamos realmente sugerindo com transparência referencial é que enquanto você está lendo um programa, uma vez que você calculou mentalmente o que é a saída de uma chamada de função pura, você não precisa mais pensar sobre o que aquela chamada de função exata está fazendo quando você vê em código, especialmente se aparecer várias vezes.
+
 That result becomes kinda like a mental `const` declaration, which as you're reading you can transparently swap in and not spend any more mental energy working out.
+
+Esse resultado se torna como uma declaração mental `const`, que enquanto você lê, vocÊ pode trocar de forma transparente e não gastar mais energia mental trabalhando.
 
 Hopefully the importance of this characteristic of a pure function is obvious. We're trying to make our programs more readable. One way we can do that is to give the reader less work, by providing assistance to skip over the unnecessary stuff so they can focus on the important stuff.
 
+Esperançosamente, a importância dessa característica de uma função pura é óbvia. Estamos tentando tornar nossos programas mais legíveis. Uma maneira de fazer isso é dar menos trabalho ao leitor, fornecendo assistência para pular coisas desnecessárias para que eles possam se concentrar nas coisas importantes.
+
 The reader shouldn't need to keep re-computing some outcome that isn't going to change (and doesn't need to). If you define a pure function with referential transparency, the reader won't have to.
+
+O leitor não precisar ficar recalculando algum resultado que não vai mudar (e não precisa). Se você definir uma função pura com transparência referencial, o leitor não precisará fazer isso.
 
 ### Not So Transparent?
 ### Não é Tão Transparente?
 
 What about a function that has a side effect, but this side effect isn't ever observed or relied upon anywhere else in the program? Does that function still have referential transparency?
+
+Que tal uma função que tem um efeito colateral, mas esse efeito colateral nunca é observado ou invocado em nenhuma outra parte do programa? Essa função ainda tem transparência referencial?
 
 Here's one:
 
@@ -975,13 +999,23 @@ var avg = calculateAverage( numbers );
 
 Did you spot it?
 
+Você percebeu?
+
 `sum` is an outer free variable that `calculateAverage(..)` uses to do its work. But, every time we call `calculateAverage(..)` with the same list, we're going to get `9` as the output. And this program couldn't be distinguished in terms of behavior from a program that replaced the `calculateAverage(nums)` call with the value `9`. No other part of the program cares about the `sum` variable, so it's an unobserved side effect.
+
+`soma` é uma variável externa livre que `calculateAverage(..)` usa para fazer seu trabalho. Mas, toda vez que chamarmos `calculateAverage(..)` com a mesma lista, obteremos `9` como saída. E este programa não poderia ser diferenciado em termos de comportamento de um programa que substituiu a chamada `calculateAverage(nums)` pelo valor `9`. Nenhuma outra parte do programa se preocupa com a variável `sum`, então é um efeito colateral não observado.
 
 Is a side cause/effect that's unobserved like this tree:
 
+É uma causa/efeito colateral não observado como está árvore:
+
 > If a tree falls in the forest, but no one is around to hear it, does it still make a sound?
 
+> Se uma árvore cair na floresta, mas não houver ninguém por perto para ouvi-la, ela ainda faz algum barulho?
+
 By the narrowest definition of referential transparency, I think you'd have to say `calculateAverage(..)` is still a pure function. However, because we're trying to avoid a strictly academic approach in favor of balancing it with pragmatism, I also think this conclusion needs more perspective. Let's explore.
+
+Pela definição mais restrita de transparência referencial, acho que você teria que dizer que `calculateAverage(..)` ainda é uma função pura. No entanto, como estamos tentando evitar uma abordagem estritamente acadêmica em favor de equilibrá-la com o pragmatismo, também acho que essa conclusão precisa de mais perspectiva. Vamos explorar.
 
 #### Performance Effects
 #### Efeitos de Desempenho
