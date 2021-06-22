@@ -1022,6 +1022,8 @@ Pela definição mais restrita de transparência referencial, acho que você ter
 
 You'll generally find these kind of side-effects-that-go-unobserved being used to optimize the performance of an operation. For example:
 
+Geralmente, você encontrará esse tipo de efeitos colaterais que não são observados sendo usados para otimizar o desempenho de uma operação. Por exemplo:
+
 ```js
 var cache = [];
 
@@ -1052,17 +1054,31 @@ specialNumber( 987654321 );     // 493827162
 
 This silly `specialNumber(..)` algorithm is deterministic and thus pure from the definition that it always gives the same output for the same input. It's also pure from the referential transparency perspective -- replace any call to `specialNumber(42)` with `22` and the end result of the program is the same.
 
+Este algoritmo tolo `specialNumber(..)` é determinístico e, portanto, puro da definição de que sempre dá a mesma saída para a mesma entrada. Também é puro de perspectiva de transparência referencial -- substitua qualquer chamada a `specialNumber(42)` com `22` e o resultado final do programa é o mesmo.
+
 However, the function has to do quite a bit of work to calculate some of the bigger numbers, especially the `987654321` input. If we needed to get that particular special number multiple times throughout our program, the `cache`ing of the result means that subsequent calls are far more efficient.
+
+No entanto, a função tem que fazer um pouco de trabalho para calcular alguns dos números maiores, especialmente a entrada `987654321`. Se precisarmos obter aquele número especial em particular várias vezes em nosso programa, o `cache`amento do resultado significa que as chamadas subsequentes são muito mais eficientes.
 
 Don't be so quick to assume that you could just run the calculation `specialNumber(987654321)` once and manually stick that result in some variable/constant. Programs are often highly modularized and globally accessible scopes are not usually the way you want to share state between those independent pieces. Having `specialNumber(..)` do its own caching (even though it happens to be using a global variable to do so!) is a more preferable abstraction of that state sharing.
 
+Não se precipite ao assumir que você poderia simplesmente executar o cálculo `specialNumber(987654321)` uma vez e colar manualmente esse resultado em alguma variável/constante. Os programas costumam ser altamente modularizados e os escopos globalmente acessíveis não costumam ser a maneira como você deseja compartilhar o estado entre essas partes independentes. Ter `specialNumber(..)` fazendo seu próprio cache (mesmo que esteja usando uma variável global para fazer isso!) É uma abstração mais preferível do que esse compartilhamento de estado.
+
 The point is that if `specialNumber(..)` is the only part of the program that accesses and updates the `cache` side cause/effect, the referential transparency perspective observably holds true, and this might be seen as an acceptable pragmatic "cheat" of the pure function ideal.
+
+O ponto é que se `specialNumber(..)` é a única parte do programa que acessa e atualiza a causa/efeito colateral da `cache`, a perspectiva de transparência referencial é observável e isso pode ser visto como uma pragmática aceitável "trapaça" do ideal de função pura.
 
 But should it?
 
+Mas deveria?
+
 Typically, this sort of performance optimization side effecting is done by hiding the caching of results so they *cannot* be observed by any other part of the program. This process is referred to as memoization. I always think of that word as "memorization"; I have no idea if that's even remotely where it comes from, but it certainly helps me understand the concept better.
 
+Normalmente, esse tipo de efeito colateral de otimização de desempenho é feito ocultando o cache de resultados para que *não* possam ser observados por qualquer outra parte do programa. Este processo é conhecido como memoização. Sempre penso nessa palavra como "memorização"; Não tenho ideia se é remotamente de onde vem, mas certamente me ajuda a entender melhor o conceito.
+
 Consider:
+
+Considere:
 
 ```js
 var specialNumber = (function memoization(){
@@ -1091,26 +1107,46 @@ var specialNumber = (function memoization(){
 
 We've contained the `cache` side causes/effects of `specialNumber(..)` inside the scope of the `memoization()` IIFE, so now we're sure that no other parts of the program *can* observe them, not just that they *don't* observe them.
 
+Contemos as causas/efeitos colaterais do `cache` de `specialNumber(..)` dentro do escopo do IIFE `memoization()`, então agora temos certeza de que nenhuma outra parte do programa *pode* observá-los, eles simplesmente *não* observam eles.
+
 That last sentence may seem like a subtle point, but actually I think it might be **the most important point of the entire chapter**. Read it again.
+
+Essa última frase pode parecer um ponto sutil, mas na verdade acho que pode ser **o ponto mais importante de todo o capítulo**. Leia isso novamente.
 
 Recall this philosophical musing:
 
+Lembre-se desta reflexão filosófica:
+
 > If a tree falls in the forest, but no one is around to hear it, does it still make a sound?
+
+> Se uma árvore cair na floresta, mas não houver ningém por perto para ouvi-la, ela ainda faz algum barulho?
 
 Going with the metaphor, what I'm getting at is: whether the sound is made or not, it would be better if we never create a scenario where the tree can fall without us being around; we'll always hear the sound when a tree falls.
 
+Seguindo com a metáfora, o que quero chegar é: quer o som seja feito ou não, seria melhor se nunca criarmos um cenário em que a árvore possa cair sem estarmos por perto, sempre ouviremos o som quando uma árvore cair.
+
 The purpose of reducing side causes/effects is not per se to have a program where they aren't observed, but to design a program where fewer of them are possible, because this makes the code easier to reason about. A program with side causes/effects that *just happen* to not be observed is not nearly as effective in this goal as a program that *cannot* observe them.
+
+O propósito de reduzir as causas/efeitos colaterais não é para se ter um programa onde eles não sejam observados, mas projetar um programa onde menos deles sejam possíveis, porque isso torna o código mais fácil de raciocinar. Um programa com causas/efeitos colaterais que *simplesmente acontecem* que não são observados não são tão eficaz neste objetivo quanto um programa que *não pode* observá-los.
 
 If side causes/effects can happen, the writer and reader must mentally juggle them. Make it so they can't happen, and both writer and reader will find more confidence over what can and cannot happen in any part.
 
+Se causas/efeitos colaterais podem acontecer, o escritor e o leitor devem manipulá-los mentalmente. Faça com que isso não aconteça, e tanto o escritor quanto o leitor terão mais confiança sobre o que pode ou não aocntecer em qualquer parte.
+
 ## Purifying
-## Purificante
+## Purificando
 
 The first best option in writing functions is that you design them from the beginning to be pure. But you'll spend plenty of time maintaining existing code, where those kinds of decisions were already made; you'll run across a lot of impure functions.
 
+A primeira e melhor opção ao escrever funções é projetá-las desde o início para que sejam puras. Mas você gastará muito tempo mantendo o código existente, onde esse tipo de decisão já foi feito, você encontrará muitas funções impuras.
+
 If possible, refactor the impure function to be pure. Sometimes you can just shift the side effects out of a function to the part of the program where the call of that function happens. The side effect wasn't eliminated, but it was made more obvious by showing up at the call-site.
 
+Se possível, refatore a função impura para ser pura. Às vezes, você pode simplesmente deslocar os efeitos colaterais de uma função para a parte do programa onde ocorre a chamada dessa função. O efeito colateral não foi eliminado, mas se tornou mais óbvio ao aparecer na chamada da função.
+
 Consider this trivial example:
+
+Considere este exemplo trivial:
 
 ```js
 function addMaxNum(arr) {
@@ -1126,6 +1162,8 @@ nums;       // [4,2,7,3,8]
 ```
 
 The `nums` array needs to be modified, but we don't have to obscure that side effect by containing it in `addMaxNum(..)`. Let's move the `push(..)` mutation out, so that `addMaxNum(..)` becomes a pure function, and the side effect is now more obvious:
+
+O array `nums` precisa ser modificado, mas não temos que obscurecer esse efeito colateral, contendo-o em `addMaxNum(..)`. Vamos mover a mutação `push(..)` para fora, de modo que `addMaxNum(..)` se torne uma função pura e o efeito colateral seja agora mais óbvio:
 
 ```js
 function addMaxNum(arr) {
@@ -1144,9 +1182,15 @@ nums;       // [4,2,7,3,8]
 
 **Note:** Another technique for this kind of task could be to use an immutable data structure, which we cover in the next chapter.
 
+**Nota:** Outra técnica para esse tipo de tarefa poderia ser o uso de uma estrutura de dados imutável, que abordaremos no próximo capítulo.
+
 But what can you do if you have an impure function where the refactoring is not as easy?
 
+Mas o que você pode fazer se tiver uma função impura em que a refatoração não seja tão fácil?
+
 You need to figure what kind of side causes/effects the function has. It may be that the side causes/effects come variously from lexical free variables, mutations-by-reference, or even `this` binding. We'll look at approaches that address each of these scenarios.
+
+Você precisa descobrir que tipo de causas/efeitos colaterais a função tem. Pode ser que as causas/efeitos colaterais venham de variáveis léxicas livres, mutações por referência ou mesmo ligações `this`. Veremos as abordagens que tratam de cada um desses cenários.
 
 ### Containing Effects
 ### Contendo Efeitos
