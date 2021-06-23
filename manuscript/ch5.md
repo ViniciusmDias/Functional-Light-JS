@@ -1197,7 +1197,11 @@ Você precisa descobrir que tipo de causas/efeitos colaterais a função tem. Po
 
 If the nature of the concerned side causes/effects is with lexical free variables, and you have the option to modify the surrounding code, you can encapsulate them using scope.
 
+Se a natureza das causas/efeitos colaterais em questão for com variáveis lexicais livres e você tiver a opção de modificar o código ao redor, poderá encapsulá-los usando o escopo.
+
 Recall:
+
+Lembrar:
 
 ```js
 var users = {};
@@ -1210,6 +1214,8 @@ function fetchUserData(userId) {
 ```
 
 One option for purifying this code is to create a wrapper around both the variable and the impure function. Essentially, the wrapper has to receive as input "the entire universe" of state it can operate on.
+
+Uma opção para purificar esse código é criar um invólucro em torno da variável e da função impura. Essencialmente, o invólucro deve receber como entrada "todo o universo" de estado no qual pode operar.
 
 ```js
 function safer_fetchUserData(userId,users) {
@@ -1239,18 +1245,30 @@ function safer_fetchUserData(userId,users) {
 
 **Warning:** `safer_fetchUserData(..)` is *more* pure, but is not strictly pure in that it still relies on the I/O of making an Ajax call. There's no getting around the fact that an Ajax call is an impure side effect, so we'll just leave that detail unaddressed.
 
+**Aviso:** `safer_fetchUserData(..)` é *mais* puro, mas não é estritamente puro porque ainda depende da E/S para fazer uma chamada Ajax. Não há como contornar o fato de que uma chamada Ajax é um efeito colateral impuro, portanto, deixaremos esse detalhe sem solução.
+
 Both `userId` and `users` are input for the original `fetchUserData`, and `users` is also output. The `safer_fetchUserData(..)` takes both of these inputs, and returns `users`. To make sure we're not creating a side effect on the outside when `users` is mutated, we make a local copy of `users`.
+
+Ambos `userId` e `users` são dados de entrada para o `fetchUserData` original e `users` também é gerado. O `safer_fetchUserData(..)` pega essas duas entradas e retorna `users`. Para ter certeza de que não estamos criando um efeito colateral externo quando `users` é mutado, fazemos uma cópia local de `users`.
 
 This technique has limited usefulness mostly because if you cannot modify a function itself to be pure, you're not that likely to be able to modify its surrounding code either. However, it's helpful to explore it if possible, as it's the simplest of our fixes.
 
+Essa técnica tem utilidade limitada principalmente porque, se você não pode modificar uma função para ser pura, provavelmente também não será capaz de modificar o código circundante. No entanto, é útil explorá-lo se possível, pois é a mais simples de nossas correções.
+
 Regardless of whether this will be a practical technique for refactoring to pure functions, the more important take-away is that function purity only need be skin deep. That is, the **purity of a function is judged from the outside**, regardless of what goes on inside. As long as a function's usage behaves pure, it is pure. Inside a pure function, impure techniques can be used -- in moderation! -- for a variety of reasons, including most commonly, for performance. It's not necessarily, as they say, "turtles all the way down".
 
+Independentemente de se essa será uma técnica prática para refatorar para funções puras, o mais importante é que a pureza da função precisa ser superficial. Ou seja, a **pureza de uma função é julgada de fora**, independentemente do que acontece dentro. Contando que o uso de uma função seja pura, ela é pura. Dentro de uma função pura, técnicas impuras podem ser usadas -- com moderação! -- por uma variedade de razões, incluindo mais comumente, para desempenho. Não é necessariamente, como se costuma dizer, "tartarugas até o fim".
+
 Be very careful, though. Any part of the program that's impure, even if it's wrapped with and only ever used via a pure function, is a potential source of bugs and confusion for readers of the code. The overall goal is to reduce side effects wherever possible, not just hide them.
+
+Porém, tenha muito cuidado. Qualquer parte do programa que seja impura, mesmo que esteja envolvida e apenas seja usada por meio de uma função pura, é uma fonte potencial de bugs e confusão para os leitores do código. O objetivo geral é reduzir os efeitos colaterais sempre que possível, não apenas ocultá-los.
 
 ### Covering Up Effects
 ### Efeitos de Encobrimento
 
 Many times you will be unable to modify the code to encapsulate the lexical free variables inside the scope of a wrapper function. For example, the impure function may be in a third-party library file that you do not control, containing something like:
+
+Muitas vezes você não conseguirá modificar o código para encapsular as variáveis lexicas livres dentro do escopo de uma função wrapper. Por exemplo, a função impura pode estar em um arquivo de bibliote de terceiros que você não controla, contendo algo como: 
 
 ```js
 var nums = [];
@@ -1275,12 +1293,21 @@ function generateMoreRandoms(count) {
 
 The brute-force strategy to *quarantine* the side causes/effects when using this utility in the rest of our program is to create an interface function that performs the following steps:
 
+A estratégia de força bruta para *colocar em quarentena* as causas/efeitos colaterais ao usar este utilitário no resto do nosso programa é criar uma função de interface que execute as seguintes etapas:
+
 1. Capture the to-be-affected current states
 2. Set initial input states
 3. Run the impure function
 4. Capture the side effect states
 5. Restore the original states
 6. Return the captured side effect states
+
+1. Capture os estados atuais a serem afetados
+2. Defina os estados de entrada iniciais
+3. Execute a função impuras
+4. Capture os estados de efeito colateral
+5. Restaure os estados originais
+6. Retorna os estados de efeito colateral capturados
 
 ```js
 function safer_generateMoreRandoms(count,initial) {
@@ -1335,14 +1362,22 @@ largeCount;     // 0
 
 That's a lot of manual work to avoid a few side causes/effects; it'd be a lot easier if we just didn't have them in the first place. But if we have no choice, this extra effort is well worth it to avoid surprises in our programs.
 
+É muito trabalho manual para evitar algumas causas/efeitos colaterais, seria muito mais fácil se não os tivéssemos em primeiro lugar. Mas se não tivermos escolha, esse esforço extra vale a pena para evitar surpresas em nossos programas.
+
 **Note:** This technique really only works when you're dealing with synchronous code. Asynchronous code can't reliably be managed with this approach because it can't prevent surprises if other parts of the program access/modify the state variables in the interim.
+
+**Nota:** Essa técnica realmente só funciona quando você está lidando com código síncrono. O código assíncrono não pode ser gerenciado de forma confiável com essa abordagem porque não pode evitar surpresas se outras partes do programa acessarem/modificarem as variáveis de estado nesse ínterim.
 
 ### Evading Effects
 ### Efeitos de Evasão
 
 When the nature of the side effect to be dealt with is a mutation of a direct input value (object, array, etc.) via reference, we can again create an interface function to interact with instead of the original impure function.
 
+Quando a natureza do efeito colateral a ser tratado é uma mutação de um valor de entrada direto (objeto, array, etc.) via referência, podemos novamente criar uma função de interface para interagir em vez da função impura original.
+
 Consider:
+
+Considerar:
 
 ```js
 function handleInactiveUsers(userList,dateCutoff) {
@@ -1361,6 +1396,8 @@ function handleInactiveUsers(userList,dateCutoff) {
 
 Both the `userList` array itself, plus the objects in it, are mutated. One strategy to protect against these side effects is to do a deep (well, just not shallow) copy first:
 
+Tanto o array `userList` em si, mais os objetos nele, são mutados. Uma estratégia para se proteger contra esses efeitos colaterais é fazer uma cópia profunda (bem, não superficial) primeiro: 
+
 ```js
 function safer_handleInactiveUsers(userList,dateCutoff) {
     // make a copy of both the list and its user objects
@@ -1378,6 +1415,8 @@ function safer_handleInactiveUsers(userList,dateCutoff) {
 ```
 
 The success of this technique will be dependent on the thoroughness of the *copy* you make of the value. Using `[...userList]` would not work here, since that only creates a shallow copy of the `userList` array itself. Each element of the array is an object that needs to be copied, so we need to take extra care. Of course, if those objects have objects inside them (they might!), the copying needs to be even more robust.
+
+O sucesso desta técnica dependerá do rigor da *cópia* que você fizer do valor. Usar `[...userList]` não funcionaria aqui, já que isso apenas cria uma cópia superficial do próprio array `userList`. Cada elemento da matriz é um ojeto que precisa ser copiado, portanto, precisamos tomar cuidado extra. Claro, se esses objetos tiverem objetos dentro deles (eles podem!), a cópia precisa ser ainda mais robusta.
 
 ### `this` Revisited
 ### `this` Revisitado
