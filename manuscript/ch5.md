@@ -1423,7 +1423,11 @@ O sucesso desta técnica dependerá do rigor da *cópia* que você fizer do valo
 
 Another variation of the via-reference side cause/effect is with `this`-aware functions having `this` as an implicit input. See [Chapter 2, "What's This"](ch2.md/#whats-this) for more info on why the `this` keyword is problematic for FPers.
 
+Outra variação da causa/efeito colateral via referência é com funções que reconhecem `this` tendo `this` como uma entrada implícita. Veja [Capítulo 2, "O que é isto"](ch2.md/#whats-this) para mais informações sobre porque a palavra-chave `this` é problemática para FPers.
+
 Consider:
+
+Considerar:
 
 ```js
 var ids = {
@@ -1435,6 +1439,8 @@ var ids = {
 ```
 
 Our strategy is similar to the previous section's discussion: create an interface function that forces the `generate()` function to use a predictable `this` context:
+
+Nossa estratégia é semelhante à discussão da seção anterior: criar uma função de interface que force a função `generate()` a usar um contexto `this` previsível: 
 
 ```js
 function safer_generate(context) {
@@ -1449,15 +1455,27 @@ safer_generate( { prefix: "foo" } );
 
 These strategies are in no way fool-proof; the safest protection against side causes/effects is to not do them. But if you're trying to improve the readability and confidence level of your program, reducing the side causes/effects wherever possible is a huge step forward.
 
+Essas estratégias não são à prova de erros, a proteção mais segura contra causas/efeitos colaterais é não praticá-los. Mas se você está tentando melhorar a legibilidade e o nível de confiança de seu programa, reduzir as causas/efeitos colaterais sempre que possível é um grande passo em frente.
+
 Essentially, we're not really eliminating side causes/effects, but rather containing and limiting them, so that more of our code is verifiable and reliable. If we later run into program bugs, we know that the parts of our code still using side causes/effects are the most likely culprits.
+
+Essencialmente, não estamos eliminando realmente as causas/efeito colaterais, mas sim os contendo e limitando, de forma que uma parte maior do nosso código seja verificável e confiável. Se mais tarde encontrarmos bugs de programa, saberemos que as partes do nosso código que ainda usam causas/efeitos colaterais são os prováveis culpados.
 
 ## Summary
 ## Resumo
 
 Side effects are harmful to code readability and quality because they make your code much harder to understand. Side effects are also one of the most common *causes* of bugs in programs, because juggling them is hard. Idempotence is a strategy for restricting side effects by essentially creating one-time-only operations.
 
+Os efeitos colaterais são prejudiciais à legibilidade e à qualidade do código, pois tornam o código muito mais difícil de entender. Os efeitos colaterais também são uma das *causas* mais comuns de bugs em programas, porque lidar com eles é difícil. Idempotência é uma estratégia para restringir os efeitos colaterais, essencialmente criando operações únicas.
+
 Pure functions are how we best avoid side effects. A pure function is one that always returns the same output given the same input, and has no side causes or side effects. Referential transparency further states that -- more as a mental exercise than a literal action -- a pure function's call could be replaced with its output and the program would not have altered behavior.
+
+Funções puras são a melhor maneira de evitar os efeitos colaterais. Uma função pura é aquela que sempre retorna a mesma saída com a mesma entrada e não tem causas ou efeitos colaterais. A transparência referencial afirma ainda que -- mais como um exercício mental do que uma ação literal -- a chamada de uma função pura poderia ser substituída por sua saída e o programa não teria o comportamento alterado. 
 
 Refactoring an impure function to be pure is the preferred option. But if that's not possible, try encapsulating the side causes/effects, or creating a pure interface against them.
 
+Refatorar uma função impura para ser pura é a melhor opção. Mas se isso não for possível, tente encapsular as causas/efeitos colaterais ou criar uma interface pura com eles.
+
 No program can be entirely free of side effects. But prefer pure functions in as many places as that's practical. Collect impure functions side effects together as much as possible, so that it's easier to identify and audit these most likely culprits of bugs when they arise.
+
+Nenhum programa pode ser totalmente isento de efeitos colaterais. Mas prefira funções puras sempre que possível. Reúna os efeitos colaterais das funções impuras, para que seja mais fácil identificar e auditar esses prováveis culpados dos bugs quando eles surgirem.
