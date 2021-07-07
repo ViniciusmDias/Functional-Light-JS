@@ -1,39 +1,21 @@
 # Functional-Light JavaScript
-# Chapter 5: Reducing Side Effects
 # Capítulo 5: Reduzindo Efeitos Colaterais
-
-In [Chapter 2](ch2.md), we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
 
 No [Capítulo 2](ch2.md), discutimos como uma função pode ter saídas além de seu valor de `return`. Agora que você deve estar muito confortável com a definição de uma função na PF, a ideia de tais efeitos colaterais deve cheirar estranho.
 
-We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
-
 Vamos examinar as várias formas diferentes de efeitos colaterais e ver por que eles são prejudiciais à qualidade e legibilidade do nosso código.
 
-But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and an empty program.
+Mas não me deixe esconder as coisas aqui. A piada deste capítulo: é impossível escrever um programa sem efeitos colaterais. Bem, não é impossivel, você certamente pode. Mas esse programa não fará nada útil ou observável. Se você escrevesse um programa com zero efeitos colaterais, não seria capaz de dizer a diferença entre ele e um programa vazio.
 
-Mas não me deixe bury the lede aqui. A piada deste capítulo: é impossível escrever um programa sem efeitos colaterais. Bem, não é impossivel, você certamente pode. Mas esse programa não fará nada útil ou observável. Se você escrevesse um programa com zero efeitos colaterais, não seria capaz de dizer a diferença entre ele e um programa vazio.
+Os programadores funcionais não eliminam todos os efeitos colaterais. Em vez disso, o objetivo é limitá-los tanto quanto possível. Para fazer isso, primeiro precisamos entendê-los totalmente.
 
-The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
-
-O código funcional não elimina todos os efeitos colaterais. Em vez disso, o objetivo é limitá-los tanto quanto possível. Para fazer isso, primeiro precisamos entendê-los totalmente.
-
-## Effects on the Side, Please
 ## Efeitos ao lado, Por Favor
-
-Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know that the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
 Causa e efeito: uma das observações intuitivas mais fundamentais que nós, humanos, podemos fazer sobre o mundo ao nosso redor. Empurre um livro da borda de uma mesa, ele cai no chão. Você não precisa de um diploma de física para saber que a causa foi você empurrar o livro e o efeito foi a gravidade puxando-o para o chão. Existe uma relação clara e direta.
 
-In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
-
 Na programação, também lidamos inteiramente com causa e efeito. Se você chamar uma função (causa), ela exibe uma mensagem na tela (efeito).
 
-When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
-
 Ao ler um programa, é extremamente importante que o leitor seja capaz de identificar claramente cada causa e cada efeito. Em qualquer medida em que uma relação direta entre causa e efeito não possa ser vista prontamente em uma leitura do programa, a legibilidade desse programa é degradada.
-
-Consider:
 
 Considere:
 
@@ -45,11 +27,7 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
-In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
-
 Neste programa trivial, é imediatamente claro que chamar foo (a causa) com o valor `3` terá o efeito de retornar o valor `6` que é então atribuído a `y` (o efeito). Não há ambiguidadae aqui.
-
-But now:
 
 Mas agora:
 
@@ -63,15 +41,9 @@ var y;
 foo( 3 );
 ```
 
-This program has the exact same outcome. But there's a very big difference. The cause and the effect are disjoint. The effect is indirect. The setting of `y` in this way is what we call a side effect.
-
 Este programa tem exatamente o mesmo resultado. Mas há uma diferença muito grande. A causa e o efeito são separados. O efeito é indireto. A configuração de `y` dessa forma é o que chamamos de efeito colateral.
 
-**Note:** When a function makes a reference to a variable outside itself, this is called a free variable. Not all free variable references will be bad, but we'll want to be very careful with them.
-
 **Nota:** Quando uma função faz referência a uma variável fora dela, isso é chamado de variável livre. Nem todas as referências de variáveis livres serão ruins, mas devemos ter muito cuidado com elas.
-
-What if I gave you a reference to call a function `bar(..)` that you cannot see the code for, but I told you that it had no such indirect side effects, only an explicit `return` value effect?
 
 E se eu der a você uma referência para chamar uma função `bar(..)` para a qual você não pode ver o código, mas eu disse que não tem esses efeitos colaterais indiretos, apenas um valor de `return` explícito?
 
@@ -79,17 +51,11 @@ E se eu der a você uma referência para chamar uma função `bar(..)` para a qu
 bar( 4 );           // 42
 ```
 
-Because you know that the internals of `bar(..)` do not create any side effects, you can now reason about any `bar(..)` call like this one in a much more straightforward way. But if you didn't know that `bar(..)` had no side effects, to understand the outcome of calling it, you'd have to go read and dissect all of its logic. This is extra mental tax burden for the reader.
-
 Como você sabe que as partes internas de `bar(..)` não criam efeitos colaterais, agora você pode raciocinar sobre qualquer chamada de `bar(..)` como esta de uma maneira muito mais direta. Mas se você não sabia que `bar(..)` não tinha efeitos colaterais, para entender o resultado de chamá-lo, você teria que ler e dissecar toda a sua lógica. Isso é uma carga tributária mental extra para o leitor.
-
-**The readability of a side effecting function is worse** because it requires more reading to understand the program.
 
 **A legibilidade de uma função de efeito colateral é pior** porque requer mais leitura para entender o programa.
 
-But the problem goes deeper than that. Consider:
-
-Mas o problema é mais profundo do que isso. Considerar:
+Mas o problema é mais profundo do que isso. Considere:
 
 ```js
 var x = 1;
@@ -107,23 +73,13 @@ baz();
 console.log( x );
 ```
 
-How sure are you which values are going to be printed at each `console.log(x)`?
-
 Você tem certeza de quais valores serão impressos em cada `console.log(x)`?
-
-The correct answer is: not at all. If you're not sure whether `foo()`, `bar()`, and `baz()` are side-effecting or not, you cannot guarantee what `x` will be at each step unless you inspect the implementations of each, **and** then trace the program from line 1 forward, keeping track of all the changes in state as you go.
 
 A resposta correta é: de forma alguma. Se você não tem certeza se `foo()`, `bar()`, e `baz()` são efeitos colaterais ou não, você não pode garantir o que será o `x` em cada etapa, a menos que você inspecione cada implementação, **e** então rastreie o programa da linha 1 em diante, acompanhando todas as mudanças de estado conforme for avançando.
 
-In other words, the final `console.log(x)` is impossible to analyze or predict unless you've mentally executed the whole program up to that point.
-
 Em outras palavras, o `console.log(x)` final é impossível de analisar ou prever, a menos que você tenha executado mentalmente todo o programa até aquele ponto.
 
-Guess who's good at running your program? The JS engine. Guess who's not as good at running your program? The reader of your code. And yet, your choice to write code (potentially) with side effects in one or more of those function calls means that you've burdened the reader with having to mentally execute your program in its entirety up to a certain line, for them to read and understand that line.
-
 Adivinha quem é bom em rodar o seu programa? O mecanismo JS. Adivinha quem não é tão bom em executar seu programar? O leitor do seu código. E ainda, sua escolha de escrever código (potencialmente) com efeitos colaterais em uma ou mais dessas chamadas de função significa que você sobrecarregou o leitor com a necessidade de executar mentalmente seu programa em sua totalidade até uma determinada linha, para que eles pudessem ler e entender essa linha. 
-
-If `foo()`, `bar()`, and `baz()` were all free of side effects, they could not affect `x`, which means we do not need to execute them to mentally trace what happens with `x`. This is less mental tax, and makes the code more readable.
 
 Se `foo()`, `bar()`, e `baz()` estivessem livres de efeitos colaterais, eles não poderiam afetar `x`, o que significa que não precisamos executá-los para rastrear mentalmente o que acontece com `x`. Isso é menos imposto mental e torna o código mais legível.
 
